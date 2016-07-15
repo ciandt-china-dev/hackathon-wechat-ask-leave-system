@@ -240,9 +240,9 @@ fieldset {
 
 .selected-approver img,
 .user-item img {
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
 }
 
 .selected-approver .name {
@@ -255,16 +255,14 @@ fieldset {
 }
 
 .add-approver {
-  width: 32px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   background: #eee;
-  border-radius: 16px;
+  border-radius: 21px;
   border: 1px solid #ccc;
-  font-size: 28px;
-  line-height: 0;
-  padding: 12px 0 0;
   color: #aaa;
-  border: 1px solid #ccc;
+  background: #eee url('../images/add.png') center center no-repeat;
+  background-size: 20px auto;
 }
 
 .add-approver,
@@ -287,7 +285,7 @@ fieldset {
   padding: 4px;
   position: absolute;
   width: 10px;
-  line-height: 6px;
+  line-height: 8px;
   height: 10px;
   border-radius: 9px;
   color: #fff;
