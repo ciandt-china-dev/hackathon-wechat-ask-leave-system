@@ -3,3 +3,4 @@ description = "Provides vocation system which integrated with Wechat enterprise 
 package = Custom
 core = 7.x
 configure = admin/config/vocation/enterprise_wechat
+dependencies[] = xautoload (>= 7.x-5.0)

@@ -24,6 +24,8 @@ function ciandt_wechat_vocation_menu() {
 
 
 function ciandt_wechat_vocation_callback(){
+  $api = new Drupal\weixin_qy_api\Api\QyCallback();
+  $api->validateCallbackUrl();
 
 }
 
