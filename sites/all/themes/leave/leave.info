@@ -1,6 +1,6 @@
 
-name = Leave System
-description = A flexible, recolorable theme for CI&T Leave System.
+name = Ask Leave System
+description = A flexible, recolorable theme for CI&T Ask Leave System.
 package = Core
 version = VERSION
 core = 7.x
