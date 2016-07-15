@@ -110,6 +110,14 @@ h1 {
   font-size: 18px;
 }
 
+.item-list .pager {
+  margin: 15px 0;
+}
+
+.item-list .pager li {
+  margin: 0;
+}
+
 /* message */
 .layermbox p {
   margin: 0;
@@ -449,7 +457,7 @@ h2 {
   background: url('../images/arrow.png') center center no-repeat;
   right: 10px;
   top: 13px;
-  background-size: 10px;
+  background-size: 8px;
 }
 
 .views-field {
