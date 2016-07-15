@@ -22,7 +22,7 @@ body {
 }
 
 a {
-  color: #007f52;
+  color: #1fbdc5;
 }
 
 a:link,
@@ -88,9 +88,7 @@ select::-ms-expand {
 }
 
 /* ------------------ Reset Styles ------------------ */
-
-/* Form Styles */
-.container {
+.page-vacation-request .container {
   padding: 0 20px;
 }
 
@@ -103,7 +101,12 @@ select::-ms-expand {
 
 h1 {
   font-size: 24px;
-  margin: 12px 0 0 80px;
+  margin: 12px 0 0 90px;
+}
+
+.view-empty {
+  margin: 30px 0;
+  text-align: center;
 }
 
 /* message */
@@ -256,4 +259,45 @@ h2 {
   text-align: center;
   font-size: 16px;
   box-shadow: 0px 0px 0px 5px rgba(185, 204, 208, 0.6);
+}
+
+/* List */
+
+/*.view-vacation-pending .views-field {*/
+.view-vacation-pending {
+  border-top: 1px solid #ccc;
+}
+
+.views-row {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-size: 0;
+  position: relative;
+}
+
+.views-row:after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 30px;
+  background: url('../images/arrow.png') center center no-repeat;
+  right: 10px;
+  top: 13px;
+  background-size: 10px;
+}
+
+.views-field {
+  display: inline-block;
+  width: 25%;
+  font-size: 14px;
+}
+
+.views-field-name {
+  width: 35%;
+}
+
+.views-field-field-leave-duration {
+  width: 100%;
+  font-size: 11px;
+  color: #999;
 }
