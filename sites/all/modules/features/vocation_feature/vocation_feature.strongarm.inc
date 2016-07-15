@@ -14,7 +14,7 @@ function vocation_feature_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'ant_pattern_vocation';
-  $strongarm->value = '[node:field_name] [node:field_leave_duration]';
+  $strongarm->value = '[node:author]申请[node:field-type-of-leave][node:field_total_days]天';
   $export['ant_pattern_vocation'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -83,6 +83,13 @@ function vocation_feature_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'date_format_vocation_detail_date';
+  $strongarm->value = 'Y-m-d H:i';
+  $export['date_format_vocation_detail_date'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'field_bundle_settings_node__vocation';
   $strongarm->value = array(
     'view_modes' => array(
@@ -102,6 +109,9 @@ function vocation_feature_strongarm() {
         'custom_settings' => FALSE,
       ),
       'token' => array(
+        'custom_settings' => FALSE,
+      ),
+      'diff_standard' => array(
         'custom_settings' => FALSE,
       ),
     ),
