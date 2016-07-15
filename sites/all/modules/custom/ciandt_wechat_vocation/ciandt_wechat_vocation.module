@@ -9,8 +9,8 @@ function ciandt_wechat_vocation_menu() {
     'access arguments' => array('administer site configuration'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('ciandt_wechat_vocation_enterprise_wechat_settings'),
-    'title' => 'Enterprise Wechat setting',
-    'description' => 'Set access keys for enterprise wechat.',
+    'title' => 'Enterprise Wechat Settings',
+    'description' => 'Set access keys and other necessary configurations for enterprise wechat.',
   );
 
   return $items;
@@ -40,7 +40,7 @@ function ciandt_wechat_vocation_enterprise_wechat_settings($form, &$form_state){
     '#description' => t('Set the enterprise wechat Secret.'),
   );
   
-  $form['vacation_approval_wechat_tag_name'] = array(
+  $form['vacation_approver_wechat_tag_name'] = array(
     '#type' => 'textfield', 
     '#title' => t('Approval Wechat Tag Name'), 
     '#size' => 60, 
