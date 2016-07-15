@@ -1,0 +1,74 @@
+
+/*
+  Node form summary love.
+ */
+.node-form-summary .form-item-name,
+.node-form-summary .form-item-date,
+.node-form-summary .form-item-promote,
+.node-form-summary .form-item-sticky,
+.node-form-summary .form-item-unpublish-on,
+.node-form-summary .form-wrapper.form-actions {
+  padding: 0;
+  border: none;
+}
+
+.node-form-summary .form-item-name label {
+  padding-top: 2px;
+  float: left;
+}
+
+.node-form-summary .form-item-name input {
+  width: 200px;
+  margin-left: 4px;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 10px;
+}
+
+.node-form-summary .form-item-date,
+.node-form-summary .form-item-name,
+.node-form-summary .form-item-promote,
+.node-form-summary .form-item-sticky,
+.node-form-summary .form-item-unpublish-on {
+  display: none;
+  margin: 0;
+}
+
+.node-form-summary .form-item-date label,
+.node-form-summary .form-item-name label,
+.node-form-summary .form-item-unpublish-on label {
+  padding: 0;
+}
+
+.node-form-summary .form-wrapper.form-actions {
+  margin: 0;
+}
+
+/* clearfix */
+.node-form-summary .form-item-date:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+
+/*
+  Path Alias (uses a bit of js as well)
+ */
+.node-form .form-item-path-alias {
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.node-form .form-item-path-alias label,
+.node-form .form-item-path-alias .input-wrapper {
+  display: table-cell;
+  vertical-align: top;
+}
+
+.node-form .form-item-path-alias .input-wrapper {
+  width: 100%;
+}
