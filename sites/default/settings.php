@@ -245,7 +245,13 @@
  * @endcode
  */
 $databases = array();
-
+$databases['default']['default'] = array(
+    'driver' => 'mysql',
+    'database' => 'hackathon_wechat_ask_leave_system',
+    'username' => 'jieyyal',
+    'password' => 'jieyyal',
+    'host' => '192.168.3.87',
+    'port' => 3306 );
 /**
  * Access control for update.php script.
  *
