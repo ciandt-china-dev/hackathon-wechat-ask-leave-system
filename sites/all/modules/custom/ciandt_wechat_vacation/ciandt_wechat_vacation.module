@@ -4,7 +4,7 @@
  * @file
  * Ciandt_wechat_vacation module.
  */
-
+define('DRUPAL_APPROVER_RID', 4);
 /**
  * Implements hook_menu().
  */
@@ -271,11 +271,15 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   $approve_user = user_load_by_mail($full_user_info['email']);
 
   if (!$approve_user) {
-    $account = array(
+    $edit = array(
       'mail' => $full_user_info['email'],
       'name' => $full_user_info['userid'],
+      'roles' => array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        DRUPAL_APPROVER_RID => 'Vacation Approver',
+      ),
     );
-    $approve_user = user_save($account);
+    $approve_user = user_save(NULL, $edit);
   }
   $form_state['values']['field_approver'][LANGUAGE_NONE][0]['target_id'] = $approve_user->uid;
 
