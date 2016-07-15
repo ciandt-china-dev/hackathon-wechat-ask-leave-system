@@ -1,0 +1,95 @@
+/* ---------- Overall Specifications ---------- */
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  line-height: 1.5;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background: #fff;
+}
+
+body {
+  font-size: 16px;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+  text-rendering: optimizeLegibility\9;
+  font-family: "PTSansRegular", Helvetica, Arial, sans-serif;
+  color: #595757;
+}
+
+a {
+  color: #007f52;
+}
+
+a:link,
+a:visited {
+  text-decoration: none;
+}
+
+a:hover,
+a:active,
+a:focus {
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 1.0em 0 0.5em;
+  font-weight: inherit;
+}
+
+h1 {
+  font-size: 1.357em;
+  color: #000;
+}
+
+h2 {
+  font-size: 1.143em;
+}
+
+p {
+  margin: 0 0 1.2em;
+}
+
+del {
+  text-decoration: line-through;
+}
+
+tr.odd {
+  background-color: #dddddd;
+}
+
+img {
+  outline: 0;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+.clearfix:after {
+  font-size: 0;
+}
+
+/* ------------------ Reset Styles ------------------ */
+
+/* Form Styles */
+.container {
+  padding: 0 30px;
+}

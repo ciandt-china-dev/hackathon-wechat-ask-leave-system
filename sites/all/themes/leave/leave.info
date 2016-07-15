@@ -1,0 +1,22 @@
+
+name = Leave System
+description = A flexible, recolorable theme for CI&T Leave System.
+package = Core
+version = VERSION
+core = 7.x
+
+
+stylesheets[all][] = css/style.css
+scripts[] = scripts/leave.js
+
+regions[header] = Header
+regions[help] = Help
+regions[page_top] = Page top
+regions[page_bottom] = Page bottom
+regions[highlighted] = Highlighted
+
+regions[featured] = Featured
+regions[content] = Content
+regions[sidebar_first] = Sidebar first
+regions[sidebar_second] = Sidebar second
+regions[footer] = Footer
