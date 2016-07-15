@@ -10,6 +10,34 @@
 function vocation_feature_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_approver'.
+  $field_bases['field_approver'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_approver',
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
+      ),
+      'target_type' => 'user',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
+  );
+
   // Exported field_base: 'field_comment'.
   $field_bases['field_comment'] = array(
     'active' => 1,
@@ -66,46 +94,24 @@ function vocation_feature_field_default_field_bases() {
     'entity_types' => array(),
     'field_name' => 'field_name',
     'indexes' => array(
-      'format' => array(
-        0 => 'format',
+      'target_id' => array(
+        0 => 'target_id',
       ),
     ),
     'locked' => 0,
-    'module' => 'text',
+    'module' => 'entityreference',
     'settings' => array(
-      'max_length' => 255,
-    ),
-    'translatable' => 0,
-    'type' => 'text',
-  );
-
-  // Exported field_base: 'field_onboarding_date'.
-  $field_bases['field_onboarding_date'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_onboarding_date',
-    'indexes' => array(),
-    'locked' => 0,
-    'module' => 'date',
-    'settings' => array(
-      'cache_count' => 4,
-      'cache_enabled' => 0,
-      'granularity' => array(
-        'day' => 'day',
-        'hour' => 0,
-        'minute' => 0,
-        'month' => 'month',
-        'second' => 0,
-        'year' => 'year',
+      'handler' => 'base',
+      'handler_settings' => array(
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(),
       ),
-      'timezone_db' => '',
-      'todate' => '',
-      'tz_handling' => 'none',
+      'target_type' => 'user',
     ),
     'translatable' => 0,
-    'type' => 'datetime',
+    'type' => 'entityreference',
   );
 
   // Exported field_base: 'field_total_days'.
