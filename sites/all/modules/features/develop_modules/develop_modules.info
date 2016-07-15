@@ -5,5 +5,7 @@ version = 7.x-1.0
 dependencies[] = admin_menu
 dependencies[] = dblog
 dependencies[] = module_filter
+dependencies[] = rules_admin
+dependencies[] = views_ui
 features[features_api][] = api:2
 project path = sites/all/modules/features
