@@ -4,19 +4,6 @@
  * Adaptivetheme implementation to display the basic html structure of a single
  * Drupal page.
  *
- * Adaptivetheme Variables:
- * - $html_attributes: structure attributes, includes the lang and dir attributes
- *   by default, use $vars['html_attributes_array'] to add attributes in preprcess
- * - $polyfills: prints IE conditional polyfill scripts enabled via theme
- *   settings.
- * - $skip_link_target: prints an ID for the skip navigation target, set in
- *   theme settings.
- * - $is_mobile: Mixed, requires the Mobile Detect or Browscap module to return
- *   TRUE for mobile.  Note that tablets are also considered mobile devices.
- *   Returns NULL if the feature could not be detected.
- * - $is_tablet: Mixed, requires the Mobile Detect to return TRUE for tablets.
- *   Returns NULL if the feature could not be detected.
- *
  * Available Variables:
  * - $css: An array of CSS files for the current page.
  * - $language: (object) The language the site is being displayed in.
@@ -55,23 +42,18 @@
  * @see template_preprocess()
  * @see template_preprocess_html()
  * @see template_process()
- * @see adaptivetheme_preprocess_html()
- * @see adaptivetheme_process_html()
  */
 ?><!DOCTYPE html>
-<!--[if lt IE 7]><html class="lt-ie9 lt-ie8 lt-ie7"<?php print $html_attributes; ?>><![endif]-->
-<!--[if IE 7]><html class="lt-ie9 lt-ie8"<?php print $html_attributes; ?>><![endif]-->
-<!--[if IE 8]><html class="lt-ie9"<?php print $html_attributes; ?>><![endif]-->
-<!--[if gt IE 8]><!--><html<?php print $html_attributes . $rdf_namespaces; ?>><!--<![endif]-->
+<html>
 <head>
-<?php print $head; ?>
-<title><?php print t($head_title); ?></title>
-<?php print $styles; ?>
-<?php print $polyfills; ?>
+	<?php print $head; ?>
+	<title><?php print t($head_title); ?></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<?php print $styles; ?>
 </head>
 <body class="<?php print $classes; ?>"<?php print $attributes; ?>>
-  <div id="skip-link" class="nocontent">
-    <a href="<?php print $skip_link_target; ?>" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>
+  <div id="skip-link">
+    <a href="#main-content" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>
   </div>
   <?php print $page_top; ?>
   <?php print $page; ?>
