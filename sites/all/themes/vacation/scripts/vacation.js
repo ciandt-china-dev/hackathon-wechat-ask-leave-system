@@ -97,7 +97,7 @@ var message = {
 			var $typeOfLeave = $('#edit-field-type-of-leave-und'),
 				$leaveDuration = $('#edit-field-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
-				$approver = $('#edit-field-approver-und-0-target-id'),
+				$approver = $('#edit-field-approver-und'),
 				len = $leaveDuration.length,
 				i = 0;
 
@@ -105,6 +105,9 @@ var message = {
 				message.alert(MESSAGE.TypeOfLeaveRequired);
 				return false;
 			}
+
+			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val($('.start-time').val());
+			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val($('.end-time').val());
 
 			for (i; i < len; i++) {
 				if ($($leaveDuration[i]).val() == '') {

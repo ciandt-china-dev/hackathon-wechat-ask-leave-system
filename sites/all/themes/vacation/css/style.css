@@ -116,8 +116,8 @@ h1 {
 }
 
 /* form */
-.form-item {
-  margin: 15px 0;
+#vocation-node-form {
+  position: relative;
 }
 
 label {
@@ -140,6 +140,10 @@ label {
   box-sizing: border-box;
   color: #333;
   background: #fff;
+}
+
+.form-item {
+  margin: 15px 0;
 }
 
 .form-textarea {
@@ -195,6 +199,31 @@ fieldset {
 
 .form-type-date-popup .form-item label {
   display: none;
+}
+
+#edit-field-leave-duration-und-0-value-timeEntry-popup-1,
+#edit-field-leave-duration-und-0-value2-timeEntry-popup-1 {
+  display: none;
+}
+
+.date-clear {
+  padding: 5px 8px;
+  -webkit-appearance: none;
+  height: 36px;
+}
+
+.time {
+  position: absolute;
+  top: 102px;
+  left: 51%;
+  width: 49%;
+  padding: 5px 8px;
+  -webkit-appearance: none;
+  height: 36px;
+}
+
+.end-time {
+  top: 168px;
 }
 
 /* vacation detail */
@@ -279,6 +308,7 @@ h2 {
 /* List */
 
 /*.view-vacation-pending .views-field {*/
+.view-vacation-approved,
 .view-vacation-history,
 .view-vacation-pending {
   border-top: 1px solid #ccc;
