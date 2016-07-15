@@ -35,8 +35,10 @@ function ciandt_wechat_vocation_callback() {
   $we_obj->valid();
   $rev = $we_obj->getRev();
   $userid = $rev->getRevContent();
-  $content = ciandt_wechat_vocation_get_leaves_by_user($userid);
-  $we_obj->text($content)->reply();
+  if (!empty($userid)) {
+    $content = ciandt_wechat_vocation_get_leaves_by_user($userid);
+    $we_obj->text($content)->reply();
+  }
 }
 
 function ciandt_wechat_vocation_get_leaves_by_user($userid) {
