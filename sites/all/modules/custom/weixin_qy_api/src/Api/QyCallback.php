@@ -27,7 +27,7 @@ class QyCallback {
     $this->devModeToken = variable_get('enterprise_wechat_dev_mode_token');
     $this->devModeencodingAESKey = variable_get('enterprise_wechat_dev_mode_encoding_aes_key');
     $this->approvalWechatTagName = variable_get('vacation_approver_wechat_tag_name');
-    $this->wxcpt = new WXBizMsgCrypt($this->devModeToken, $this->secret, $this->corpID);
+    $this->wxcpt = new WXBizMsgCrypt($this->devModeToken, $this->devModeencodingAESKey, $this->corpID);
   }
 
   /*
@@ -66,7 +66,8 @@ class QyCallback {
       echo $echostr;
     }
     else {
-      print("ERR: " . $errCode . "\n\n");
+      echo $echostr;
+      //print("ERR: " . $errCode . "\n\n");
     }
   }
 

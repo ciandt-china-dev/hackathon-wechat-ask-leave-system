@@ -6,7 +6,10 @@ version = VERSION
 core = 7.x
 
 
+stylesheets[all][] = css/layer.css
 stylesheets[all][] = css/style.css
+
+scripts[] = scripts/layer.m.js
 scripts[] = scripts/vacation.js
 
 regions[header] = Header
