@@ -16,7 +16,7 @@ function ciandt_wechat_vacation_rules_action_info() {
     'parameter' => array(
       'target' => array(
         'type' => 'text',
-        'label' => t('Target Approver'),
+        'label' => t('Target Notification Receiver'),
       ),
       'message' => array(
         'type' => 'text',
