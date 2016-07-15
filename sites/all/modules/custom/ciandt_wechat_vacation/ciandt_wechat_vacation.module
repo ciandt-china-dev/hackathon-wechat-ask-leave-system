@@ -1,7 +1,12 @@
 <?php
 
 /**
- * Implementation of hook_menu().
+ * @file
+ * Ciandt_wechat_vacation module.
+ */
+
+/**
+ * Implements hook_menu().
  */
 function ciandt_wechat_vacation_menu() {
   $items = array();
@@ -12,78 +17,75 @@ function ciandt_wechat_vacation_menu() {
     'title' => 'Enterprise Wechat Settings',
     'description' => 'Set access keys and other necessary configurations for enterprise wechat.',
   );
-  
-  $items['webchat_callback'] = array(
-    'title' => 'CI&T vacation management system',
-    'page callback' => 'ciandt_wechat_vacation_callback',
-    'access arguments' => array('access content')
-  );
 
   return $items;
 }
 
 
-function ciandt_wechat_vacation_callback(){
-  $we_obj = _ciandt_wechat_vacation_init_obj();
-  $we_obj->valid();
-
-}
-
 /**
  * Menu callback to configure module settings.
  */
-function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state){
+function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state) {
   $form['enterprise_wechat_corp_id'] = array(
-    '#type' => 'textfield', 
-    '#title' => t('CorpID'), 
-    '#size' => 60, 
-    '#maxlength' => 128, 
+    '#type' => 'textfield',
+    '#title' => t('CorpID'),
+    '#size' => 60,
+    '#maxlength' => 128,
     '#required' => TRUE,
     '#default_value' => variable_get('enterprise_wechat_corp_id'),
     '#description' => t('Set the enterprise wechat CorpID.'),
   );
-  
+
   $form['enterprise_wechat_secret'] = array(
-    '#type' => 'textfield', 
-    '#title' => t('Secret'), 
-    '#size' => 60, 
-    '#maxlength' => 128, 
+    '#type' => 'textfield',
+    '#title' => t('Secret'),
+    '#size' => 60,
+    '#maxlength' => 128,
     '#required' => TRUE,
     '#default_value' => variable_get('enterprise_wechat_secret'),
     '#description' => t('Set the enterprise wechat Secret.'),
   );
-  
+
   $form['enterprise_wechat_dev_mode_token'] = array(
-    '#type' => 'textfield', 
-    '#title' => t('Dev mode Token'), 
-    '#size' => 60, 
-    '#maxlength' => 128, 
+    '#type' => 'textfield',
+    '#title' => t('Dev mode Token'),
+    '#size' => 60,
+    '#maxlength' => 128,
     '#required' => TRUE,
     '#default_value' => variable_get('enterprise_wechat_dev_mode_token'),
     '#description' => t('Set the token for dev mode.'),
   );
-  
+
   $form['enterprise_wechat_dev_mode_encoding_aes_key'] = array(
-    '#type' => 'textfield', 
-    '#title' => t('Dev mode EncodingAESKey'), 
-    '#size' => 60, 
-    '#maxlength' => 128, 
+    '#type' => 'textfield',
+    '#title' => t('Dev mode EncodingAESKey'),
+    '#size' => 60,
+    '#maxlength' => 128,
     '#required' => TRUE,
     '#default_value' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
     '#description' => t('Set the EncodingAESKey for dev mode.'),
   );
-  
+
   $form['vacation_approver_wechat_tag_name'] = array(
-    '#type' => 'textfield', 
-    '#title' => t('Approval Wechat Tag Name'), 
-    '#size' => 60, 
-    '#maxlength' => 128, 
+    '#type' => 'textfield',
+    '#title' => t('Approval Wechat Tag Name'),
+    '#size' => 60,
+    '#maxlength' => 128,
     '#required' => TRUE,
     '#default_value' => variable_get('vacation_approver_wechat_tag_name'),
     '#description' => t('Set the Wechat tag name for approvers.'),
   );
-  
-  return system_settings_form($form);  
+  $form['vacation_approver_wechat_staff_password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Stuff Password'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('vacation_approver_wechat_staff_password', 'cit2016'),
+    '#description' => t('Set the stuff password of Weixin'),
+  );
+
+  return system_settings_form($form);
 }
 
 /**
@@ -92,13 +94,14 @@ function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state){
 function ciandt_wechat_vacation_push_wechat_notification($target, $message) {
 
   // TODO: Get wechat uid/token_id by $target.
-
   // TODO: Send message with wechat api.
-
   drupal_set_message(t("vacation approve notification has been sent to approver."));
   return TRUE;
 }
 
+/**
+ * Function to set Weixin API data.
+ */
 function _ciandt_wechat_vacation_init_obj() {
   $we_obj = &drupal_static(__FUNCTION__);
   if (!isset($we_obj)) {
@@ -114,27 +117,36 @@ function _ciandt_wechat_vacation_init_obj() {
   return $we_obj;
 }
 
+/**
+ * Function to authorize(Weixin API).
+ */
 function _ciandt_wechat_vacation_authorize() {
-  if (empty($_SESSION['weixin']['user_id'])) {
+  $drupal_get_path_alias = drupal_get_path_alias();
+  if (FALSE !== strpos($drupal_get_path_alias, 'vacation') && empty($_SESSION['weixin']['user_id'])) {
     $code = isset($_GET['code']) ? $_GET['code'] : '';
     if (empty($code)) {
       // Get Code.
       $we_obj = _ciandt_wechat_vacation_init_obj();
-      $callback = 'http://' . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];;
+      $callback = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
       $url = $we_obj->getOauthRedirect($callback);
-      header("Location: $url");
+      drupal_goto($url);
     }
+
     // Get User id.
     $we_obj = _ciandt_wechat_vacation_init_obj();
-    $user_id = $we_obj->getUserId($code);
+    $user_id_arr = $we_obj->getUserId($code);
+    $user_id = $user_id_arr['UserId'];
+
+    $user_info = $we_obj->getUserInfo($user_id);
     $_SESSION['weixin'] = [
       'user_id' => $user_id,
+      'name' => $user_info['name'],
+      'email' => $user_info['email'],
     ];
-    $user_info = $we_obj->getUserInfo($user_id);
-
     if (!user_load_by_name($user_id)) {
       // Create user.
-      $password = user_password(8);
+      $password = variable_get('vacation_approver_wechat_staff_password', 'cit2016');
       $fields = array(
         'name' => $user_id,
         'mail' => $user_info['email'],
@@ -144,17 +156,36 @@ function _ciandt_wechat_vacation_authorize() {
         'roles' => array(
           DRUPAL_AUTHENTICATED_RID => 'authenticated user',
         ),
-        'field_weixin_name' => $user_info['name'],
+        'field_weixin_name' => [],
       );
-      //the first parameter is left blank so a new user is created
+      $fields['field_weixin_name'][LANGUAGE_NONE][0]['value'] = $user_info['name'];
+      // The first parameter is left blank so a new user is created.
       user_save('', $fields);
     }
 
   }
-
-
 }
 
-
-
-
+/**
+ * Implements hook_block_info().
+ */
+function ciandt_wechat_vacation_block_info() {
+  $blocks = array();
+  $blocks['weixin_authorize'] = array(
+    'info' => t('Weixin Authorize'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+/**
+ * Implements hook_block_view().
+ */
+function ciandt_wechat_vacation_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'weixin_authorize':
+      $block['content'] = _ciandt_wechat_vacation_authorize();
+      break;
+  }
+  return $block;
+}
