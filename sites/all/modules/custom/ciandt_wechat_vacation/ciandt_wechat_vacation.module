@@ -41,6 +41,7 @@ function ciandt_wechat_vocation_callback() {
 
 function ciandt_wechat_vocation_get_leaves_by_user($userid) {
   $data= views_get_view_result('vacation_approved_of_one_person_', NULL, [$userid]);
+
   $string = '';
   foreach ($data as $d) {
     if (isset($d->field_field_type_of_leave) && isset($d->field_field_total_days)) {
@@ -52,10 +53,10 @@ function ciandt_wechat_vocation_get_leaves_by_user($userid) {
         'days' => t('@day Day', ['@day' => $day]),
         'type' => $type,
       ];
-      $string .= $result['duration'] . ' ' . $duration['type'] . "\n" . $result['days'] . "\n";
+
+      $string .= $result['duration'] . ' ' . $result['type'] . "\n" . $result['days'] . "\n";
     }
   }
-
   return !empty($string) ? $string : t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
 }
 
