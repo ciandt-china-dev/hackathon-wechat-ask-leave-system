@@ -22,6 +22,10 @@ function ciandt_wechat_vacation_rules_action_info() {
         'type' => 'text',
         'label' => t('Notification message'),
       ),
+      'url' => array(
+        'type' => 'text',
+        'label' => t('URL'),
+      ),
     ),
   );
   return $items;
