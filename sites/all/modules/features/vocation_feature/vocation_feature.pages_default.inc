@@ -11,9 +11,9 @@ function vocation_feature_default_page_manager_pages() {
   $page = new stdClass();
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;
-  $page->name = 'approved_vocations';
+  $page->name = 'approved_vacations';
   $page->task = 'page';
-  $page->admin_title = 'Approved Vocations';
+  $page->admin_title = 'Approved Vacations';
   $page->admin_description = '';
   $page->path = 'vacation/approved-list';
   $page->access = array();
@@ -26,9 +26,9 @@ function vocation_feature_default_page_manager_pages() {
   $handler = new stdClass();
   $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
   $handler->api_version = 1;
-  $handler->name = 'page_approved_vocations__panel';
+  $handler->name = 'page_approved_vacations__panel_context_4fb48d57-dadd-4c32-8f0e-465a5cda1509';
   $handler->task = 'page';
-  $handler->subtask = 'approved_vocations';
+  $handler->subtask = 'approved_vacations';
   $handler->handler = 'panel_context';
   $handler->weight = 0;
   $handler->conf = array(
@@ -41,7 +41,7 @@ function vocation_feature_default_page_manager_pages() {
     'css' => '',
     'contexts' => array(),
     'relationships' => array(),
-    'name' => 'panel',
+    'name' => '',
   );
   $display = new panels_display();
   $display->layout = 'onecol';
@@ -58,10 +58,10 @@ function vocation_feature_default_page_manager_pages() {
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
-    $pane->pid = 'new-63ea4a7e-bbe8-4c40-8f6b-02ce64902d10';
+    $pane->pid = 'new-96ccc0e6-1dca-4aa9-b4ef-a9e2c51de250';
     $pane->panel = 'middle';
     $pane->type = 'views_panes';
-    $pane->subtype = 'vocation_approved-panel_pane_1';
+    $pane->subtype = 'vacation_approved-panel_pane_1';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array();
@@ -73,21 +73,21 @@ function vocation_feature_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $pane->uuid = '63ea4a7e-bbe8-4c40-8f6b-02ce64902d10';
-    $display->content['new-63ea4a7e-bbe8-4c40-8f6b-02ce64902d10'] = $pane;
-    $display->panels['middle'][0] = 'new-63ea4a7e-bbe8-4c40-8f6b-02ce64902d10';
+    $pane->uuid = '96ccc0e6-1dca-4aa9-b4ef-a9e2c51de250';
+    $display->content['new-96ccc0e6-1dca-4aa9-b4ef-a9e2c51de250'] = $pane;
+    $display->panels['middle'][0] = 'new-96ccc0e6-1dca-4aa9-b4ef-a9e2c51de250';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
-  $pages['approved_vocations'] = $page;
+  $pages['approved_vacations'] = $page;
 
   $page = new stdClass();
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;
-  $page->name = 'my_vocations';
+  $page->name = 'my_vacations';
   $page->task = 'page';
-  $page->admin_title = 'My Vocations';
+  $page->admin_title = 'My Vacations';
   $page->admin_description = '';
   $page->path = 'vacation/my-vacation-history';
   $page->access = array();
@@ -100,9 +100,9 @@ function vocation_feature_default_page_manager_pages() {
   $handler = new stdClass();
   $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
   $handler->api_version = 1;
-  $handler->name = 'page_my_vocations__panel';
+  $handler->name = 'page_my_vacations__panel_context_e36e1def-6f5d-431e-a817-2bec62adc09f';
   $handler->task = 'page';
-  $handler->subtask = 'my_vocations';
+  $handler->subtask = 'my_vacations';
   $handler->handler = 'panel_context';
   $handler->weight = 0;
   $handler->conf = array(
@@ -115,7 +115,7 @@ function vocation_feature_default_page_manager_pages() {
     'css' => '',
     'contexts' => array(),
     'relationships' => array(),
-    'name' => 'panel',
+    'name' => '',
   );
   $display = new panels_display();
   $display->layout = 'onecol';
@@ -132,10 +132,10 @@ function vocation_feature_default_page_manager_pages() {
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
-    $pane->pid = 'new-69ce7246-24cf-464b-8da0-a070a8ecac48';
+    $pane->pid = 'new-07b87b00-9555-4888-9a9e-f1c328c6b0cb';
     $pane->panel = 'middle';
     $pane->type = 'views_panes';
-    $pane->subtype = 'vocation_history-panel_pane_1';
+    $pane->subtype = 'vacation_history-panel_pane_1';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array();
@@ -147,21 +147,21 @@ function vocation_feature_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $pane->uuid = '69ce7246-24cf-464b-8da0-a070a8ecac48';
-    $display->content['new-69ce7246-24cf-464b-8da0-a070a8ecac48'] = $pane;
-    $display->panels['middle'][0] = 'new-69ce7246-24cf-464b-8da0-a070a8ecac48';
+    $pane->uuid = '07b87b00-9555-4888-9a9e-f1c328c6b0cb';
+    $display->content['new-07b87b00-9555-4888-9a9e-f1c328c6b0cb'] = $pane;
+    $display->panels['middle'][0] = 'new-07b87b00-9555-4888-9a9e-f1c328c6b0cb';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
-  $pages['my_vocations'] = $page;
+  $pages['my_vacations'] = $page;
 
   $page = new stdClass();
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;
-  $page->name = 'pending_vocations';
+  $page->name = 'pending_vacations';
   $page->task = 'page';
-  $page->admin_title = 'Pending Vocations';
+  $page->admin_title = 'Pending Vacations';
   $page->admin_description = '';
   $page->path = 'vacation/pending-list';
   $page->access = array();
@@ -174,9 +174,9 @@ function vocation_feature_default_page_manager_pages() {
   $handler = new stdClass();
   $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
   $handler->api_version = 1;
-  $handler->name = 'page_pending_vocations__panel';
+  $handler->name = 'page_pending_vacations__panel_context_ad3f61e0-acb9-4f5c-9e17-4dd26eba92df';
   $handler->task = 'page';
-  $handler->subtask = 'pending_vocations';
+  $handler->subtask = 'pending_vacations';
   $handler->handler = 'panel_context';
   $handler->weight = 0;
   $handler->conf = array(
@@ -189,7 +189,7 @@ function vocation_feature_default_page_manager_pages() {
     'css' => '',
     'contexts' => array(),
     'relationships' => array(),
-    'name' => 'panel',
+    'name' => '',
   );
   $display = new panels_display();
   $display->layout = 'onecol';
@@ -206,10 +206,10 @@ function vocation_feature_default_page_manager_pages() {
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
-    $pane->pid = 'new-619ef744-7882-4d36-9b89-6013053e6a00';
+    $pane->pid = 'new-957015ba-ed31-4a6f-bc9c-53383cfaab2c';
     $pane->panel = 'middle';
     $pane->type = 'views_panes';
-    $pane->subtype = 'vocation_pending-panel_pane_1';
+    $pane->subtype = 'vacation_pending-panel_pane_1';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array();
@@ -221,21 +221,21 @@ function vocation_feature_default_page_manager_pages() {
     $pane->extras = array();
     $pane->position = 0;
     $pane->locks = array();
-    $pane->uuid = '619ef744-7882-4d36-9b89-6013053e6a00';
-    $display->content['new-619ef744-7882-4d36-9b89-6013053e6a00'] = $pane;
-    $display->panels['middle'][0] = 'new-619ef744-7882-4d36-9b89-6013053e6a00';
+    $pane->uuid = '957015ba-ed31-4a6f-bc9c-53383cfaab2c';
+    $display->content['new-957015ba-ed31-4a6f-bc9c-53383cfaab2c'] = $pane;
+    $display->panels['middle'][0] = 'new-957015ba-ed31-4a6f-bc9c-53383cfaab2c';
   $display->hide_title = PANELS_TITLE_FIXED;
-  $display->title_pane = 'new-619ef744-7882-4d36-9b89-6013053e6a00';
+  $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
-  $pages['pending_vocations'] = $page;
+  $pages['pending_vacations'] = $page;
 
   $page = new stdClass();
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;
-  $page->name = 'wechat_vocation';
+  $page->name = 'vacation_request';
   $page->task = 'page';
-  $page->admin_title = 'Wechat Vocation';
+  $page->admin_title = 'Vacation Request';
   $page->admin_description = '';
   $page->path = 'vacation/request';
   $page->access = array();
@@ -248,9 +248,9 @@ function vocation_feature_default_page_manager_pages() {
   $handler = new stdClass();
   $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
   $handler->api_version = 1;
-  $handler->name = 'page_wechat_vocation__panel';
+  $handler->name = 'page_vacation_request__panel_context_de9312e6-661e-4190-92d6-8d5900e501bd';
   $handler->task = 'page';
-  $handler->subtask = 'wechat_vocation';
+  $handler->subtask = 'vacation_request';
   $handler->handler = 'panel_context';
   $handler->weight = 0;
   $handler->conf = array(
@@ -263,7 +263,7 @@ function vocation_feature_default_page_manager_pages() {
     'css' => '',
     'contexts' => array(),
     'relationships' => array(),
-    'name' => 'panel',
+    'name' => '',
   );
   $display = new panels_display();
   $display->layout = 'onecol';
@@ -306,7 +306,7 @@ function vocation_feature_default_page_manager_pages() {
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
-  $pages['wechat_vocation'] = $page;
+  $pages['vacation_request'] = $page;
 
   return $pages;
 
