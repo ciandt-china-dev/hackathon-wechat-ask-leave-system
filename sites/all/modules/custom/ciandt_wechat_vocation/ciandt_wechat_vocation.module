@@ -40,6 +40,26 @@ function ciandt_wechat_vocation_enterprise_wechat_settings($form, &$form_state){
     '#description' => t('Set the enterprise wechat Secret.'),
   );
   
+  $form['enterprise_wechat_dev_mode_token'] = array(
+    '#type' => 'textfield', 
+    '#title' => t('Dev mode Token'), 
+    '#size' => 60, 
+    '#maxlength' => 128, 
+    '#required' => TRUE,
+    '#default_value' => variable_get('enterprise_wechat_dev_mode_token'),
+    '#description' => t('Set the token for dev mode.'),
+  );
+  
+  $form['enterprise_wechat_dev_mode_encoding_aes_key'] = array(
+    '#type' => 'textfield', 
+    '#title' => t('Dev mode EncodingAESKey'), 
+    '#size' => 60, 
+    '#maxlength' => 128, 
+    '#required' => TRUE,
+    '#default_value' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
+    '#description' => t('Set the EncodingAESKey for dev mode.'),
+  );
+  
   $form['vacation_approver_wechat_tag_name'] = array(
     '#type' => 'textfield', 
     '#title' => t('Approval Wechat Tag Name'), 
@@ -51,4 +71,17 @@ function ciandt_wechat_vocation_enterprise_wechat_settings($form, &$form_state){
   );
   
   return system_settings_form($form);  
+}
+
+/**
+ * Rules action for push notification.
+ */
+function ciandt_wechat_vocation_push_wechat_notification($target, $message) {
+
+  // TODO: Get wechat uid/token_id by $target.
+
+  // TODO: Send message with wechat api.
+
+  drupal_set_message(t("Vocation approve notification has been sent to approver"));
+  return TRUE;
 }

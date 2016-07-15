@@ -10,6 +10,7 @@ dependencies[] = features
 dependencies[] = formblock
 dependencies[] = list
 dependencies[] = node
+dependencies[] = number
 dependencies[] = options
 dependencies[] = page_manager
 dependencies[] = panels

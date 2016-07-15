@@ -205,10 +205,15 @@ function vocation_feature_field_default_field_instances() {
     'display' => array(
       'default' => array(
         'label' => 'above',
-        'module' => 'text',
-        'settings' => array(),
-        'type' => 'text_default',
-        'weight' => 9,
+        'module' => 'number',
+        'settings' => array(
+          'decimal_separator' => '.',
+          'prefix_suffix' => TRUE,
+          'scale' => 2,
+          'thousand_separator' => '',
+        ),
+        'type' => 'number_decimal',
+        'weight' => 13,
       ),
       'teaser' => array(
         'label' => 'above',
@@ -222,16 +227,17 @@ function vocation_feature_field_default_field_instances() {
     'label' => 'Total Days',
     'required' => 1,
     'settings' => array(
-      'text_processing' => 0,
+      'max' => '',
+      'min' => 0.5,
+      'prefix' => '',
+      'suffix' => '',
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 1,
-      'module' => 'text',
-      'settings' => array(
-        'size' => 60,
-      ),
-      'type' => 'text_textfield',
+      'active' => 0,
+      'module' => 'number',
+      'settings' => array(),
+      'type' => 'number',
       'weight' => 4,
     ),
   );
