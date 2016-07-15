@@ -8,7 +8,7 @@
 		<div class="remove-approver">-</div>
 		<div class="selected-approver-field"></div>
 	</div>
-	<div class="add-approver">+</div>
+	<div class="add-approver"></div>
 </div>
 <?php print render($form["actions"]);?>
 <input type="time" class="time start-time form-text" value="09:00">
