@@ -167,6 +167,11 @@ endif;
           <?php print render($content['field_approver']);?>
         </div>
       <?php endif; ?>
+	  <?php if(!empty($content['field_vocation_status'])): ?>
+        <div class="item">
+          <?php print render($content['field_vocation_status']);?>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
 
