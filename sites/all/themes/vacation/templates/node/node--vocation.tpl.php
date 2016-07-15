@@ -79,6 +79,34 @@
  *
  * @ingroup themeable
  */
+if (!empty($field_leave_duration[0]["value"]) && !empty($field_leave_duration[0]["value2"])):
+$start_date = $field_leave_duration[0]["value"];
+$end_date = $field_leave_duration[0]["value2"];
+$start_date_timestamp = strtotime($field_leave_duration[0]["value"]);
+$end_date_timestamp = strtotime($field_leave_duration[0]["value2"]);
+$start_date_set = array(
+  'month' => date('m', $start_date_timestamp),
+  'day' => date('d', $start_date_timestamp),
+  'week' => date('l', $start_date_timestamp),
+);
+$end_date_set = array(
+  'month' => date('m', $end_date_timestamp),
+  'day' => date('d', $end_date_timestamp),
+  'week' => date('l', $end_date_timestamp),
+);
+$start_date_circle = t("@monthMonth@dayDay@week", array(
+  '@month' => "<span class='month'>" . $start_date_set['month'] . "</span>",
+  '@day' => "<span class='day'>" . $start_date_set['day'] . "</span>",
+  '@week' => "<span class='week'>" . $start_date_set['week'] . "</span>",
+));
+$end_date_circle = t("@monthMonth@dayDay@week", array(
+  '@month' => "<span class='month'>" . $end_date_set['month'] . "</span>",
+  '@day' => "<span class='day'>" . $end_date_set['day'] . "</span>",
+  '@week' => "<span class='week'>" . $end_date_set['week'] . "</span>",
+));
+else:
+  $start_date_circle = $end_date_circle = $start_date = $end_date = '';
+endif;
 ?>
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
 
@@ -101,9 +129,17 @@
       // We hide the comments and links now so that we can render them later.
       hide($content['comments']);
       hide($content['links']);
-      //print render($content);
-      var_dump($content);die;
     ?>
+    <?php print $start_date_circle;?>
+    <?php print t("Start Date");?>
+    <?php print $end_date_circle;?>
+    <?php print t("End Date");?>
+    <?php print t("Start:");?>
+    <?php print $start_date;?>
+    <?php print t("End:");?>
+    <?php print $end_date;?>
+    <?php print !empty($content['field_comment']) ? render($content['field_comment']) : '';?>
+    <?php print !empty($content['field_approver']) ? render($content['field_approver']) : '';?>
   </div>
 
   <?php print render($content['links']); ?>
