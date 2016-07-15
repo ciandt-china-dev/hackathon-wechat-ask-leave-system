@@ -132,7 +132,12 @@ function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url
     ),
   );
   // Send message with wechat api.
-  $wechat_object = new Wechat();
+  $options = array(
+    'token' => '',
+    'encodingaeskey' => '',
+    
+  );
+  $wechat_object = _ciandt_wechat_vacation_init_obj();
   $result = $wechat_object->sendMessage($data);
 
   if ($result) {
