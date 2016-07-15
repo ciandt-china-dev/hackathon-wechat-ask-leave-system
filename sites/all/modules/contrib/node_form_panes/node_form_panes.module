@@ -1,0 +1,246 @@
+<?php
+
+/***********************************************************************
+ *
+ * DRUPAL HOOKS
+ *
+ ***********************************************************************/
+
+
+/**
+ * Implementation of hook_ctools_plugin_directory().
+ *
+ */
+function node_form_panes_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return "plugins/$plugin_type";
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function node_form_panes_form_alter(&$form, &$form_state, $form_id) {
+  // If it's the node edit form
+  if (isset($form['#node_edit_form']) && $form['#node_edit_form']) {
+
+    // Some trickery to add a custom submit handler defined by node_form_summary
+    $form['node_form_summary_submit'] = array(
+      '#type' => 'hidden',
+      '#default_value' => 0,
+    );
+    // We want to run our submit handler first, before the node gets saved
+    // in the regular node form submit handler
+    $form['#submit'] = array_merge(array('node_form_panes_submit_node_form'), $form['#submit']);
+
+    // More trickery to sneak a submit handler in that is controlled by a
+    // node form pane ctools content type defintion
+    $form['node_form_path_submit'] = array(
+      '#type' => 'hidden',
+      '#default_value' => 0,
+    );
+    // Special submit handler for the path node form pane
+    $form['#submit'] = array_merge(array('node_form_panes_pathauto_submit'), $form['#submit']);
+
+  }
+}
+
+/**
+ * Form submit handler for node forms
+ */
+function node_form_panes_submit_node_form($form, &$form_state) {
+  // If node_form_summary_submit is true we're going to do some special handling
+  // to handle scheduled publishing
+  if (!empty($form_state['values']['node_form_summary_submit']) && isset($form['scheduler_settings']['publish_on'])) {
+    $date = strtotime($form_state['values']['date']);
+    if ($date > time()) {
+      $publish_on = date($form['scheduler_settings']['publish_on']['#date_format'], $date);
+      $form_state['values']['publish_on'] = $publish_on;
+    }
+    else {
+      if ($form_state['values']['publish_on']) {
+        $form_state['values']['publish_on'] = '';
+        drupal_set_message('Scheduled publishing disabled for ' . $form_state['values']['title']);
+      }
+    }
+  }
+}
+
+/**
+ * Submit function for adding pathauto settings
+ */
+function node_form_panes_pathauto_submit($form, &$form_state) {
+  if (!empty($form_state['values']['node_form_path_submit'])) {
+    // If the user hasn't specified a path, autogenerate
+    if (empty($form_state['input']['path']['alias'])) {
+      $form_state['values']['path']['pathauto'] = TRUE;
+      $form_state['input']['path']['pathauto'] = TRUE;
+    }
+    // If the user has specified a path, don't autogenerate
+    else {
+      $form_state['values']['path']['pathauto'] = FALSE;
+      $form_state['input']['path']['pathauto'] = FALSE;
+    }
+  }
+}
+
+/***********************************************************************
+ *
+ * PREPROCESSORS
+ *
+ ***********************************************************************/
+
+/**
+ * Implements hook_preprocess_panels_pane().
+ */
+function node_form_panes_preprocess_panels_pane(&$vars) {
+
+  // The pane is preprocessed to remove the giveaway pane-node-form-spamicide
+  // wrapper class.
+  if ($vars['pane']->type == 'node_form_spamicide_field') {
+    $class = '';
+    if ($vars['pane']->configuration['override_spamicide_wrapper']) {
+      $class = $vars['pane']->configuration['override_spamicide_wrapper_text'];
+    }
+    else {
+      // Get the node form id. Is this stable?
+      $form_id = $vars['display']->context['argument_node_edit_1']->form_id;
+      if ($spamicide_field = _spamicide_get_field($form_id)) {
+        $class = $spamicide_field;
+      }
+    }
+
+    // Remove default spamicide wrapper class and add the custom one.
+    $classes = array_flip($vars['classes_array']);
+    unset($classes['pane-node-form-spamicide']);
+    $vars['classes_array'] = array_flip($classes);
+    $vars['classes_array'][] = $class;
+  }
+}
+
+/***********************************************************************
+ *
+ * FORM DEFINITIONS
+ *
+ ***********************************************************************/
+
+
+/**
+ * Unified options form for our node form ctools content type plugins
+ */
+function node_form_panes_node_form_content_type_edit_form($form, &$form_state) {
+
+  $conf = $form_state['conf'];
+
+  $form['display_options'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Display Options'),
+    '#tree' => FALSE,
+  );
+
+  $form['display_options']['display_in_fieldset'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display form in a collapsible fieldset'),
+    '#default_value' => isset($conf['display_in_fieldset']) ? $conf['display_in_fieldset'] : 0,
+  );
+
+  $form['display_options']['collapsible'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collapsible fieldset'),
+    '#default_value' => isset($conf['collapsible']) ? $conf['collapsible'] : 1,
+    '#states' => array(
+      'invisible' => array(
+       ':input[name="display_in_fieldset"]' => array('checked' => FALSE),
+      ),
+    ),
+  );
+
+  $form['display_options']['collapsed'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Collapsed by default'),
+    '#default_value' => isset($conf['collapsed']) ? $conf['collapsed'] : 1,
+    '#states' => array(
+      'invisible' => array(
+       ':input[name="display_in_fieldset"]' => array('checked' => FALSE),
+      ),
+    ),
+  );
+
+  return $form;
+}
+
+/**
+ * Submit Handler for node_form_panes_node_form_content_type_edit_form()
+ */
+function node_form_panes_node_form_content_type_edit_form_submit($form, &$form_state) {
+
+  // We'll just add all form state values into the content type configuration
+  foreach ($form_state['values'] as $key => $value) {
+    $form_state['conf'][$key] = $form_state['values'][$key];
+  }
+
+}
+
+
+/***********************************************************************
+ *
+ * HELPER FUNCTIONS
+ *
+ ***********************************************************************/
+
+
+/**
+ * Helper function to process node form elements. Since we're using a unified
+ * settings form for the content type (above) we can process the element
+ * with a utility function like this.
+ *
+ * @param $element
+ *    The form element to process for rendering
+ *
+ * @param $conf
+ *    Configuration for the content type
+ */
+function node_form_panes_node_form_process_element(&$element, $conf) {
+
+  if ($element && $conf['display_in_fieldset']) {
+    unset($element['#group']);
+    // Element collapsible/collapsed has been processed already and classes
+    // have been added to $element['#attributes'] so we'll need to override
+    // those directly
+    if ($conf['collapsible']) {
+      if (!array_search('collapsible', $element['#attributes']['class'])) {
+        $element['#attributes']['class'][] = 'collapsible';
+      }
+      $element['#collapsible'] = TRUE;
+      if ($conf['collapsed']) {
+        if (!array_search('collapsed', $element['#attributes']['class'])) {
+          $element['#attributes']['class'][] = 'collapsed';
+          $element['#collapsed'] = TRUE;
+        }
+      }
+      else {
+        if ($key = array_search('collapsed', $element['#attributes']['class'])) {
+          unset($element['#attributes']['class'][$key]);
+          $element['#collapsed'] = FALSE;
+        }
+      }
+    }
+    else {
+      $element['#collapsible'] = FALSE;
+      $element['#collapsed'] = FALSE;
+      if ($key = array_search('collapsible', $element['#attributes']['class'])) {
+        unset($element['#attributes']['class'][$key]);
+      }
+      if ($key = array_search('collapsed', $element['#attributes']['class'])) {
+        unset($element['#attributes']['class'][$key]);
+      }
+    }
+  }
+  else {
+    $element['#type'] = '';
+    unset($element['#pre_render']);
+    unset($element['#theme_wrappers']);
+  }
+}
+
+
