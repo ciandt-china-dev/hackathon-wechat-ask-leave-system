@@ -53,7 +53,7 @@ function vocation_feature_default_page_manager_pages() {
     ),
   );
   $display->cache = array();
-  $display->title = '';
+  $display->title = '我已审批';
   $display->uuid = '42cfd64b-0e85-4ab5-901e-027c006909c1';
   $display->content = array();
   $display->panels = array();
@@ -127,7 +127,7 @@ function vocation_feature_default_page_manager_pages() {
     ),
   );
   $display->cache = array();
-  $display->title = '';
+  $display->title = '请假记录';
   $display->uuid = 'a50ea028-75c2-4fe9-84c5-3b9634bda9ee';
   $display->content = array();
   $display->panels = array();
@@ -201,7 +201,7 @@ function vocation_feature_default_page_manager_pages() {
     ),
   );
   $display->cache = array();
-  $display->title = '';
+  $display->title = '待我审批';
   $display->uuid = '6ee71c14-ec38-4a11-887d-9d251b44b25b';
   $display->content = array();
   $display->panels = array();
@@ -275,7 +275,7 @@ function vocation_feature_default_page_manager_pages() {
     ),
   );
   $display->cache = array();
-  $display->title = '';
+  $display->title = '发起请假';
   $display->uuid = 'f7bc5a37-8afe-458e-8ed0-e5638226e60d';
   $display->content = array();
   $display->panels = array();
