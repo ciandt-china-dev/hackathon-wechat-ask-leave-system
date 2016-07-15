@@ -93,11 +93,15 @@ var message = {
 	};
 
 	$(document).ready(function() {
+		var $popup = $('.popup'),
+			$selectedWrapper = $('.selected-approver'),
+			uid = '';
+
 		$('#vocation-node-form').submit(function() {
 			var $typeOfLeave = $('#edit-field-type-of-leave-und'),
 				$leaveDuration = $('#edit-field-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
-				$approver = $('#edit-field-approver-und'),
+				$approver = $('input[name="approve_user_id"]'),
 				len = $leaveDuration.length,
 				i = 0;
 
@@ -108,6 +112,7 @@ var message = {
 
 			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val($('.start-time').val());
 			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val($('.end-time').val());
+			$('input[name="approve_user_id"]').val(uid);
 
 			for (i; i < len; i++) {
 				if ($($leaveDuration[i]).val() == '') {
@@ -127,6 +132,29 @@ var message = {
 			}
 
 			return true;
+		});
+
+		$popup.find('.close-btn').click(function() {
+			$popup.hide();
+		});
+
+		$popup.find('.user-item').click(function() {
+
+			$popup.hide();
+			$('.selected-approver-field').html($(this).html());
+			if (!$selectedWrapper.hasClass('selected')) {
+				$selectedWrapper.addClass('selected');
+			}
+			uid = $(this).data('uid');
+		});
+
+		$('.add-approver').click(function() {
+			$popup.show();
+		});
+
+		$('.remove-approver').click(function() {
+			$('.selected-approver-field').empty();
+			$selectedWrapper.removeClass('selected');
 		});
 
 	});
