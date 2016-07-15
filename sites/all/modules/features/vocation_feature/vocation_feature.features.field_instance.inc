@@ -208,8 +208,8 @@ function vocation_feature_field_default_field_instances() {
         'module' => 'number',
         'settings' => array(
           'decimal_separator' => '.',
-          'prefix_suffix' => TRUE,
-          'scale' => 2,
+          'prefix_suffix' => 1,
+          'scale' => 1,
           'thousand_separator' => '',
         ),
         'type' => 'number_decimal',
@@ -279,6 +279,47 @@ function vocation_feature_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-vocation-field_vocation_status'.
+  $field_instances['node-vocation-field_vocation_status'] = array(
+    'bundle' => 'vocation',
+    'default_value' => array(
+      0 => array(
+        'value' => 'pending',
+      ),
+    ),
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 14,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_vocation_status',
+    'label' => 'Vocation Status',
+    'required' => 1,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(),
+      'type' => 'options_buttons',
+      'weight' => 7,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('Approver');
@@ -287,6 +328,7 @@ function vocation_feature_field_default_field_instances() {
   t('Name');
   t('Total Days');
   t('Type of Leave');
+  t('Vocation Status');
 
   return $field_instances;
 }
