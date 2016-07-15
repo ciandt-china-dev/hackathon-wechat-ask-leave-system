@@ -26,6 +26,10 @@ function ciandt_wechat_vacation_rules_action_info() {
         'type' => 'text',
         'label' => t('URL'),
       ),
+      'picurl' => array(
+        'type' => 'text',
+        'label' => t('Picture URL'),
+      ),
     ),
   );
   return $items;

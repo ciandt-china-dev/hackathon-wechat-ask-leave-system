@@ -114,8 +114,8 @@ function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state) 
 /**
  * Rules action for push notification.
  */
-function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url) {
-  // TODO: Get wechat uid/token_id by $target.
+function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url, $picurl) {
+  // Get wechat uid/token_id by $target.
   $wechat_uid = $target;
   $data = array(
     "touser" => $wechat_uid,
@@ -127,6 +127,7 @@ function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url
           //"title" => "Title",//标题
           "description" => $message,//描述
           "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份。
+          "picurl" => $picurl,
         ),
       ),
     ),
