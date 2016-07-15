@@ -149,6 +149,7 @@ label {
   color: #333;
   background: #fff;
   height: 36px;
+  -webkit-appearance: none;
 }
 
 .form-item {
