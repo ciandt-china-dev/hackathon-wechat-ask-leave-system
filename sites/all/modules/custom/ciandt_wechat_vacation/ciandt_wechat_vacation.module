@@ -118,6 +118,35 @@ function _ciandt_wechat_vacation_init_obj() {
 }
 
 /**
+ * Function to get tag list of Weixin API.
+ */
+function _ciandt_wechat_vacation_get_tag_lists() {
+  $we_obj = _ciandt_wechat_vacation_init_obj();
+  $taglist = $we_obj->getTagList();
+  $tag_name = variable_get('vacation_approver_wechat_tag_name');
+  if (isset($taglist['taglist'])) {
+    foreach ($taglist['taglist'] as $v) {
+      if ($tag_name == $v['tagname']) {
+        $tagid = $v['tagid'];
+        // Get Tag Users.
+        $userlist = $we_obj->getTag($tagid);
+        $user_infos = [];
+        foreach ($userlist['userlist'] as $u) {
+          $info = $we_obj->getUserInfo($u['userid']);
+          $user_infos[] = [
+            'email' => $info['email'],
+            'avatar' => $info['avatar'],
+            'userid' => $info['userid'],
+          ];
+        }
+        return $user_infos;
+      }
+    }
+  }
+
+  return FALSE;
+}
+/**
  * Function to authorize(Weixin API).
  */
 function _ciandt_wechat_vacation_authorize() {

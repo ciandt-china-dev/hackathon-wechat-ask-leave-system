@@ -107,6 +107,7 @@ h1 {
 .view-empty {
   margin: 30px 0;
   text-align: center;
+  font-size: 18px;
 }
 
 /* message */
@@ -264,12 +265,17 @@ h2 {
 /* List */
 
 /*.view-vacation-pending .views-field {*/
+.view-vacation-history,
 .view-vacation-pending {
   border-top: 1px solid #ccc;
 }
 
-.views-row {
+.detail-link {
   padding: 10px;
+  display: block;
+}
+
+.views-row {
   border-bottom: 1px solid #ccc;
   font-size: 0;
   position: relative;
@@ -292,6 +298,7 @@ h2 {
   font-size: 14px;
 }
 
+.views-field-field-approver,
 .views-field-name {
   width: 35%;
 }
