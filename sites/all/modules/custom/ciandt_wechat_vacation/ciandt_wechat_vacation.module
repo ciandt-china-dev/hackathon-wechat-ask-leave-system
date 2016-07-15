@@ -270,6 +270,8 @@ function _ciandt_wechat_vacation_authorize() {
   if (user_is_anonymous() && !empty($_SESSION['weixin']['user_id'])) {
     global $user;
     $user = user_load_by_name($_SESSION['weixin']['user_id']);
+    $login_array = array ('name' => $user->name);
+    user_login_finalize($login_array);
   }
 }
 
