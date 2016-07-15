@@ -36,6 +36,16 @@ function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state) 
     '#description' => t('Set the enterprise wechat CorpID.'),
   );
 
+  $form['ciandt_wechat_vacation_agentid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('AgentID'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('ciandt_wechat_vacation_agentid'),
+    '#description' => t('Set the enterprise wechat agentid.'),
+  );
+
   $form['enterprise_wechat_secret'] = array(
     '#type' => 'textfield',
     '#title' => t('Secret'),
