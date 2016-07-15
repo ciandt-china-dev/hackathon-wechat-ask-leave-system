@@ -262,6 +262,20 @@ h2 {
   box-shadow: 0px 0px 0px 5px rgba(185, 204, 208, 0.6);
 }
 
+.block-ciandt-wechat-vacation {
+  text-align: center;
+  margin: 20px 0 30px;
+}
+
+.block-ciandt-wechat-vacation .form-submit {
+  width: 40%;
+}
+
+#edit-approve {
+  margin-left: 10%;
+  background: #1fbdc5;
+}
+
 /* List */
 
 /*.view-vacation-pending .views-field {*/
