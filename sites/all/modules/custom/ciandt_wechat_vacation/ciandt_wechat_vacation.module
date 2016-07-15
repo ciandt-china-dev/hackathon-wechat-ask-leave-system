@@ -266,8 +266,10 @@ function _ciandt_wechat_vacation_authorize() {
       // The first parameter is left blank so a new user is created.
       user_save('', $fields);
     }
+  }
+  if (user_is_anonymous() && !empty($_SESSION['weixin']['user_id'])) {
     global $user;
-    $user = user_load_by_name($user_id);
+    $user = user_load_by_name($_SESSION['weixin']['user_id']);
   }
 }
 
