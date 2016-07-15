@@ -5,15 +5,26 @@
  */
 function ciandt_wechat_vocation_menu() {
   $items = array();
-  $items['admin/config/vocation/enterprise_wechat'] = array(
+  $items['admin/config/vocation/enterprise-wechat'] = array(
     'access arguments' => array('administer site configuration'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('ciandt_wechat_vocation_enterprise_wechat_settings'),
     'title' => 'Enterprise Wechat Settings',
     'description' => 'Set access keys and other necessary configurations for enterprise wechat.',
   );
+  
+  $items['webchat_callback'] = array(
+    'title' => 'CI&T vocation management system',
+    'page callback' => 'ciandt_wechat_vocation_callback',
+    'access arguments' => array('access content')
+  );
 
   return $items;
+}
+
+
+function ciandt_wechat_vocation_callback(){
+
 }
 
 /**
