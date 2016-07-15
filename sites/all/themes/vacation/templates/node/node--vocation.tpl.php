@@ -139,6 +139,7 @@ endif;
         </div>
         <?php print t("Start Date");?>
       </div>
+      <span>~</span>
       <div class="circle-item">
         <div class="circle">
           <?php print $end_date_circle;?>

@@ -17,7 +17,7 @@ body {
   -webkit-font-smoothing: antialiased;
   font-smoothing: antialiased;
   text-rendering: optimizeLegibility\9;
-  font-family: "PTSansRegular", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
   color: #333;
 }
 
@@ -140,6 +140,7 @@ label {
   box-sizing: border-box;
   color: #333;
   background: #fff;
+  height: 36px;
 }
 
 .form-item {
@@ -161,6 +162,12 @@ label {
   -ms-border-radius: 3px;
   border-radius: 3px;
   width: 100%;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+.form-submit:focus {
+  outline: none;
 }
 
 .form-actions {
@@ -333,6 +340,7 @@ fieldset {
 }
 
 /* vacation detail */
+.node-type-vocation .messages,
 .node-type-vocation #page-title,
 .node-type-vocation #header {
   display: none;
@@ -346,6 +354,7 @@ fieldset {
   background: #1fbdc5;
   text-align: center;
   padding: 20px 0;
+  color: #fff;
 }
 
 h2 {
@@ -368,9 +377,10 @@ h2 {
 
 .circle-item {
   display: inline-block;
-  width: 130px;
+  width: 125px;
   font-size: 14px;
   color: #fff;
+  vertical-align: middle;
 }
 
 .week {

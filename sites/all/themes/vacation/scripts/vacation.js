@@ -15,7 +15,7 @@ var message = {
 	},
 	alert: function(text, s) {
 		if (s == null) {
-			s = 2;
+			s = 3;
 		}
 
 		var a1 = layer.open({
@@ -30,58 +30,6 @@ var message = {
 	}
 };
 
-// var FormValidate = (function($) {
-// 	return {
-
-// 		scrollToElement: function($this, $scrollToElement, height) {
-// 			$scrollToElement = (typeof $scrollToElement === 'undefined') ? $this.find(".error, .error-message") : $scrollToElement;
-// 			height = height ? height : 110;
-
-// 			if ($scrollToElement.length) {
-// 				$("html,body").animate({
-// 					scrollTop: $scrollToElement.eq(0).offset().top - height
-// 				}, 'slow');
-// 			}
-// 		},
-
-// 		checkTextRequired: function($this) {
-// 			var text = $.trim($this.val());
-
-// 			$this.removeClass('error');
-
-// 			if (text === '') {
-// 				$this.addClass('error');
-// 				return false;
-// 			}
-
-// 			return true
-// 		},
-
-// 		checkCheckboxRequired: function($this) {
-// 			$this.removeClass('error').parent().removeClass('error');
-
-// 			if ($this.prop('checked') !== true) {
-// 				$this.addClass('error').parent().addClass('error');
-// 				return false;
-// 			}
-
-// 			return true
-// 		},
-
-// 		validateRequiredFields: function($requiredFields) {
-// 			var len = $requiredFields.length,
-// 				i = 0,
-// 				validate = true;
-
-// 			for (i; i < len; i++) {
-// 				validate = (BWI.checkTextRequired($($requiredFields[i])) === false) ? false : validate;
-// 			}
-
-// 			return validate;
-// 		}
-// 	}
-// }(jQuery));
-
 (function($) {
 	'use strict';
 
@@ -89,7 +37,8 @@ var message = {
 		TypeOfLeaveRequired: Drupal.t('Please select Type of Leave'),
 		LeaveDurationRequired: Drupal.t('Please input Leave Duration'),
 		TotalDaysRequired: Drupal.t('Please input Total Days'),
-		ApproverRequired: Drupal.t('Please input Approver')
+		ApproverRequired: Drupal.t('Please add an Approver'),
+		DateRangeError: Drupal.t('Please enter the valid date and time')
 	};
 
 	$(document).ready(function() {
@@ -102,16 +51,20 @@ var message = {
 				$leaveDuration = $('#edit-field-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
 				$approver = $('input[name="approve_user_id"]'),
+				startTime = $('.start-time').val(),
+				endTime = $('.end-time').val(),
 				len = $leaveDuration.length,
-				i = 0;
+				i = 0,
+				startDate,
+				endDate;
 
 			if ($typeOfLeave.val() == '_none') {
 				message.alert(MESSAGE.TypeOfLeaveRequired);
 				return false;
 			}
 
-			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val($('.start-time').val());
-			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val($('.end-time').val());
+			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val(startTime);
+			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val(endTime);
 			$('input[name="approve_user_id"]').val(uid);
 
 			for (i; i < len; i++) {
@@ -119,6 +72,14 @@ var message = {
 					message.alert(MESSAGE.LeaveDurationRequired);
 					return false;
 				}
+			}
+
+			startDate = $('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val();
+			endDate = $('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val();
+
+			if ((startDate > endDate) || (startDate == endDate && startTime > endTime)) {
+				message.alert(MESSAGE.DateRangeError);
+				return false;
 			}
 
 			if ($totalDays.val() == '') {
