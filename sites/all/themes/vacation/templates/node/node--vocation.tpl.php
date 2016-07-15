@@ -87,12 +87,12 @@ $end_date_timestamp = strtotime($field_leave_duration[0]["value2"]);
 $start_date_set = array(
   'month' => date('m', $start_date_timestamp),
   'day' => date('d', $start_date_timestamp),
-  'week' => date('l', $start_date_timestamp),
+  'week' => format_date($start_date_timestamp, 'custom', 'l'),
 );
 $end_date_set = array(
   'month' => date('m', $end_date_timestamp),
   'day' => date('d', $end_date_timestamp),
-  'week' => date('l', $end_date_timestamp),
+  'week' => format_date($end_date_timestamp, 'custom', 'l'),
 );
 $start_date_circle = t("!monthMonth!dayDay!week", array(
   '!month' => "<span class='month'>" . $start_date_set['month'] . "</span>",
