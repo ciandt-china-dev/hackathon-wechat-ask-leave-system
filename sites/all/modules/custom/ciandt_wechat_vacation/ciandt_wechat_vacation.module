@@ -3,19 +3,19 @@
 /**
  * Implementation of hook_menu().
  */
-function ciandt_wechat_vocation_menu() {
+function ciandt_wechat_vacation_menu() {
   $items = array();
-  $items['admin/config/vocation/enterprise-wechat'] = array(
+  $items['admin/config/vacation/enterprise-wechat'] = array(
     'access arguments' => array('administer site configuration'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('ciandt_wechat_vocation_enterprise_wechat_settings'),
+    'page arguments' => array('ciandt_wechat_vacation_enterprise_wechat_settings'),
     'title' => 'Enterprise Wechat Settings',
     'description' => 'Set access keys and other necessary configurations for enterprise wechat.',
   );
   
   $items['webchat_callback'] = array(
-    'title' => 'CI&T vocation management system',
-    'page callback' => 'ciandt_wechat_vocation_callback',
+    'title' => 'CI&T vacation management system',
+    'page callback' => 'ciandt_wechat_vacation_callback',
     'access arguments' => array('access content')
   );
 
@@ -23,8 +23,8 @@ function ciandt_wechat_vocation_menu() {
 }
 
 
-function ciandt_wechat_vocation_callback(){
-  $we_obj = _ciandt_wechat_vocation_init_obj();
+function ciandt_wechat_vacation_callback(){
+  $we_obj = _ciandt_wechat_vacation_init_obj();
   $we_obj->valid();
 
 }
@@ -32,7 +32,7 @@ function ciandt_wechat_vocation_callback(){
 /**
  * Menu callback to configure module settings.
  */
-function ciandt_wechat_vocation_enterprise_wechat_settings($form, &$form_state){
+function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state){
   $form['enterprise_wechat_corp_id'] = array(
     '#type' => 'textfield', 
     '#title' => t('CorpID'), 
@@ -89,20 +89,20 @@ function ciandt_wechat_vocation_enterprise_wechat_settings($form, &$form_state){
 /**
  * Rules action for push notification.
  */
-function ciandt_wechat_vocation_push_wechat_notification($target, $message) {
+function ciandt_wechat_vacation_push_wechat_notification($target, $message) {
 
   // TODO: Get wechat uid/token_id by $target.
 
   // TODO: Send message with wechat api.
 
-  drupal_set_message(t("Vocation approve notification has been sent to approver."));
+  drupal_set_message(t("vacation approve notification has been sent to approver."));
   return TRUE;
 }
 
-function _ciandt_wechat_vocation_init_obj() {
+function _ciandt_wechat_vacation_init_obj() {
   $we_obj = &drupal_static(__FUNCTION__);
   if (!isset($we_obj)) {
-    module_load_include('php', 'ciandt_wechat_vocation', 'sdk/qywechat.class');
+    module_load_include('php', 'ciandt_wechat_vacation', 'sdk/qywechat.class');
     $options = array(
       'token' => variable_get('enterprise_wechat_dev_mode_token'),
       'appid' => variable_get('enterprise_wechat_corp_id'),
@@ -113,3 +113,48 @@ function _ciandt_wechat_vocation_init_obj() {
   }
   return $we_obj;
 }
+
+function _ciandt_wechat_vacation_authorize() {
+  if (empty($_SESSION['weixin']['user_id'])) {
+    $code = isset($_GET['code']) ? $_GET['code'] : '';
+    if (empty($code)) {
+      // Get Code.
+      $we_obj = _ciandt_wechat_vacation_init_obj();
+      $callback = 'http://' . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];;
+      $url = $we_obj->getOauthRedirect($callback);
+      header("Location: $url");
+    }
+    // Get User id.
+    $we_obj = _ciandt_wechat_vacation_init_obj();
+    $user_id = $we_obj->getUserId($code);
+    $_SESSION['weixin'] = [
+      'user_id' => $user_id,
+    ];
+    $user_info = $we_obj->getUserInfo($user_id);
+
+    if (!user_load_by_name($user_id)) {
+      // Create user.
+      $password = user_password(8);
+      $fields = array(
+        'name' => $user_id,
+        'mail' => $user_info['email'],
+        'pass' => $password,
+        'status' => 1,
+        'init' => 'email address',
+        'roles' => array(
+          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        ),
+        'field_weixin_name' => $user_info['name'],
+      );
+      //the first parameter is left blank so a new user is created
+      user_save('', $fields);
+    }
+
+  }
+
+
+}
+
+
+
+

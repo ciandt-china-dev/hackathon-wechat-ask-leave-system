@@ -7,11 +7,11 @@
 /**
  * Implements hook_rules_action_info().
  */
-function ciandt_wechat_vocation_rules_action_info() {
+function ciandt_wechat_vacation_rules_action_info() {
   $items = array();
 
-  $items['ciandt_wechat_vocation_push_wechat_notification'] = array(
-    'label' => t('Vocation Wechat notification to approver'),
+  $items['ciandt_wechat_vacation_push_wechat_notification'] = array(
+    'label' => t('vacation Wechat notification to approver'),
     'group' => t('Wechat notification'),
     'parameter' => array(
       'target' => array(
