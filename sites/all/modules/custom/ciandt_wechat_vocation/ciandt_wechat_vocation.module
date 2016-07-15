@@ -24,8 +24,8 @@ function ciandt_wechat_vocation_menu() {
 
 
 function ciandt_wechat_vocation_callback(){
-  $api = new Drupal\weixin_qy_api\Api\QyCallback();
-  $api->validateCallbackUrl();
+  $we_obj = _ciandt_wechat_vocation_init_obj();
+  $we_obj->valid();
 
 }
 
@@ -97,4 +97,19 @@ function ciandt_wechat_vocation_push_wechat_notification($target, $message) {
 
   drupal_set_message(t("Vocation approve notification has been sent to approver."));
   return TRUE;
+}
+
+function _ciandt_wechat_vocation_init_obj() {
+  $we_obj = &drupal_static(__FUNCTION__);
+  if (!isset($we_obj)) {
+    module_load_include('php', 'ciandt_wechat_vocation', 'sdk/qywechat.class');
+    $options = array(
+      'token' => variable_get('enterprise_wechat_dev_mode_token'),
+      'appid' => variable_get('enterprise_wechat_corp_id'),
+      'appsecret' => variable_get('enterprise_wechat_secret'),
+      'encodingaeskey' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
+    );
+    $we_obj = new Wechat($options);
+  }
+  return $we_obj;
 }

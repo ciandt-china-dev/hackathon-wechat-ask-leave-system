@@ -1,5 +1,5 @@
 <?php
-namespace Drupal\weixin_qy_api\Decryption;
+include_once "errorCode.php";
 
 /**
  * XMLParse class
