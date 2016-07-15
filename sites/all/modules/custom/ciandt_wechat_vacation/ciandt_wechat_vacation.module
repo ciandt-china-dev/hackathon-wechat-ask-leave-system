@@ -359,8 +359,18 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
     );
     $approve_user = user_save(NULL, $edit);
   }
+  elseif (!user_has_role(DRUPAL_APPROVER_RID, $approve_user)) {
+    $edit = array(
+      'mail' => $full_user_info['email'],
+      'name' => $full_user_info['userid'],
+      'roles' => array(
+        DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        DRUPAL_APPROVER_RID => 'Vacation Approver',
+      ),
+    );
+    $approve_user = user_save($approve_user, $edit);
+  }
   $form_state['values']['field_approver'][LANGUAGE_NONE][0]['target_id'] = $approve_user->uid;
-
 }
 
 /**
