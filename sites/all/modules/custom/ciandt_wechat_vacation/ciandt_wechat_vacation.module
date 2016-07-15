@@ -133,7 +133,7 @@ function _ciandt_wechat_vacation_get_tag_lists() {
         $user_infos = [];
         foreach ($userlist['userlist'] as $u) {
           $info = $we_obj->getUserInfo($u['userid']);
-          $user_infos[] = [
+          $user_infos[$info['userid']] = [
             'email' => $info['email'],
             'avatar' => $info['avatar'] . '64',
             'userid' => $info['userid'],
@@ -236,12 +236,10 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   // Get approvers list.
   $options = _ciandt_wechat_vacation_get_tag_lists();
 
-  $approve_users = array();
   $output = '<div class="popup"><div class="popup-top"><span class="close-btn">X</span></div><ul>';
-  foreach ($options as $option) {
+  foreach ($options as $key => $option) {
     $image = '<img src="' . $option['avatar'] . '"/>';
-    $approve_users[$option['userid']] = '<li class="user-item" data-uid="' . $option['userid'] . '"><span class="image">' . $image . '</span><span class="name">' . $option['name'] . '</span></li>';
-    $output .= $approve_users[$option['userid']];
+    $output .= '<li class="user-item" data-uid="' . $option['userid'] . '"><span class="image">' . $image . '</span><span class="name">' . $option['name'] . '</span></li>';
   }
   $output .= "</ul></div>";
 
@@ -262,12 +260,18 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
  * @param type $form_state
  */
 function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_state) {
-
-  $approve_user_id = $_POST['approve_user_id'];
+  $approve_user_id = filter_input(INPUT_POST, 'approve_user_id');
   $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_id];
-  if (!user_load_by_mail($full_user_info['email'])) {
-    
-  };
+  $approve_user = user_load_by_mail($full_user_info['email']);
+
+  if (!$approve_user) {
+    $account = array(
+      'mail' => $full_user_info['email'],
+      'name' => $full_user_info['userid'],
+    );
+    $approve_user = user_save($account);
+  }
+  $form_state['values']['field_approver'][LANGUAGE_NONE][0]['target_id'] = $approve_user->uid;
 }
 
 function _ciandt_wechat_vacation_approval_buttons(){
