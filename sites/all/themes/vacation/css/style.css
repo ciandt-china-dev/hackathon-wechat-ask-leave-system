@@ -107,6 +107,7 @@ h1 {
 .view-empty {
   margin: 30px 0;
   text-align: center;
+  font-size: 18px;
 }
 
 /* message */
@@ -261,15 +262,30 @@ h2 {
   box-shadow: 0px 0px 0px 5px rgba(185, 204, 208, 0.6);
 }
 
+.block-ciandt-wechat-vacation {
+  text-align: center;
+  margin: 20px 0 30px;
+}
+
+.block-ciandt-wechat-vacation .form-submit {
+  width: 40%;
+}
+
+#edit-approve {
+  margin-left: 10%;
+  background: #1fbdc5;
+}
+
 /* List */
 
 /*.view-vacation-pending .views-field {*/
+.view-vacation-history,
 .view-vacation-pending {
   border-top: 1px solid #ccc;
 }
 
 .detail-link {
-  padding: 10px;
+  padding: 10px 20px;
   display: block;
 }
 
@@ -296,12 +312,13 @@ h2 {
   font-size: 14px;
 }
 
+.views-field-field-approver,
 .views-field-name {
   width: 35%;
 }
 
 .views-field-field-leave-duration {
   width: 100%;
-  font-size: 11px;
+  font-size: 12px;
   color: #999;
 }

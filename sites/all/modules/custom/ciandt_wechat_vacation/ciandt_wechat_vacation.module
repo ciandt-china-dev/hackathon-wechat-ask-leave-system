@@ -205,6 +205,10 @@ function ciandt_wechat_vacation_block_info() {
     'info' => t('Weixin Authorize'),
     'cache' => DRUPAL_NO_CACHE,
   );
+  $blocks['vacation_approval_buttons'] = array(
+    'info' => t('Vacation Approval Buttons'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
   return $blocks;
 }
 /**
@@ -216,10 +220,18 @@ function ciandt_wechat_vacation_block_view($delta = '') {
     case 'weixin_authorize':
       $block['content'] = _ciandt_wechat_vacation_authorize();
       break;
+    case 'vacation_approval_buttons':
+      $block['content'] = drupal_get_form('_ciandt_wechat_vacation_approval_buttons');;
+      break;
   }
   return $block;
 }
 
+/**
+ * Implement of hook_form_FORM_ID_alter().
+ * @param type $form
+ * @param type $form_state
+ */
 function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_state) {
   // Get approvers list.
   $options = _ciandt_wechat_vacation_get_tag_lists();
@@ -261,5 +273,26 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   if (!user_load_by_mail($full_user_info['email'])) {
     
   };
+}
 
+function _ciandt_wechat_vacation_approval_buttons(){
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    // Get the nid
+    $nid = arg(1);
+    //node_load(), judge if current user is the approver
+    $form['node_id'] = array(
+      '#type' => 'hidden ',
+      '#value' => $nid,
+    );
+    $form['approve'] = array(
+      '#type' => 'submit',
+      '#value' => t('Approve'),
+    );
+    $form['reject'] = array(
+      '#type' => 'submit',
+      '#value' => t('Reject'),
+    );
+    
+    return $form;
+  }
 }
