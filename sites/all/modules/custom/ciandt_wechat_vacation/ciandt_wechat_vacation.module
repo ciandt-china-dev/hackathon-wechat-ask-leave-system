@@ -18,9 +18,22 @@ function ciandt_wechat_vacation_menu() {
     'description' => 'Set access keys and other necessary configurations for enterprise wechat.',
   );
 
+  $items['wechat_callback'] = array(
+    'title' => 'CI&T vocation management system',
+    'page callback' => 'ciandt_wechat_vocation_callback',
+    'access arguments' => array('access content'),
+  );
+
   return $items;
 }
 
+/**
+ *
+ */
+function ciandt_wechat_vocation_callback() {
+  $we_obj = _ciandt_wechat_vacation_init_obj();
+  $we_obj->valid();
+}
 
 /**
  * Menu callback to configure module settings.
@@ -140,6 +153,8 @@ function _ciandt_wechat_vacation_init_obj() {
       'appsecret' => variable_get('enterprise_wechat_secret'),
       'encodingaeskey' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
     );
+//    $options['token'] = 'wNmiTryqVuEJgBw';
+//    $options['encodingaeskey'] = '8cYGM2XvO2xMmQia2MS7a4d3NTaivrnHwF91RLwF8Vs';
     $we_obj = new Wechat($options);
   }
   return $we_obj;
