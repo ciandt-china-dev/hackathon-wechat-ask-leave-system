@@ -1,5 +1,5 @@
 name = Ciandt Wechat Vocation
-description = "Provides vocation system"
+description = "Provides vocation system which integrated with Wechat enterprise account"
 package = Custom
 core = 7.x
-configure = admin/config/cit_vocation
+configure = admin/config/vocation/enterprise_wechat
