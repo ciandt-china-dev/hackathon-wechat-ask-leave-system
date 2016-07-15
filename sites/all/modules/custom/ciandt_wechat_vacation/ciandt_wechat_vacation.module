@@ -54,7 +54,7 @@ function ciandt_wechat_vocation_get_leaves_by_user($userid) {
         'type' => $type,
       ];
 
-      $string .= $result['duration'] . ' ' . $result['type'] . "\n" . $result['days'] . "\n";
+      $string .= $result['duration'] . "\n" . $result['type'] . " " . $result['days'] . " " . $userid .  "\n";
     }
   }
   return !empty($string) ? $string : t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
