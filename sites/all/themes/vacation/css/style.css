@@ -271,7 +271,7 @@ h2 {
 }
 
 .detail-link {
-  padding: 10px;
+  padding: 10px 20px;
   display: block;
 }
 
@@ -305,6 +305,6 @@ h2 {
 
 .views-field-field-leave-duration {
   width: 100%;
-  font-size: 11px;
+  font-size: 12px;
   color: #999;
 }
