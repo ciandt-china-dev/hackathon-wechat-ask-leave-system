@@ -135,7 +135,7 @@ function _ciandt_wechat_vacation_get_tag_lists() {
           $info = $we_obj->getUserInfo($u['userid']);
           $user_infos[] = [
             'email' => $info['email'],
-            'avatar' => $info['avatar'],
+            'avatar' => $info['avatar'] . '64',
             'userid' => $info['userid'],
             'name' => $info['name'],
           ];
@@ -237,23 +237,18 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   $options = _ciandt_wechat_vacation_get_tag_lists();
 
   $approve_users = array();
-  $output = '<ul>';
+  $output = '<div class="popup"><div class="popup-top"><span class="close-btn">X</span></div><ul>';
   foreach ($options as $option) {
     $image = '<img src="' . $option['avatar'] . '"/>';
-    $approve_users[$option['userid']] = '<li><span>' . $image . '</span><span>' . $option['name'] . '</span></li>';
+    $approve_users[$option['userid']] = '<li class="user-item" data-uid="' . $option['userid'] . '"><span class="image">' . $image . '</span><span class="name">' . $option['name'] . '</span></li>';
     $output .= $approve_users[$option['userid']];
   }
-  $output .= "</ul>";
+  $output .= "</ul></div>";
 
   if ($option) {
     $form['approve_user_list'] = array(
       '#title' => 'Approve Users List',
       '#markup' => $output,
-    );
-    $form['approve_user_info'] = array(
-      '#title' => 'Approve Users',
-      '#type' => 'select',
-      '#options' => array_keys($approve_users),
     );
     $form_state['storage']['approve_user_list'] = $options;
   }
@@ -268,8 +263,8 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
  */
 function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_state) {
 
-  $approve_user_info = $form_state['values']['approve_user_info'];
-  $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_info];
+  $approve_user_id = $_POST['approve_user_id'];
+  $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_id];
   if (!user_load_by_mail($full_user_info['email'])) {
     
   };
