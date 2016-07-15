@@ -464,12 +464,19 @@ h2 {
   width: 25%;
   font-size: 14px;
 }
-
 .views-field-field-approver,
 .views-field-name {
   width: 35%;
 }
-
+.view-vacation-history  .views-field {
+  width: 20%;
+}
+.view-vacation-history .views-field-field-approver{
+	width: 35%;
+}
+.view-vacation-history  .views-field-field-leave-duration {
+  width: 100%;
+}
 .views-field-field-leave-duration {
   width: 100%;
   font-size: 12px;
