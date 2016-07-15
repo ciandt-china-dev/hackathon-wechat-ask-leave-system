@@ -15,7 +15,7 @@ function vocation_feature_default_page_manager_pages() {
   $page->task = 'page';
   $page->admin_title = 'Wechat Vocation';
   $page->admin_description = '';
-  $page->path = 'wechat-vocation';
+  $page->path = 'vacation/request';
   $page->access = array();
   $page->menu = array();
   $page->arguments = array();
