@@ -1,5 +1,5 @@
 <?php
-namespace Drupal\weixin_qy_api\Decryption;
+
 /**
  * error code 说明.
  * <ul>

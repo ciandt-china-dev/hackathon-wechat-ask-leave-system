@@ -1,11 +1,16 @@
 <?php
-namespace Drupal\weixin_qy_api\Decryption;
+
 /**
  * 对公众平台发送给公众账号的消息加解密示例代码.
  *
  * @copyright Copyright (c) 1998-2014 Tencent Inc.
  */
 
+
+include_once "sha1.php";
+include_once "xmlparse.php";
+include_once "pkcs7Encoder.php";
+include_once "errorCode.php";
 
 /**
  * 1.第三方回复加密消息给公众平台；
@@ -23,7 +28,7 @@ class WXBizMsgCrypt
 	 * @param $encodingAesKey string 公众平台上，开发者设置的EncodingAESKey
 	 * @param $Corpid string 公众平台的Corpid
 	 */
-	public function __construct($token, $encodingAesKey, $Corpid)
+	public function WXBizMsgCrypt($token, $encodingAesKey, $Corpid)
 	{
 		$this->m_sToken = $token;
 		$this->m_sEncodingAesKey = $encodingAesKey;
@@ -41,18 +46,14 @@ class WXBizMsgCrypt
 	*/
 	public function VerifyURL($sMsgSignature, $sTimeStamp, $sNonce, $sEchoStr, &$sReplyEchoStr)
 	{
-
 		if (strlen($this->m_sEncodingAesKey) != 43) {
-
 			return ErrorCode::$IllegalAesKey;
 		}
-
 
 		$pc = new Prpcrypt($this->m_sEncodingAesKey);
 		//verify msg_signature
 		$sha1 = new SHA1;
 		$array = $sha1->getSHA1($this->m_sToken, $sTimeStamp, $sNonce, $sEchoStr);
-
 		$ret = $array[0];
 
 		if ($ret != 0) {
