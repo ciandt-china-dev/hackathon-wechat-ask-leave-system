@@ -95,6 +95,6 @@ function ciandt_wechat_vocation_push_wechat_notification($target, $message) {
 
   // TODO: Send message with wechat api.
 
-  drupal_set_message(t("Vocation approve notification has been sent to approver"));
+  drupal_set_message(t("Vocation approve notification has been sent to approver."));
   return TRUE;
 }
