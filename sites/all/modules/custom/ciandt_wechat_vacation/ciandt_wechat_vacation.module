@@ -28,11 +28,35 @@ function ciandt_wechat_vacation_menu() {
 }
 
 /**
- *
+ * Function.
  */
 function ciandt_wechat_vocation_callback() {
   $we_obj = _ciandt_wechat_vacation_init_obj();
   $we_obj->valid();
+  $rev = $we_obj->getRev();
+  $userid = $rev->getRevContent();
+  $content = ciandt_wechat_vocation_get_leaves_by_user($userid);
+  $we_obj->text($content)->reply();
+}
+
+function ciandt_wechat_vocation_get_leaves_by_user($userid) {
+  $data= views_get_view_result('vacation_approved_of_one_person_', NULL, [$userid]);
+  $string = '';
+  foreach ($data as $d) {
+    if (isset($d->field_field_type_of_leave) && isset($d->field_field_total_days)) {
+      $type = $d->field_field_type_of_leave[0]['rendered']['#markup'];
+      $day = $d->field_field_total_days[0]['rendered']['#markup'];
+      $duration = $d->field_field_leave_duration[0]['raw'];
+      $result = [
+        'duration' => t('@from To  @to', ['@from' => $duration['value'], '@to' => $duration['value2']]),
+        'days' => t('@day Day', ['@day' => $day]),
+        'type' => $type,
+      ];
+      $string .= $result['duration'] . ' ' . $duration['type'] . "\n" . $result['days'] . "\n";
+    }
+  }
+
+  return !empty($string) ? $string : t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
 }
 
 /**
