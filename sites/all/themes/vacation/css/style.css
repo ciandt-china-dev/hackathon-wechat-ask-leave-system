@@ -18,7 +18,7 @@ body {
   font-smoothing: antialiased;
   text-rendering: optimizeLegibility\9;
   font-family: "PTSansRegular", Helvetica, Arial, sans-serif;
-  color: #595757;
+  color: #333;
 }
 
 a {
@@ -94,17 +94,32 @@ select::-ms-expand {
   padding: 0 30px;
 }
 
+#header {
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  font-size: 20px;
+  margin: 0 0 10px;
+}
+
+/* form */
+.form-item {
+  margin: 15px 0;
+}
+
 label {
   font-size: 16px;
-  color: #333;
-  margin: 0;
-  padding-bottom: 5px;
+  margin: 3px 0;
   font-weight: normal;
 }
 
+.form-textarea,
+.form-select,
 .form-text {
-  padding: 12px;
-  font-size: 20px;
+  padding: 8px;
+  font-size: 16px;
   border: 1px solid rgba(44, 44, 43, 0.15);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -112,6 +127,29 @@ label {
   border-radius: 3px;
   width: 100%;
   box-sizing: border-box;
+  color: #333;
+  background: #fff;
+}
+
+.form-textarea {
+  height: 56px;
+}
+
+.form-submit {
+  background: #d91f3e;
+  color: #fff;
+  border: none;
+  font-size: 17px;
+  padding: 10px 20px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  border-radius: 3px;
+  width: 100%;
+}
+
+.form-actions {
+  margin: 20px 0 30px;
 }
 
 fieldset {
@@ -120,6 +158,30 @@ fieldset {
   margin: 0;
 }
 
-legend {
+#edit-field-name {
+
+  /*display: none;*/
+}
+
+/* date */
+.form-type-date-popup {
+  margin: 0;
+}
+
+.form-type-date-popup .date-padding {
+  font-size: 0;
+}
+
+.form-type-date-popup .form-item {
+  width: 49%;
+  display: inline-block;
+  margin: 0;
+}
+
+.form-type-date-popup .form-item:first-child {
+  margin-right: 2%
+}
+
+.form-type-date-popup .form-item label {
   display: none;
 }

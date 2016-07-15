@@ -13,3 +13,12 @@ function vacation_theme($existing, $type, $theme, $path) {
     ),
   );
 }
+
+
+/**
+ * Implements hook_css_alter().
+ */
+function vacation_css_alter(&$css) {
+  // Remove defaults.css file.
+  unset($css[drupal_get_path('module', 'date') . '/date_api/date.css']);
+}
