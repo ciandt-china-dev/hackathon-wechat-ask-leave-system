@@ -1,0 +1,5 @@
+name = Cit Vocation
+description = "Provides vocation system"
+package = Custom
+core = 7.x
+configure = admin/config/cit_vocation
