@@ -83,3 +83,16 @@ function ciandt_wechat_vocation_enterprise_wechat_settings($form, &$form_state){
   
   return system_settings_form($form);  
 }
+
+/**
+ * Rules action for push notification.
+ */
+function ciandt_wechat_vocation_push_wechat_notification($target, $message) {
+
+  // TODO: Get wechat uid/token_id by $target.
+
+  // TODO: Send message with wechat api.
+
+  drupal_set_message(t("Vocation approve notification has been sent to approver"));
+  return TRUE;
+}
