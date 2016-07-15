@@ -94,15 +94,15 @@ $end_date_set = array(
   'day' => date('d', $end_date_timestamp),
   'week' => date('l', $end_date_timestamp),
 );
-$start_date_circle = t("@monthMonth@dayDay@week", array(
-  '@month' => "<span class='month'>" . $start_date_set['month'] . "</span>",
-  '@day' => "<span class='day'>" . $start_date_set['day'] . "</span>",
-  '@week' => "<span class='week'>" . $start_date_set['week'] . "</span>",
+$start_date_circle = t("!monthMonth!dayDay!week", array(
+  '!month' => "<span class='month'>" . $start_date_set['month'] . "</span>",
+  '!day' => "<span class='day'>" . $start_date_set['day'] . "</span>",
+  '!week' => "<span class='week'>" . $start_date_set['week'] . "</span>",
 ));
-$end_date_circle = t("@monthMonth@dayDay@week", array(
-  '@month' => "<span class='month'>" . $end_date_set['month'] . "</span>",
-  '@day' => "<span class='day'>" . $end_date_set['day'] . "</span>",
-  '@week' => "<span class='week'>" . $end_date_set['week'] . "</span>",
+$end_date_circle = t("!monthMonth!dayDay!week", array(
+  '!month' => "<span class='month'>" . $end_date_set['month'] . "</span>",
+  '!day' => "<span class='day'>" . $end_date_set['day'] . "</span>",
+  '!week' => "<span class='week'>" . $end_date_set['week'] . "</span>",
 ));
 else:
   $start_date_circle = $end_date_circle = $start_date = $end_date = '';
@@ -130,16 +130,43 @@ endif;
       hide($content['comments']);
       hide($content['links']);
     ?>
-    <?php print $start_date_circle;?>
-    <?php print t("Start Date");?>
-    <?php print $end_date_circle;?>
-    <?php print t("End Date");?>
-    <?php print t("Start:");?>
-    <?php print $start_date;?>
-    <?php print t("End:");?>
-    <?php print $end_date;?>
-    <?php print !empty($content['field_comment']) ? render($content['field_comment']) : '';?>
-    <?php print !empty($content['field_approver']) ? render($content['field_approver']) : '';?>
+    <div class="detail-header">
+      <h2><?php print $node->title; ?></h2>
+
+      <div class="circle-item">
+        <div class="circle">
+          <?php print $start_date_circle;?>
+        </div>
+        <?php print t("Start Date");?>
+      </div>
+      <div class="circle-item">
+        <div class="circle">
+          <?php print $end_date_circle;?>
+        </div> 
+        <?php print t("End Date");?>
+      </div>
+    </div>
+
+    <div class="detail-content">
+      <div class="item">
+        <?php print t("Start:");?> 
+        <?php print $start_date;?>
+      </div>
+      <div class="item">
+        <?php print t("End:");?>
+        <?php print $end_date;?>
+      </div>
+      <?php if(!empty($content['field_comment'])): ?>
+        <div class="item">
+          <?php print render($content['field_comment']);?>
+        </div>
+      <?php endif; ?>
+      <?php if(!empty($content['field_approver'])): ?>
+        <div class="item">
+          <?php print render($content['field_approver']);?>
+        </div>
+      <?php endif; ?>
+    </div>
   </div>
 
   <?php print render($content['links']); ?>
