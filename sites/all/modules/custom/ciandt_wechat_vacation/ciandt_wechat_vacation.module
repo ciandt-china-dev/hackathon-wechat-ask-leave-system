@@ -54,10 +54,15 @@ function ciandt_wechat_vocation_get_leaves_by_user($userid) {
         'type' => $type,
       ];
 
-      $string .= $result['duration'] . "\n" . $result['type'] . " " . $result['days'] . " " . $userid .  "\n";
+      $string .= $result['duration'] . "\n" . $result['type'] . " " . $result['days'] . " " . $userid .  "\n\n";
     }
   }
-  return !empty($string) ? $string : t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
+  if (!empty($string)) {
+    $string = t("检索到@userid信息如下:\n ", ['@userid' => $userid]) . $string;
+  } else {
+    $string = t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
+  }
+  return $string;
 }
 
 /**
