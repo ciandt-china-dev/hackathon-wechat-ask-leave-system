@@ -1,6 +1,6 @@
-
 <?php unset($form["actions"]["preview"]);?>
 <?php hide($form["actions"]);?>
+<?php $form["actions"]["submit"]["#value"] = t("Submit", array(), array('context' => 'vocation submit'));?>
 <input name="approve_user_id" type="hidden"/>
 <?php print drupal_render_children($form);?>
 <div class="approver-wrapper">
