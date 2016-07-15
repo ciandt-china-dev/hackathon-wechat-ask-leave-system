@@ -86,34 +86,6 @@ function vocation_feature_field_default_field_bases() {
     'type' => 'datetime',
   );
 
-  // Exported field_base: 'field_name'.
-  $field_bases['field_name'] = array(
-    'active' => 1,
-    'cardinality' => 1,
-    'deleted' => 0,
-    'entity_types' => array(),
-    'field_name' => 'field_name',
-    'indexes' => array(
-      'target_id' => array(
-        0 => 'target_id',
-      ),
-    ),
-    'locked' => 0,
-    'module' => 'entityreference',
-    'settings' => array(
-      'handler' => 'base',
-      'handler_settings' => array(
-        'sort' => array(
-          'type' => 'none',
-        ),
-        'target_bundles' => array(),
-      ),
-      'target_type' => 'user',
-    ),
-    'translatable' => 0,
-    'type' => 'entityreference',
-  );
-
   // Exported field_base: 'field_total_days'.
   $field_bases['field_total_days'] = array(
     'active' => 1,
@@ -140,6 +112,9 @@ function vocation_feature_field_default_field_bases() {
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_type_of_leave',
+    'field_permissions' => array(
+      'type' => 0,
+    ),
     'indexes' => array(
       'value' => array(
         0 => 'value',
@@ -149,13 +124,13 @@ function vocation_feature_field_default_field_bases() {
     'module' => 'list',
     'settings' => array(
       'allowed_values' => array(
-        'annual-leave' => 'Annual Leave 年假',
-        'pregnant-leave' => 'Pregnant Leave 妊娠假',
-        'excused-leave' => 'Excused Leave 事假',
-        'maternity-leave' => 'Maternity Leave 产假',
-        'marriage-leave' => 'Marriage Leave 婚嫁',
-        'compassionate-leave' => 'Compassionate Leave 丧假',
-        'illness-leave' => 'Illness Leave 病假',
+        'annual-leave' => '年假',
+        'pregnant-leave' => '妊娠假',
+        'excused-leave' => '事假',
+        'maternity-leave' => '产假',
+        'marriage-leave' => '婚嫁',
+        'compassionate-leave' => '丧假',
+        'illness-leave' => '病假',
       ),
       'allowed_values_function' => '',
     ),
