@@ -2,6 +2,7 @@ name = Vocation feature
 core = 7.x
 package = Features
 dependencies[] = date
+dependencies[] = date_popup
 dependencies[] = features
 dependencies[] = list
 dependencies[] = options
