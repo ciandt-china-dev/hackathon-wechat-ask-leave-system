@@ -327,7 +327,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   // Get approvers list.
   $options = _ciandt_wechat_vacation_get_tag_lists();
   // Get rid of current login user.
-  if (isset($options[$user->name])) {
+  if (isset($user->name) && isset($options[$user->name])) {
     unset($options[$user->name]);
   }
   $output = '<div class="popup"><div class="popup-top"><span class="close-btn">X</span></div><ul>';
