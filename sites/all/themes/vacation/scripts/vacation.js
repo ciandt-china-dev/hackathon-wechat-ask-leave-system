@@ -92,7 +92,7 @@ var message = {
 			$('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val(startDate.replace(/-/g, '/'));
 			$('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val(endDate.replace(/-/g, '/'));
 
-			return false;
+			return true;
 		});
 
 		$popup.find('.close-btn').click(function() {
