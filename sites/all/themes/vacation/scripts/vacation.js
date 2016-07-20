@@ -51,21 +51,17 @@ var message = {
 				$leaveDuration = $('#edit-field-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
 				$approver = $('input[name="approve_user_id"]'),
+				startDate = $('.start-date').val(),
+				endDate = $('.end-date').val(),
 				startTime = $('.start-time').val(),
 				endTime = $('.end-time').val(),
 				len = $leaveDuration.length,
-				i = 0,
-				startDate,
-				endDate;
+				i = 0;
 
 			if ($typeOfLeave.val() == '_none') {
 				message.alert(MESSAGE.TypeOfLeaveRequired);
 				return false;
 			}
-
-			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val(startTime);
-			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val(endTime);
-			$('input[name="approve_user_id"]').val(uid);
 
 			for (i; i < len; i++) {
 				if ($($leaveDuration[i]).val() == '') {
@@ -74,10 +70,7 @@ var message = {
 				}
 			}
 
-			startDate = $('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val();
-			endDate = $('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val();
-
-			if ((startDate > endDate) || (startDate == endDate && startTime > endTime)) {
+			if ((startDate == '') || (endDate == '') || (startTime == '') || (endTime == '') || (startDate > endDate) || (startDate == endDate && startTime > endTime)) {
 				message.alert(MESSAGE.DateRangeError);
 				return false;
 			}
@@ -87,12 +80,19 @@ var message = {
 				return false;
 			}
 
+			$approver.val(uid);
+
 			if ($approver.val() == '') {
 				message.alert(MESSAGE.ApproverRequired);
 				return false;
 			}
 
-			return true;
+			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val(startTime);
+			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val(endTime);
+			$('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val(startDate.replace(/-/g, '/'));
+			$('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val(endDate.replace(/-/g, '/'));
+
+			return false;
 		});
 
 		$popup.find('.close-btn').click(function() {

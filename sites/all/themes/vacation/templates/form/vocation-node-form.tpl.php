@@ -1,8 +1,26 @@
 <?php unset($form["actions"]["preview"]);?>
-<?php hide($form["actions"]);?>
+<?php //hide($form["actions"]);?>
+
 <?php $form["actions"]["submit"]["#value"] = t("Submit", array(), array('context' => 'vocation submit'));?>
-<input name="approve_user_id" type="hidden"/>
-<?php print drupal_render_children($form);?>
+
+<?php print render($form["field_type_of_leave"]);?>
+<?php print render($form["field_leave_duration"]);?>
+<div class="leave-duration">
+	<label class="fieldset-legend"><?php print t("Leave Duration");?>  <span class="form-required" title="This field is required.">*</span></label>
+	<div class="date-field">
+		<input type="date" class="date start-date form-text">
+		<input type="time" class="time start-time form-text" value="09:00">
+	</div>
+	<label><?php print t("to:");?> <span class="form-required" title="This field is required.">*</span></label>
+	<div class="date-field">
+		<input type="date" class="date end-date form-text">
+		<input type="time" class="time end-time form-text" value="09:00">
+	</div>
+</div>
+<?php print render($form["field_total_days"]);?>
+<?php print render($form["field_comment"]);?>
+<?php print render($form["field_approver"]);?>
+
 <div class="approver-wrapper">
 	<div class="selected-approver">
 		<div class="remove-approver">-</div>
@@ -11,5 +29,7 @@
 	<div class="add-approver"></div>
 </div>
 <?php print render($form["actions"]);?>
-<input type="time" class="time start-time form-text" value="09:00">
-<input type="time" class="time end-time form-text" value="09:00">
+
+<input name="approve_user_id" type="hidden"/>
+<?php print drupal_render_children($form);?>
+

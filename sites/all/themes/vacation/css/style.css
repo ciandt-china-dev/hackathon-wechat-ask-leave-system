@@ -299,20 +299,28 @@ fieldset {
 }
 
 /* date */
+#edit-field-leave-duration {
+  display: none;
+}
+
 .form-type-date-popup {
   margin: 0;
 }
 
+.date-field,
 .form-type-date-popup .date-padding {
   font-size: 0;
 }
 
+.date,
+.time,
 .form-type-date-popup .form-item {
   width: 49%;
   display: inline-block;
   margin: 0;
 }
 
+.date,
 .form-type-date-popup .form-item:first-child {
   margin-right: 2%
 }
@@ -321,29 +329,12 @@ fieldset {
   display: none;
 }
 
-#edit-field-leave-duration-und-0-value-timeEntry-popup-1,
-#edit-field-leave-duration-und-0-value2-timeEntry-popup-1 {
-  display: none;
-}
-
+.date,
+.time,
 .date-clear {
   padding: 5px 8px;
   -webkit-appearance: none;
   height: 36px;
-}
-
-.time {
-  position: absolute;
-  top: 102px;
-  left: 51%;
-  width: 49%;
-  padding: 5px 8px;
-  -webkit-appearance: none;
-  height: 36px;
-}
-
-.end-time {
-  top: 168px;
 }
 
 /* vacation detail */
@@ -464,19 +455,24 @@ h2 {
   width: 25%;
   font-size: 14px;
 }
+
 .views-field-field-approver,
 .views-field-name {
   width: 35%;
 }
+
 .view-vacation-history  .views-field {
   width: 20%;
 }
-.view-vacation-history .views-field-field-approver{
-	width: 35%;
+
+.view-vacation-history .views-field-field-approver {
+  width: 35%;
 }
+
 .view-vacation-history  .views-field-field-leave-duration {
   width: 100%;
 }
+
 .views-field-field-leave-duration {
   width: 100%;
   font-size: 12px;
