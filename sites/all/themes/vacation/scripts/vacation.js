@@ -41,6 +41,12 @@ var message = {
 		DateRangeError: Drupal.t('Please enter the valid date and time')
 	};
 
+	function formatDate(date) {
+		var dateArray = date.split('-');
+
+		return dateArray[1] + '/' + dateArray[2] + '/' + dateArray[0];
+	}
+
 	$(document).ready(function() {
 		var $popup = $('.popup'),
 			$selectedWrapper = $('.selected-approver'),
@@ -48,7 +54,7 @@ var message = {
 
 		$('#vocation-node-form').submit(function() {
 			var $typeOfLeave = $('#edit-field-type-of-leave-und'),
-				$leaveDuration = $('#edit-field-leave-duration').find('input'),
+				$leaveDuration = $('.custom-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
 				$approver = $('input[name="approve_user_id"]'),
 				startDate = $('.start-date').val(),
@@ -70,7 +76,7 @@ var message = {
 				}
 			}
 
-			if ((startDate == '') || (endDate == '') || (startTime == '') || (endTime == '') || (startDate > endDate) || (startDate == endDate && startTime > endTime)) {
+			if ((startDate > endDate) || (startDate == endDate && startTime >= endTime)) {
 				message.alert(MESSAGE.DateRangeError);
 				return false;
 			}
@@ -89,8 +95,10 @@ var message = {
 
 			$('#edit-field-leave-duration-und-0-value-timeEntry-popup-1').val(startTime);
 			$('#edit-field-leave-duration-und-0-value2-timeEntry-popup-1').val(endTime);
-			$('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val(startDate.replace(/-/g, '/'));
-			$('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val(endDate.replace(/-/g, '/'));
+			$('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val(formatDate(startDate));
+			$('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val(formatDate(endDate));
+
+			//$(this).find('.form-submit').attr('disabled', 'disabled');
 
 			return true;
 		});

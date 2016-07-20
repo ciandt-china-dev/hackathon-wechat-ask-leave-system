@@ -5,15 +5,15 @@
 
 <?php print render($form["field_type_of_leave"]);?>
 <?php print render($form["field_leave_duration"]);?>
-<div class="leave-duration">
+<div class="custom-leave-duration">
 	<label class="fieldset-legend"><?php print t("Leave Duration");?>  <span class="form-required" title="This field is required.">*</span></label>
 	<div class="date-field">
-		<input type="date" class="date start-date form-text">
+		<input type="date" class="date start-date form-text" value="<?php echo date('Y-m-d'); ?>">
 		<input type="time" class="time start-time form-text" value="09:00">
 	</div>
 	<label><?php print t("to:");?> <span class="form-required" title="This field is required.">*</span></label>
 	<div class="date-field">
-		<input type="date" class="date end-date form-text">
+		<input type="date" class="date end-date form-text" value="<?php echo date('Y-m-d'); ?>">
 		<input type="time" class="time end-time form-text" value="09:00">
 	</div>
 </div>
