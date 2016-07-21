@@ -6,7 +6,7 @@
 <?php print render($form["field_type_of_leave"]);?>
 <?php print render($form["field_leave_duration"]);?>
 <div class="custom-leave-duration">
-	<label><?php print t("Leave Duration:");?>  <span class="form-required" title="<?php print t("This field is required.");?>">*</span></label>
+	<label><?php print t("Leave Duration", array(), array('context' => 'vacation request'));?> <span class="form-required" title="<?php print t("This field is required.");?>">*</span></label>
 	<div class="date-field">
 		<input type="date" class="date start-date form-text" value="<?php echo date('Y-m-d'); ?>">
 		<input type="time" class="time start-time form-text" value="09:00">
