@@ -38,6 +38,7 @@ var message = {
 		LeaveDurationRequired: Drupal.t('Please input Leave Duration'),
 		TotalDaysRequired: Drupal.t('Please input Total Days'),
 		ApproverRequired: Drupal.t('Please add an Approver'),
+		TotalDaysError: Drupal.t('Please input a valid number'),
 		DateRangeError: Drupal.t('Please enter the valid date and time')
 	};
 
@@ -62,7 +63,8 @@ var message = {
 				startTime = $('.start-time').val(),
 				endTime = $('.end-time').val(),
 				len = $leaveDuration.length,
-				i = 0;
+				i = 0,
+				reg = /^\d+(\.\d{1})?$/;
 
 			if ($typeOfLeave.val() == '_none') {
 				message.alert(MESSAGE.TypeOfLeaveRequired);
@@ -86,6 +88,11 @@ var message = {
 				return false;
 			}
 
+			if (reg.test($totalDays.val()) == false) {
+				message.alert(MESSAGE.TotalDaysError);
+				return false;
+			}
+
 			$approver.val(uid);
 
 			if ($approver.val() == '') {
@@ -98,7 +105,7 @@ var message = {
 			$('#edit-field-leave-duration-und-0-value-datepicker-popup-0').val(formatDate(startDate));
 			$('#edit-field-leave-duration-und-0-value2-datepicker-popup-0').val(formatDate(endDate));
 
-			//$(this).find('.form-submit').attr('disabled', 'disabled');
+			$(this).find('.form-submit').attr('disabled', 'disabled');
 
 			return true;
 		});

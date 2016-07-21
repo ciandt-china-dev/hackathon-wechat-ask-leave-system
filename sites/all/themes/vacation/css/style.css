@@ -175,6 +175,10 @@ label {
   outline: none;
 }
 
+.form-submit:disabled {
+  background: #a9a2a3;
+}
+
 .form-submit:focus {
   outline: none;
 }
