@@ -51,7 +51,32 @@ var message = {
 	$(document).ready(function() {
 		var $popup = $('.popup'),
 			$selectedWrapper = $('.selected-approver'),
-			uid = '';
+			uidArray = [];
+
+		function hasUid(uid) {
+			var len = uidArray.length,
+				i = 0;
+			for (i; i < len; i++) {
+				if (uidArray[i] === uid) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		function removeUid(uid) {
+			var len = uidArray.length,
+				i = 0;
+			for (i; i < len; i++) {
+				if (uidArray[i] === uid) {
+					uidArray.splice(i, 1);
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 		$('#vocation-node-form').submit(function() {
 			var $typeOfLeave = $('#edit-field-type-of-leave-und'),
@@ -93,7 +118,7 @@ var message = {
 				return false;
 			}
 
-			$approver.val(uid);
+			$approver.val(uidArray.join(','));
 
 			if ($approver.val() == '') {
 				message.alert(MESSAGE.ApproverRequired);
@@ -110,27 +135,31 @@ var message = {
 			return true;
 		});
 
-		$popup.find('.close-btn').click(function() {
-			$popup.hide();
-		});
-
-		$popup.find('.user-item').click(function() {
-
-			$popup.hide();
-			$('.selected-approver-field').html($(this).html());
-			if (!$selectedWrapper.hasClass('selected')) {
-				$selectedWrapper.addClass('selected');
-			}
-			uid = $(this).data('uid');
-		});
-
 		$('.add-approver').click(function() {
 			$popup.show();
 		});
 
-		$('.remove-approver').click(function() {
-			$('.selected-approver-field').empty();
-			$selectedWrapper.removeClass('selected');
+		$popup.on('click', '.close-btn', function() {
+			$popup.hide();
+		}).on('click', '.user-item', function() {
+			var uid = $(this).data('uid'),
+				$userItem;
+
+			$popup.hide();
+
+			if (!hasUid(uid)) {
+				uidArray.push(uid);
+				$userItem = $(this).clone();
+				$userItem.append('<div class="remove-approver">-</div>');
+				$('.selected-approver-field').append($userItem);
+			}
+		});
+
+		$('.selected-approver-field').on('click', '.remove-approver', function() {
+			var $userItem = $(this).parent();
+
+			removeUid($userItem.data('uid'));
+			$userItem.remove();
 		});
 
 	});

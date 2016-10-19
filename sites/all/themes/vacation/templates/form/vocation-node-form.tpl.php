@@ -23,8 +23,7 @@
 
 <div class="approver-wrapper">
 	<div class="selected-approver">
-		<div class="remove-approver">-</div>
-		<div class="selected-approver-field"></div>
+		<ul class="selected-approver-field"></ul>
 	</div>
 	<div class="add-approver"></div>
 </div>

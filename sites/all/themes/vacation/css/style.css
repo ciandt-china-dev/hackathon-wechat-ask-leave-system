@@ -225,19 +225,19 @@ fieldset {
   padding: 0;
 }
 
-.user-item {
+.popup .user-item {
   padding: 8px 20px;
   border-bottom: 1px solid #ccc;
   font-size: 0;
 }
 
-.user-item .image {
+.popup .user-item .image {
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
 }
 
-.user-item .name {
+.popup .user-item .name {
   display: inline-block;
   vertical-align: middle;
   font-size: 16px;
@@ -248,6 +248,7 @@ fieldset {
   width: 40px;
   height: 40px;
   border-radius: 20px;
+  display: block;
 }
 
 .selected-approver .name {
@@ -277,13 +278,8 @@ fieldset {
   text-align: center;
 }
 
-.selected-approver.selected {
-  position: relative;
-  margin-right: 10px;
-}
-
 .selected-approver .remove-approver {
-  display: none;
+  display: block;
   font-weight: bold;
   font-size: 30px;
   background: red;
@@ -298,8 +294,16 @@ fieldset {
   top: -5px;
 }
 
-.selected-approver.selected .remove-approver {
-  display: block;
+.selected-approver-field {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.selected-approver-field li {
+  display: inline-block;
+  position: relative;
+  margin-right: 10px;
 }
 
 /* date */
