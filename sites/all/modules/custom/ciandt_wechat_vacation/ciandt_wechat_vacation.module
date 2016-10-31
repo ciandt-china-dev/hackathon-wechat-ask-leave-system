@@ -442,7 +442,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
       node_save($node);
     }
     if ($status == 'pending' && $node->field_vocation_status[LANGUAGE_NONE][0]['value'] == 'approved') {
-      rules_invoke_event('vocation_approved');
+      rules_invoke_event('vocation_approved', $node);
     }
   }
   drupal_goto('vacation/approved-list');
