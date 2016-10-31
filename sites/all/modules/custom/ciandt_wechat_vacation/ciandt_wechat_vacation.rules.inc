@@ -32,5 +32,39 @@ function ciandt_wechat_vacation_rules_action_info() {
       ),
     ),
   );
+  $items['ciandt_wechat_vacation_group_notification'] = array(
+    'label' => t('Wechat notification to group'),
+    'group' => t('Wechat notification'),
+    'parameter' => array(
+      'tag' => array(
+        'type' => 'text',
+        'label' => t('Notification tag'),
+      ),
+      'message' => array(
+        'type' => 'text',
+        'label' => t('Notification message'),
+      ),
+      'url' => array(
+        'type' => 'text',
+        'label' => t('URL'),
+      ),
+      'picurl' => array(
+        'type' => 'text',
+        'label' => t('Picture URL'),
+      ),
+    ),
+  );
   return $items;
+}
+
+/**
+ * Implementats hook_rules_event_info().
+ */
+function ciandt_wechat_vacation_rules_event_info() {
+  return array(
+    'vocation_approved' => array(
+      'label' => t('After a vocation approved'),
+      'module' => 'ciandt_wechat_vacation',
+    ),
+  );
 }
