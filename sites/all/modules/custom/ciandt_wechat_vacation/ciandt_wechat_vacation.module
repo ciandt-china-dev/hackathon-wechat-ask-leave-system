@@ -432,17 +432,46 @@ function _ciandt_wechat_vacation_approval_buttons($form, &$form_state) {
  */
 function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) {
   $nid = isset($form_state['input']['node_id']) ? $form_state['input']['node_id'] : '';
-  if ($nid) {
-    $node = node_load($nid);
-    if ($node) {
-      $status = isset($node->field_vocation_status[LANGUAGE_NONE][0]['value']) ? $node->field_vocation_status[LANGUAGE_NONE][0]['value'] : '';
-      $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
-      if (!empty($_SESSION['weixin']['user_id']) && $_SESSION['weixin']['user_id'] == $weixin_userid && 'pending' == $status) {
-        $new_status = $form_state['input']['op'] == t('Approve') ? 'approved' : 'rejected';
-        $node->field_vocation_status[LANGUAGE_NONE][0]['value'] = $new_status;
-        node_save($node);
-      }
+  $node = node_load($nid);
+  if ($node) {
+    $status = isset($node->field_vocation_status[LANGUAGE_NONE][0]['value']) ? $node->field_vocation_status[LANGUAGE_NONE][0]['value'] : '';
+    $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
+    if (!empty($_SESSION['weixin']['user_id']) && $_SESSION['weixin']['user_id'] == $weixin_userid && 'pending' == $status) {
+      $new_status = $form_state['input']['op'] == t('Approve') ? 'approved' : 'rejected';
+      $node->field_vocation_status[LANGUAGE_NONE][0]['value'] = $new_status;
+      node_save($node);
+    }
+    if ($status == 'pending' && $node->field_vocation_status[LANGUAGE_NONE][0]['value'] == 'approved') {
+      rules_invoke_event('vocation_approved');
     }
   }
   drupal_goto('vacation/approved-list');
+}
+
+/**
+ * Send notification to group.
+ */
+function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl) {
+  // Get wechat uid/token_id by $target.
+  $data = array(
+    "totag" => $tag,
+    "agentid" => variable_get('ciandt_wechat_vacation_agentid'),//9
+    "msgtype" => 'news',
+    "news" => array(
+      "articles" => array(
+        array(
+          "description" => $message,//描述
+          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份。
+          "picurl" => $picurl,
+        ),
+      ),
+    ),
+  );
+  // Send message with wechat api.
+  $wechat_object = _ciandt_wechat_vacation_init_obj();
+  $result = $wechat_object->sendMessage($data);
+
+  if ($result) {
+    drupal_set_message(t("Successfully sent notification to group user."));
+  }
 }
