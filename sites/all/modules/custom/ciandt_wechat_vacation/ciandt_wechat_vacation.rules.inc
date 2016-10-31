@@ -63,6 +63,7 @@ function ciandt_wechat_vacation_rules_action_info() {
 function ciandt_wechat_vacation_rules_event_info() {
   return array(
     'vocation_approved' => array(
+      'group' => 'ciandt_wechat_vacation',
       'label' => t('After a vocation approved'),
       'module' => 'ciandt_wechat_vacation',
     ),
