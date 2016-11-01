@@ -454,9 +454,11 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
  * Send notification to group.
  */
 function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl) {
+  $tag_list = get_tag_list();
+  $tag_id = array_search($tag, $tag_list);
   // Get wechat uid/token_id by $target.
   $data = array(
-    "totag" => $tag,
+    "totag" => $tag_id,
     "agentid" => variable_get('ciandt_wechat_vacation_agentid'),//9
     "msgtype" => 'news',
     "news" => array(
@@ -476,4 +478,27 @@ function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl
   if ($result) {
     drupal_set_message(t("Successfully sent notification to group user."));
   }
+}
+
+/**
+ * Get wechat tag list.
+ */
+function get_tag_list() {
+  $tag_var = &drupal_static(__FUNCTION__);
+  if (empty($tag_var)) {
+    if ($cache = cache_get('wechat_tag_list')) {
+      $my_data = $cache->data;
+    }
+    else {
+      $wechat_object = _ciandt_wechat_vacation_init_obj();
+      $result = $wechat_object->getTagList();
+      if ($result && !empty($result["taglist"])) {
+        foreach ($result["taglist"] as $tag) {
+          $tag_var[$tag["id"]] = $tag["tagname"];
+        }
+      }
+      cache_set('wechat_tag_list', $tag_var);
+    }
+  }
+  return $tag_var;
 }
