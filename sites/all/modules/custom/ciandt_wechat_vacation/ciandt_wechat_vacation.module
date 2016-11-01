@@ -494,7 +494,7 @@ function get_tag_list() {
       $result = $wechat_object->getTagList();
       if ($result && !empty($result["taglist"])) {
         foreach ($result["taglist"] as $tag) {
-          $tag_var[$tag["id"]] = $tag["tagname"];
+          $tag_var[$tag["tagid"]] = $tag["tagname"];
         }
       }
       cache_set('wechat_tag_list', $tag_var);
