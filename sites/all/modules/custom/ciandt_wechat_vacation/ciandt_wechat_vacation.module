@@ -487,7 +487,7 @@ function get_tag_list() {
   $tag_var = &drupal_static(__FUNCTION__);
   if (empty($tag_var)) {
     if ($cache = cache_get('wechat_tag_list')) {
-      $my_data = $cache->data;
+      $tag_var = $cache->data;
     }
     else {
       $wechat_object = _ciandt_wechat_vacation_init_obj();
