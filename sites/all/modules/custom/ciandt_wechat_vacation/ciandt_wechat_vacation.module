@@ -234,7 +234,7 @@ function _ciandt_wechat_vacation_get_tag_lists() {
  */
 function _ciandt_wechat_vacation_authorize() {
   $drupal_get_path_alias = drupal_get_path_alias();
-  if (FALSE !== strpos($drupal_get_path_alias, 'vacation') && empty($_SESSION['weixin']['user_id'])) {
+  if (empty($_SESSION['weixin']['user_id'])) {
     $code = isset($_GET['code']) ? $_GET['code'] : '';
     if (empty($code)) {
       // Get Code.
@@ -280,6 +280,8 @@ function _ciandt_wechat_vacation_authorize() {
     $user = user_load_by_name($_SESSION['weixin']['user_id']);
     $login_array = array ('name' => $user->name);
     user_login_finalize($login_array);
+    // Refresh page to avoid form outdated error.
+    drupal_goto($drupal_get_path_alias);
   }
 }
 
