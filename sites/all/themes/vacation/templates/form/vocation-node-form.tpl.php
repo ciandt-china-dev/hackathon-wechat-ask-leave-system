@@ -1,4 +1,13 @@
 <?php unset($form["actions"]["preview"]);?>
+<?php unset($form["field_approver"]["und"]["add_more"]);?>
+<?php unset($form["field_approver_vocation_status"]);?>
+<?php
+if (empty($form["nid"]['value'])) {
+  unset($form["field_reject_reason"]);
+}
+?>
+
+<?php unset($form["actions"]["preview"]);?>
 <?php //hide($form["actions"]);?>
 
 <?php $form["actions"]["submit"]["#value"] = t("Submit", array(), array('context' => 'vocation submit'));?>
@@ -20,7 +29,6 @@
 <?php print render($form["field_total_days"]);?>
 <?php print render($form["field_comment"]);?>
 <?php print render($form["field_approver"]);?>
-
 <div class="approver-wrapper">
 	<div class="selected-approver">
 		<ul class="selected-approver-field"></ul>
