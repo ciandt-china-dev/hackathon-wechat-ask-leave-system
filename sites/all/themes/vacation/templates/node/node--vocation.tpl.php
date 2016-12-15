@@ -79,6 +79,7 @@
  *
  * @ingroup themeable
  */
+global $user;
 if (!empty($field_leave_duration[0]["value"]) && !empty($field_leave_duration[0]["value2"])):
 $start_date = $field_leave_duration[0]["value"];
 $end_date = $field_leave_duration[0]["value2"];
@@ -172,6 +173,11 @@ endif;
           <?php print render($content['field_vocation_status']);?>
         </div>
       <?php endif; ?>
+      <?php if(($field_vocation_status[0]['value']=='pending' || $field_vocation_status[0]['value']=='rejected') && $user->uid==$node->uid):?>
+        <div class="item">
+            <a href='/vacation/<?php print $node->nid; ?>/edit'>编辑</a>
+        </div>
+      <?php endif;?>
     </div>
   </div>
 
