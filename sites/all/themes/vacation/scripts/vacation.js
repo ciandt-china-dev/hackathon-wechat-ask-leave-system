@@ -48,9 +48,45 @@ var message = {
 		return dateArray[1] + '/' + dateArray[2] + '/' + dateArray[0];
 	}
 
+	// auto totalDays
+	function autoTotalDays() {
+		var $totalDays = $('#edit-field-total-days-und-0-value'),
+				autototalDaysUrl,
+				startDate = $('.start-date').val(),
+				endDate = $('.end-date').val(),
+				startTime = $('.start-time').val(),
+				endTime = $('.end-time').val(),
+				startDateUnix = parseInt(new Date(startDate.replace(/-/g,'/'))/1000),
+				endDateUnix = parseInt(new Date(endDate.replace(/-/g,'/'))/1000);
+
+		autototalDaysUrl = location.protocol + '//' +
+											location.host +
+											'/calculate_vocation_duration/' +
+											startDate + '%20' + startTime + '/' +
+											endDate + '%20' + endTime;
+
+		if (startDateUnix <= endDateUnix) {
+
+			$.getJSON(autototalDaysUrl).done(function(res) {
+				$totalDays.val(res.days);
+			}).fail(function() {
+				alert(MESSAGE.DateRangeError);
+			});
+
+		} else {
+			$totalDays.val('');
+			alert(MESSAGE.DateRangeError);
+		}
+
+	}
+
 	$(document).ready(function() {
 		var $popup = $('.popup'),
 			$selectedWrapper = $('.selected-approver'),
+			startDate,
+			endDate,
+			startTime,
+			endTime,
 			uidArray = [];
 
 		function hasUid(uid) {
@@ -162,6 +198,12 @@ var message = {
 			$userItem.remove();
 		});
 
+	});
+
+	// auto totalDays
+	autoTotalDays();
+	$('.start-date, .end-date, .start-time, .end-time').on('input propertychange', function() {
+		autoTotalDays();
 	});
 
 })(jQuery);
