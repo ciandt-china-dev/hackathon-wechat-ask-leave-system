@@ -23,9 +23,26 @@ function ciandt_wechat_vacation_menu() {
     'page callback' => 'ciandt_wechat_vocation_callback',
     'access arguments' => array('access content'),
   );
+  
+  $items['calculate_days'] = array(
+    'page callback' => 'calculate_days_api',
+    'page arguments' => array(1,2),
+    'access callback' => TRUE,
+  );
 
   return $items;
 }
+
+/**
+ * Function.
+ */
+function calculate_days_api($starttime,$endtime){
+    $data['starttime'] = $starttime;
+    $data['endtime'] = $endtime;
+    $result['days'] = calculate_days($data);
+    echo json_encode($result);
+}
+
 
 /**
  * Function.
@@ -60,7 +77,7 @@ function ciandt_wechat_vocation_get_leaves_by_user($userid) {
     }
   }
   if (!empty($string)) {
-    $string = t("检索到@userid信息如下:\n ", ['@userid' => $userid]) . $string;
+    $string = t("�?索到@userid信息如下:\n ", ['@userid' => $userid]) . $string;
   } else {
     $string = t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
   }
@@ -158,7 +175,7 @@ function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url
         array(
           //"title" => "Title",//标题
           "description" => $message,//描述
-          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份。
+          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份�??
           "picurl" => $picurl,
         ),
       ),
@@ -351,7 +368,57 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   }
 
   array_unshift($form['actions']["submit"]["#submit"], 'ciandt_wechat_vacation_form_vocation_node_form_submit');
-}
+  
+  //Gets the content of the node
+  if(arg(1)>0){
+    $node = node_load(arg(1));
+    $user_info = user_load($node->field_approver[LANGUAGE_NONE][0]['target_id']);
+    $user_info = $options[$user_info->name];
+    $form['userinfo_userid'] = array(
+      '#type' => 'hidden',
+      '#value' => $user_info['userid'],
+    );
+    $form['userinfo_avatar'] = array(
+      '#type' => 'hidden',
+      '#value' => $user_info['avatar'],
+    );
+    $form['userinfo_name'] = array(
+      '#type' => 'hidden',
+      '#value' => $user_info['name'],
+    );    
+    $field_type_of_leave = $node->field_type_of_leave[LANGUAGE_NONE][0]['value'];
+    $starttime = $node->field_leave_duration[LANGUAGE_NONE][0]['value'];
+    $endtime = $node->field_leave_duration[LANGUAGE_NONE][0]['value2'];
+    $field_total_days = $node->field_total_days[LANGUAGE_NONE][0]['value'];
+    $field_comment = $node->field_comment[LANGUAGE_NONE][0]['value'];
+
+    $form['field_type_of_leave'][LANGUAGE_NONE]['#default_value'] = $field_type_of_leave;
+    $form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value'] = $starttime;
+    $form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value2'] = $endtime;
+    $form['field_total_days'][LANGUAGE_NONE][0]['value']['#default_value'] = $field_total_days;
+    $form['field_comment'][LANGUAGE_NONE][0]['value']['#default_value'] = $field_comment;
+  }
+    
+  }
+
+
+/**
+ *  Function to calculate the number of days
+ *  @param array();
+ */
+function calculate_days($data){
+    $starttime = $data['starttime'];
+    $endtime = $data['endtime'];
+    $starttime = strtotime($starttime);
+    $endtime = strtotime($endtime);
+    $mod = ($endtime-$starttime)%86400; 
+    if($mod>0 && $mod<=14400){
+        $days = intval(floor(($endtime-$starttime)/86400))+0.5;
+    }elseif($mod>14400){
+        $days = intval(floor(($endtime-$starttime)/86400))+1;
+    }
+    return $days;
+} 
 
 /**
  * Submit vocation.
@@ -361,6 +428,14 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
  */
 function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_state) {
   $approve_user_id = filter_input(INPUT_POST, 'approve_user_id');
+  
+  //half a day as a unit
+  $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
+  $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+  $days = calculate_days($data);
+  $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $days;
+  
+      
   $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_id];
 
   $approve_user = user_load_by_mail($full_user_info['email']);
@@ -388,6 +463,12 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
     $approve_user = user_save($approve_user, $edit);
   }
   $form_state['values']['field_approver'][LANGUAGE_NONE][0]['target_id'] = $approve_user->uid;
+  
+  //fix node
+  if(arg(1)>0){
+    $form_state['values']['nid'] = arg(1);
+    $form_state['values']['vid'] = arg(1);
+  }  
 }
 
 /**
@@ -465,7 +546,7 @@ function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl
       "articles" => array(
         array(
           "description" => $message,//描述
-          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份。
+          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份�??
           "picurl" => $picurl,
         ),
       ),
