@@ -24,8 +24,8 @@ function ciandt_wechat_vacation_menu() {
     'access arguments' => array('access content'),
   );
   
-  $items['calculate_days'] = array(
-    'page callback' => 'calculate_days_api',
+  $items['calculate_vocation_duration'] = array(
+    'page callback' => 'ciandt_wechat_calculate_duration_api',
     'page arguments' => array(1,2),
     'access callback' => TRUE,
   );
@@ -36,10 +36,10 @@ function ciandt_wechat_vacation_menu() {
 /**
  * Function.
  */
-function calculate_days_api($starttime,$endtime){
+function ciandt_wechat_calculate_duration_api($starttime,$endtime){
     $data['starttime'] = $starttime;
     $data['endtime'] = $endtime;
-    $result['days'] = calculate_days($data);
+    $result['days'] = ciandt_wechat_vocation_calculate_duration($data);
     echo json_encode($result);
 }
 
@@ -406,7 +406,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
  *  Function to calculate the number of days
  *  @param array();
  */
-function calculate_days($data){
+function ciandt_wechat_vocation_calculate_duration($data){
     $starttime = $data['starttime'];
     $endtime = $data['endtime'];
     $starttime = strtotime($starttime);
@@ -432,7 +432,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   //half a day as a unit
   $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
   $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
-  $days = calculate_days($data);
+  $days = ciandt_wechat_vocation_calculate_duration($data);
   $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $days;
   
       
