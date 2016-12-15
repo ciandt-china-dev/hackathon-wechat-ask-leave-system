@@ -83,11 +83,17 @@ var message = {
 	$(document).ready(function() {
 		var $popup = $('.popup'),
 			$selectedWrapper = $('.selected-approver'),
+			$approver = $('input[name="approve_user_id"]'),
 			startDate,
 			endDate,
 			startTime,
 			endTime,
 			uidArray = [];
+
+		// initial uidArray
+		if ($approver.val() != '') {
+			uidArray[0] = $approver.val();
+		}
 
 		function hasUid(uid) {
 			var len = uidArray.length,
@@ -118,7 +124,6 @@ var message = {
 			var $typeOfLeave = $('#edit-field-type-of-leave-und'),
 				$leaveDuration = $('.custom-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
-				$approver = $('input[name="approve_user_id"]'),
 				startDate = $('.start-date').val(),
 				endDate = $('.end-date').val(),
 				startTime = $('.start-time').val(),
