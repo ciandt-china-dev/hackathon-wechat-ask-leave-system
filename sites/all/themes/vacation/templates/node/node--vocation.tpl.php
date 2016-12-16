@@ -173,10 +173,12 @@ endif;
           <?php print render($content['field_vocation_status']);?>
         </div>
       <?php endif; ?>
-      <?php if(($field_vocation_status[0]['value']=='pending' || $field_vocation_status[0]['value']=='rejected') && $user->uid==$node->uid):?>
-        <div class="item">
-            <a href='/vacation/<?php print $node->nid; ?>/edit'>编辑</a>
-        </div>
+      <?php if(isset($field_vocation_status[0])):?>
+        <?php if(($field_vocation_status[0]['value']=='pending' || $field_vocation_status[0]['value']=='rejected') && $user->uid==$node->uid):?>
+          <div class="item">
+            <a  class="form-submit form-submit-edit" href="/vacation/<?php print $node->nid; ?>/edit">编辑</a>
+          </div>
+        <?php endif;?>
       <?php endif;?>
     </div>
   </div>
