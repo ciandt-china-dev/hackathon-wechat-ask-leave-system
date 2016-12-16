@@ -92,6 +92,14 @@ select::-ms-expand {
   padding: 0 20px;
 }
 
+form .field-multiple-table th {
+  border: none;
+}
+
+form .draggable {
+  display: none;
+}
+
 #header {
   text-align: center;
   position: absolute;
@@ -181,6 +189,12 @@ label {
 
 .form-submit:focus {
   outline: none;
+}
+
+.form-submit-edit{
+  display:block;
+  text-align:center;
+  box-sizing: border-box;
 }
 
 .form-actions {
