@@ -55,9 +55,7 @@ var message = {
 				startDate = $('.start-date').val(),
 				endDate = $('.end-date').val(),
 				startTime = $('.start-time').val(),
-				endTime = $('.end-time').val(),
-				startDateUnix = parseInt(new Date(startDate.replace(/-/g,'/'))/1000),
-				endDateUnix = parseInt(new Date(endDate.replace(/-/g,'/'))/1000);
+				endTime = $('.end-time').val();
 
 		autototalDaysUrl = location.protocol + '//' +
 											location.host +
@@ -65,17 +63,17 @@ var message = {
 											startDate + '%20' + startTime + '/' +
 											endDate + '%20' + endTime;
 
-		if (startDateUnix <= endDateUnix) {
+		if ((startDate > endDate) || (startDate == endDate && startTime > endTime)) {
 
+			$totalDays.val('');
+			message.alert(MESSAGE.DateRangeError);
+
+		} else {
 			$.getJSON(autototalDaysUrl).done(function(res) {
 				$totalDays.val(res.days);
 			}).fail(function() {
-				alert(MESSAGE.DateRangeError);
+				message.alert(MESSAGE.DateRangeError);
 			});
-
-		} else {
-			$totalDays.val('');
-			alert(MESSAGE.DateRangeError);
 		}
 
 	}
