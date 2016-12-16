@@ -1,6 +1,13 @@
 <?php $starttime = strtotime($form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value']);?>
 <?php $endtime = strtotime($form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value2']);?>
 <?php unset($form["actions"]["preview"]);?>
+<?php unset($form["field_approver"][LANGUAGE_NONE]["add_more"]);?>
+<?php unset($form["field_approver_vocation_status"]);?>
+<?php
+if (empty($form["nid"]['value'])) {
+  unset($form["field_reject_reason"]);
+}
+?>
 <?php //hide($form["actions"]);?>
 
 <?php $form["actions"]["submit"]["#value"] = t("Submit", array(), array('context' => 'vocation submit'));?>
@@ -22,24 +29,25 @@
 <?php print render($form["field_total_days"]);?>
 <?php print render($form["field_comment"]);?>
 <?php print render($form["field_approver"]);?>
-
 <div class="approver-wrapper">
 	<div class="selected-approver">
-            <ul class="selected-approver-field">
-                <?php if(!empty($form['userinfo_userid'])):?>
-                <li class="user-item" data-uid="<?php print $form['userinfo_userid']['#value'];?>">
-                    <span class="image">
-                        <img src="<?php print $form['userinfo_avatar']['#value'];?>">
-                    </span>
-                    <span class="name"><?php print $form['userinfo_name']['#value'];?></span>
-                    <div class="remove-approver">-</div>
-                </li>
-                <?php endif;?>
-            </ul>
+		<ul class="selected-approver-field">
+			<?php if(!empty($form['user_info_arr']['#value'])):?>
+				<?php foreach (unserialize($form['user_info_arr']['#value']) as $user_info) {?>
+					<li class="user-item" data-uid="<?php print $user_info['user_info_user_id'];?>">
+						<span class="image">
+							<img src="<?php print $user_info['user_info_avatar'];?>">
+						</span>
+						<span class="name"><?php print $user_info['user_info_name'];?></span>
+						<div class="remove-approver">-</div>
+					</li>
+				<?php };?>
+			<?php endif;?>
+		</ul>
 	</div>
 	<div class="add-approver"></div>
 </div>
 <?php print render($form["actions"]);?>
-<input name="approve_user_id" type="hidden" value="<?php print $form['userinfo_userid']['#value'];?>" />
+<input name="approve_user_id" type="hidden" value="<?php if(!empty($form['userinfo_userid'])){print $form['userinfo_userid']['#value'];}?>" />
 <?php print drupal_render_children($form);?>
 
