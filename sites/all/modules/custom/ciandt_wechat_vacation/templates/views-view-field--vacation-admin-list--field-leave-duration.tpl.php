@@ -22,8 +22,8 @@
  */
 ?>
 <?php
-    $starttime = $row->_field_data['nid']['entity']->field_leave_duration['und'][0]['value'];
-    $endtime = $row->_field_data['nid']['entity']->field_leave_duration['und'][0]['value2'];
+    $starttime = $row->_field_data['nid']['entity']->field_leave_duration[LANGUAGE_NONE][0]['value'];
+    $endtime = $row->_field_data['nid']['entity']->field_leave_duration[LANGUAGE_NONE][0]['value2'];
     $starttime = strtotime($starttime);
     $endtime = strtotime($endtime);
     print date('Y-m-d',$starttime)." ".t('from')." ".date('Y-m-d',$endtime);   
