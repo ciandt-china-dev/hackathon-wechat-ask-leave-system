@@ -510,9 +510,9 @@ function _ciandt_wechat_vacation_approval_buttons($form, &$form_state) {
     $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
 
     // Validate User.
-    //if (empty($_SESSION['weixin']['user_id']) || $_SESSION['weixin']['user_id'] != $weixin_userid) {
-    //  return FALSE;
-    //}
+    if (empty($_SESSION['weixin']['user_id']) || $_SESSION['weixin']['user_id'] != $weixin_userid) {
+      return FALSE;
+    }
     // Validate Status.
     if ('pending' != $status) {
       return FALSE;
