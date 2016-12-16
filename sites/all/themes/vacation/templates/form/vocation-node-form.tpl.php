@@ -1,24 +1,13 @@
 <?php $starttime = strtotime($form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value']);?>
 <?php $endtime = strtotime($form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value2']);?>
 <?php unset($form["actions"]["preview"]);?>
-<?php unset($form["field_approver"]["und"]["add_more"]);?>
+<?php unset($form["field_approver"][LANGUAGE_NONE]["add_more"]);?>
 <?php unset($form["field_approver_vocation_status"]);?>
 <?php
 if (empty($form["nid"]['value'])) {
   unset($form["field_reject_reason"]);
 }
 ?>
-
-<?php unset($form["actions"]["preview"]);?>
-<?php unset($form["field_approver"]["und"]["add_more"]);?>
-<?php unset($form["field_approver_vocation_status"]);?>
-<?php
-if (empty($form["nid"]['value'])) {
-  unset($form["field_reject_reason"]);
-}
-?>
-
-<?php unset($form["actions"]["preview"]);?>
 <?php //hide($form["actions"]);?>
 
 <?php $form["actions"]["submit"]["#value"] = t("Submit", array(), array('context' => 'vocation submit'));?>
