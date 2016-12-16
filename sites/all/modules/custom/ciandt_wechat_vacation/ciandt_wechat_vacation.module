@@ -372,52 +372,65 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   //Gets the content of the node
   if(arg(1)>0){
     $node = node_load(arg(1));
-    $user_info = user_load($node->field_approver[LANGUAGE_NONE][0]['target_id']);
-    $user_info = $options[$user_info->name];
+    $approver_all = $node->field_approver[LANGUAGE_NONE];
+    $user_info_arr = array();
+    $userinfo_userid = '';
+    if(count($approver_all) != 0) {
+      foreach ($approver_all as $key => $approver) {
+        $field_target_id = $node->field_approver[LANGUAGE_NONE][$key]['target_id'];
+        $user_info = user_load($field_target_id);
+        if (array_key_exists($user_info->name, $options)) {
+          $user_info = $options[$user_info->name];
+          //debug($user_info);
+          if (!empty($user_info)) {
+            $user_info_arr[$key]['user_info_user_id'] = $user_info['userid'];
+            $user_info_arr[$key]['user_info_avatar'] = $user_info['avatar'];
+            $user_info_arr[$key]['user_info_name'] = $user_info['name'];
+            $userinfo_userid .= $user_info['name'] . ',';
+          }
+        }
+      };
+    }
     $form['userinfo_userid'] = array(
       '#type' => 'hidden',
-      '#value' => $user_info['userid'],
+      '#value' => rtrim($userinfo_userid, ","),
     );
-    $form['userinfo_avatar'] = array(
+    $form['user_info_arr'] = array(
       '#type' => 'hidden',
-      '#value' => $user_info['avatar'],
+      '#value' => serialize($user_info_arr),
     );
-    $form['userinfo_name'] = array(
-      '#type' => 'hidden',
-      '#value' => $user_info['name'],
-    );    
     $field_type_of_leave = $node->field_type_of_leave[LANGUAGE_NONE][0]['value'];
     $starttime = $node->field_leave_duration[LANGUAGE_NONE][0]['value'];
     $endtime = $node->field_leave_duration[LANGUAGE_NONE][0]['value2'];
     $field_total_days = $node->field_total_days[LANGUAGE_NONE][0]['value'];
-    $field_comment = $node->field_comment[LANGUAGE_NONE][0]['value'];
-
+    $field_comment = '';
+    if (count($node->field_comment) != 0) {
+      $field_comment = $node->field_comment[LANGUAGE_NONE][0]['value'];
+    }
     $form['field_type_of_leave'][LANGUAGE_NONE]['#default_value'] = $field_type_of_leave;
     $form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value'] = $starttime;
     $form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value2'] = $endtime;
     $form['field_total_days'][LANGUAGE_NONE][0]['value']['#default_value'] = $field_total_days;
     $form['field_comment'][LANGUAGE_NONE][0]['value']['#default_value'] = $field_comment;
   }
-    
-  }
-
+}
 
 /**
  *  Function to calculate the number of days
  *  @param array();
  */
 function ciandt_wechat_vocation_calculate_duration($data){
-    $starttime = $data['starttime'];
-    $endtime = $data['endtime'];
-    $starttime = strtotime($starttime);
-    $endtime = strtotime($endtime);
-    $mod = ($endtime-$starttime)%86400; 
-    if($mod>0 && $mod<=14400){
-        $days = intval(floor(($endtime-$starttime)/86400))+0.5;
-    }elseif($mod>14400){
-        $days = intval(floor(($endtime-$starttime)/86400))+1;
-    }
-    return $days;
+  $starttime = $data['starttime'];
+  $endtime = $data['endtime'];
+  $starttime = strtotime($starttime);
+  $endtime = strtotime($endtime);
+  $mod = ($endtime-$starttime)%86400;
+  if($mod>0 && $mod<=14400){
+    $days = intval(floor(($endtime-$starttime)/86400))+0.5;
+  }elseif($mod>14400){
+    $days = intval(floor(($endtime-$starttime)/86400))+1;
+  }
+  return $days;
 } 
 
 /**
