@@ -442,16 +442,14 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
  */
 function ciandt_wechat_vocation_calculate_duration($data){
   if(!empty($data['starttime']) && !empty($data['endtime'])){  
-        $starttime = $data['starttime'];
-        $endtime = $data['endtime'];
-        $starttime = strtotime($starttime);
-        $endtime = strtotime($endtime);
+        $starttime = strtotime($data['starttime']);
+        $endtime = strtotime($data['endtime']);
         
         //Open holidays removed
-        $holiday_nid = variable_get('holiday_nid');
-        $content = db_select('field_data_field_holidays', 'f')
+        $holiday_nid = intval(variable_get('holiday_nid'));
+        $content = db_select('field_data_field_holidays','f')
         ->fields('f',array('field_holidays_cid'))
-        ->condition('entity_id', $holiday_nid,'=')
+        ->condition('entity_id',$holiday_nid,'=')
         ->execute()
         ->fetchAssoc();
         
@@ -462,10 +460,10 @@ function ciandt_wechat_vocation_calculate_duration($data){
           $arr = array();
           $result = db_select('availability_calendar_availability', 'n')
           ->fields('n',array('date'))
-          ->condition('cid', $content['field_holidays_cid'],'=')
-          ->condition('sid', 2,'=')
-          ->condition('date', $starttime_ymd,'>=')
-          ->condition('date', $endtime_ymd,'<=')
+          ->condition('cid',$content['field_holidays_cid'],'=')
+          ->condition('sid',2,'=')
+          ->condition('date',$starttime_ymd,'>=')
+          ->condition('date',$endtime_ymd,'<=')
           ->execute();
           while($record = $result->fetchAssoc()) {
             $arr[$num] = $record['date'];
