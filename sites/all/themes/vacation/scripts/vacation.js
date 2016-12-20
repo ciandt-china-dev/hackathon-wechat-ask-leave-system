@@ -82,10 +82,6 @@ var message = {
 		var $popup = $('.popup'),
 			$selectedWrapper = $('.selected-approver'),
 			$approver = $('input[name="approve_user_id"]'),
-			startDate,
-			endDate,
-			startTime,
-			endTime,
 			uidArray = [];
 
 		// initial uidArray
