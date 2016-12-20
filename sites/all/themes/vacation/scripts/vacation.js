@@ -38,6 +38,7 @@ var message = {
 		LeaveDurationRequired: Drupal.t('Please input Leave Duration'),
 		TotalDaysRequired: Drupal.t('Please input Total Days'),
 		ApproverRequired: Drupal.t('Please add an Approver'),
+                ApproverError: Drupal.t('Please select two or more Approver'),
 		TotalDaysError: Drupal.t('Please input a valid number'),
 		DateRangeError: Drupal.t('Please enter the valid date and time')
 	};
@@ -83,11 +84,11 @@ var message = {
 			$selectedWrapper = $('.selected-approver'),
 			$approver = $('input[name="approve_user_id"]'),
 			uidArray = [];
-
-		// initial uidArray
-		if ($approver.val() != '') {
-			uidArray[0] = $approver.val();
-		}
+                        
+                        // initial uidArray
+                        if($('input[name="approve_user_id"]').val()!=''){
+                            uidArray = $('input[name="approve_user_id"]').val().split(",");
+                        }
 
 		function hasUid(uid) {
 			var len = uidArray.length,
@@ -154,6 +155,13 @@ var message = {
 			}
 
 			$approver.val(uidArray.join(','));
+                        
+                        if($totalDays.val()>3){
+                            if(uidArray.length<2){
+                                message.alert(MESSAGE.ApproverError);
+                                return false;
+                            }                            
+                        }
 
 			if ($approver.val() == '') {
 				message.alert(MESSAGE.ApproverRequired);
