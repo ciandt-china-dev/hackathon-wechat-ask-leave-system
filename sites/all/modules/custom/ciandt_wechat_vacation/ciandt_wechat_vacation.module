@@ -178,7 +178,14 @@ function ciandt_wechat_vacation_holiday_nid_settings($form, &$form_state){
       '#default_value' => variable_get('holiday_nid'),
       '#description' => t('Set the china official holiday nid.'),
     );
+    $form['#validate'][] = 'holiday_nid_settings_form_validate';
     return system_settings_form($form);
+}
+
+function holiday_nid_settings_form_validate(&$form,&$form_state){
+   if(!is_int($form['holiday_nid']['#value'])){     
+       form_set_error('holiday_nid',t('Must be an integer'));
+   }
 }
 
 /**
@@ -401,13 +408,13 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
         $field_target_id = $node->field_approver[LANGUAGE_NONE][$key]['target_id'];
         $user_info = user_load($field_target_id);
         if (array_key_exists($user_info->name, $options)) {
-          $user_info = $options[$user_info->name];
+          $user_infomation = $options[$user_info->name];
           //debug($user_info);
           if (!empty($user_info)) {
-            $user_info_arr[$key]['user_info_user_id'] = $user_info['userid'];
-            $user_info_arr[$key]['user_info_avatar'] = $user_info['avatar'];
-            $user_info_arr[$key]['user_info_name'] = $user_info['name'];
-            $userinfo_userid .= $user_info['name'] . ',';
+            $user_info_arr[$key]['user_info_user_id'] = $user_infomation['userid'];
+            $user_info_arr[$key]['user_info_avatar'] = $user_infomation['avatar'];
+            $user_info_arr[$key]['user_info_name'] = $user_infomation['name'];
+            $userinfo_userid .= $user_info->name . ',';
           }
         }
       };
