@@ -48,10 +48,46 @@ var message = {
 		return dateArray[1] + '/' + dateArray[2] + '/' + dateArray[0];
 	}
 
+	// auto totalDays
+	function autoTotalDays() {
+		var $totalDays = $('#edit-field-total-days-und-0-value'),
+				autototalDaysUrl,
+				startDate = $('.start-date').val(),
+				endDate = $('.end-date').val(),
+				startTime = $('.start-time').val(),
+				endTime = $('.end-time').val();
+
+		autototalDaysUrl = location.protocol + '//' +
+											location.host +
+											'/calculate_vocation_duration/' +
+											startDate + '%20' + startTime + '/' +
+											endDate + '%20' + endTime;
+
+		if ((startDate > endDate) || (startDate == endDate && startTime > endTime)) {
+
+			$totalDays.val('');
+			message.alert(MESSAGE.DateRangeError);
+
+		} else {
+			$.getJSON(autototalDaysUrl).done(function(res) {
+				$totalDays.val(res.days);
+			}).fail(function() {
+				message.alert(MESSAGE.DateRangeError);
+			});
+		}
+
+	}
+
 	$(document).ready(function() {
 		var $popup = $('.popup'),
 			$selectedWrapper = $('.selected-approver'),
+			$approver = $('input[name="approve_user_id"]'),
 			uidArray = [];
+
+		// initial uidArray
+		if ($approver.val() != '') {
+			uidArray[0] = $approver.val();
+		}
 
 		function hasUid(uid) {
 			var len = uidArray.length,
@@ -82,7 +118,6 @@ var message = {
 			var $typeOfLeave = $('#edit-field-type-of-leave-und'),
 				$leaveDuration = $('.custom-leave-duration').find('input'),
 				$totalDays = $('#edit-field-total-days-und-0-value'),
-				$approver = $('input[name="approve_user_id"]'),
 				startDate = $('.start-date').val(),
 				endDate = $('.end-date').val(),
 				startTime = $('.start-time').val(),
@@ -162,6 +197,12 @@ var message = {
 			$userItem.remove();
 		});
 
+	});
+
+	// auto totalDays
+	autoTotalDays();
+	$('.start-date, .end-date, .start-time, .end-time').on('input propertychange', function() {
+		autoTotalDays();
 	});
 
 })(jQuery);
