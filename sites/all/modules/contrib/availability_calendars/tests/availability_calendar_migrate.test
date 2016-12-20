@@ -1,0 +1,49 @@
+<?php
+/**
+ * @file
+ * Test integration with Migrate.
+ */
+
+/**
+ * Test migration of availability data.
+ */
+class AvailabilityCalendarMigrateUnitTest extends DrupalWebTestCase {
+  /**
+   * Describe this test class.
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Availability calendar migration',
+      'description' => 'Test importation of availability data',
+      'group' => 'Availability Calendar',
+    );
+  }
+
+  /**
+   * Set up a Drupal site for running functional and integration tests.
+   */
+  protected function setUp() {
+    parent::setUp('availability_calendar_migrate');
+  }
+
+  /**
+   * Verify that availability data is correctly imported.
+   */
+  public function testAvailabilityCalendarImport() {
+    $migration = Migration::getInstance('ExampleAvailabilityCalendar');
+    $result = $migration->processImport();
+    $this->assertEqual($result, Migration::RESULT_COMPLETED,
+      t('Import returned RESULT_COMPLETED'));
+
+    $calendar_entities_number = 0;
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'availability_calendar_calendar');
+
+    $result = $query->execute();
+    if (!empty($result['availability_calendar_calendar'])) {
+      $calendar_entities_number = count($result['availability_calendar_calendar']);
+    }
+    $this->assertEqual($calendar_entities_number, 2, t('Two Availability Calendar entities created'));
+  }
+
+}
