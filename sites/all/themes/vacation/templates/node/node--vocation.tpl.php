@@ -80,9 +80,23 @@
  * @ingroup themeable
  */
 global $user;
+$edit = true;
+foreach($field_approver_vocation_status as $key => $v){
+  $target_id = get_approver_vocation_status('pending', 'vocation_status');
+  if($v['target_id']!=$target_id){
+      if(isset($approver_vocation_status)){
+          $approver_vocation_status .= "<br/>".$field_approver[$key]['entity']->name."(".t($v['entity']->name).")";
+      }else{
+          $approver_vocation_status = $field_approver[$key]['entity']->name."(".t($v['entity']->name).")";
+      } 
+      if($v['entity']->name=='approved'){
+          $edit = false;
+      }
+  }
+}
 if (!empty($field_leave_duration[0]["value"]) && !empty($field_leave_duration[0]["value2"])):
-$start_date = $field_leave_duration[0]["value"];
-$end_date = $field_leave_duration[0]["value2"];
+$start_date = date("Y-m-d H:i:s",strtotime($field_leave_duration[0]["value"])+8*3600);
+$end_date = date("Y-m-d H:i:s",strtotime($field_leave_duration[0]["value2"])+8*3600);
 $start_date_timestamp = strtotime($field_leave_duration[0]["value"]);
 $end_date_timestamp = strtotime($field_leave_duration[0]["value2"]);
 $start_date_set = array(
@@ -168,18 +182,22 @@ endif;
           <?php print render($content['field_approver']);?>
         </div>
       <?php endif; ?>
+      <?php if(!empty($approver_vocation_status)): ?>
+        <div class="item">
+            <strong><?php print t("Approved:");?></strong><br/>
+            <?php print $approver_vocation_status;?>
+        </div>
+      <?php endif; ?>
 	  <?php if(!empty($content['field_vocation_status'])): ?>
         <div class="item">
           <?php print render($content['field_vocation_status']);?>
         </div>
       <?php endif; ?>
-      <?php if(isset($field_vocation_status[0])):?>
-        <?php if(($field_vocation_status[0]['value']=='pending' || $field_vocation_status[0]['value']=='rejected') && $user->uid==$node->uid):?>
+        <?php if($edit && $user->uid==$node->uid):?>
           <div class="item">
             <a  class="form-submit form-submit-edit" href="/vacation/<?php print $node->nid; ?>/edit">编辑</a>
           </div>
         <?php endif;?>
-      <?php endif;?>
     </div>
   </div>
 
