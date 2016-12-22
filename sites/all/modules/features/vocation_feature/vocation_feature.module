@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Vocation feature feature.
+ */
+
+include_once 'vocation_feature.features.inc';

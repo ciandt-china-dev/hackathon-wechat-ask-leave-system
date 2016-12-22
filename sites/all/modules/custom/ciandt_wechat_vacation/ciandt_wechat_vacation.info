@@ -1,0 +1,5 @@
+name = Ciandt Wechat vacation
+description = "Provides vacation system which integrated with Wechat enterprise account"
+package = Custom
+core = 7.x
+configure = admin/config/vacation/enterprise_wechat

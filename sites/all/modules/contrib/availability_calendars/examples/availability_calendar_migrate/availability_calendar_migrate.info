@@ -1,0 +1,19 @@
+name = Availability Calendar Migration Example
+description = Example of migrating with the Availability Calendar Module
+core = 7.x
+package = Migrate Examples
+dependencies[] = availability_calendar
+dependencies[] = features
+dependencies[] = migrate
+features[features_api][] = api:2
+features[field_base][] = field_availability
+features[field_instance][] = node-availability_calendar_migrate-field_availability
+features[node][] = availability_calendar_migrate
+files[] = availability_calendar_migrate.migrate.inc
+
+; Information added by Drupal.org packaging script on 2016-03-20
+version = "7.x-5.6"
+core = "7.x"
+project = "availability_calendars"
+datestamp = "1458490755"
+

@@ -1,0 +1,760 @@
+<?php
+
+/**
+ * @file
+ * Ciandt_wechat_vacation module.
+ */
+define('DRUPAL_APPROVER_RID', 4);
+/**
+ * Implements hook_menu().
+ */
+function ciandt_wechat_vacation_menu() {
+  $items = array();
+  $items['admin/config/vacation/enterprise-wechat'] = array(
+    'access arguments' => array('administer site configuration'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ciandt_wechat_vacation_enterprise_wechat_settings'),
+    'title' => 'Enterprise Wechat Settings',
+    'description' => 'Set access keys and other necessary configurations for enterprise wechat.',
+  );
+
+  $items['wechat_callback'] = array(
+    'title' => 'CI&T vocation management system',
+    'page callback' => 'ciandt_wechat_vocation_callback',
+    'access arguments' => array('access content'),
+  );
+  
+  $items['calculate_vocation_duration'] = array(
+    'page callback' => 'ciandt_wechat_calculate_duration_api',
+    'page arguments' => array(1,2),
+    'access callback' => TRUE,
+  );
+  
+  $items['admin/config/vacation/holiday-nid'] = array(
+    'access arguments' => array('administer site configuration'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ciandt_wechat_vacation_holiday_nid_settings'),
+    'title' => 'China Official Holiday Nid Settings',
+    'description' => 'Set china official holiday nid.',
+  );
+
+  return $items;
+}
+
+/**
+ * Function.
+ */
+function ciandt_wechat_calculate_duration_api($starttime,$endtime){
+    $data['starttime'] = $starttime;
+    $data['endtime'] = $endtime;
+    $result['days'] = ciandt_wechat_vocation_calculate_duration($data);
+    echo json_encode($result);
+}
+
+
+/**
+ * Function.
+ */
+function ciandt_wechat_vocation_callback() {
+  $we_obj = _ciandt_wechat_vacation_init_obj();
+  $we_obj->valid();
+  $rev = $we_obj->getRev();
+  $userid = $rev->getRevContent();
+  if (!empty($userid)) {
+    $content = ciandt_wechat_vocation_get_leaves_by_user($userid);
+    $we_obj->text($content)->reply();
+  }
+}
+
+function ciandt_wechat_vocation_get_leaves_by_user($userid) {
+  $data= views_get_view_result('vacation_approved_of_one_person_', NULL, [$userid]);
+
+  $string = '';
+  foreach ($data as $d) {
+    if (isset($d->field_field_type_of_leave) && isset($d->field_field_total_days)) {
+      $type = $d->field_field_type_of_leave[0]['rendered']['#markup'];
+      $day = $d->field_field_total_days[0]['rendered']['#markup'];
+      $duration = $d->field_field_leave_duration[0]['raw'];
+      $result = [
+        'duration' => t('@from To  @to', ['@from' => $duration['value'], '@to' => $duration['value2']]),
+        'days' => t('@day Day', ['@day' => $day]),
+        'type' => $type,
+      ];
+
+      $string .= $result['duration'] . "\n" . $result['type'] . " " . $result['days'] . " " . $userid .  "\n\n";
+    }
+  }
+  if (!empty($string)) {
+    $string = t("检索到@userid信息如下:\n ", ['@userid' => $userid]) . $string;
+  } else {
+    $string = t('Not Found The  Leave Of @userid', ['@userid' => $userid]);
+  }
+  return $string;
+}
+
+/**
+ * Menu callback to configure module settings.
+ */
+function ciandt_wechat_vacation_enterprise_wechat_settings($form, &$form_state) {
+  $form['enterprise_wechat_corp_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('CorpID'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('enterprise_wechat_corp_id'),
+    '#description' => t('Set the enterprise wechat CorpID.'),
+  );
+
+  $form['ciandt_wechat_vacation_agentid'] = array(
+    '#type' => 'textfield',
+    '#title' => t('AgentID'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('ciandt_wechat_vacation_agentid'),
+    '#description' => t('Set the enterprise wechat agentid.'),
+  );
+
+  $form['enterprise_wechat_secret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Secret'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('enterprise_wechat_secret'),
+    '#description' => t('Set the enterprise wechat Secret.'),
+  );
+
+  $form['enterprise_wechat_dev_mode_token'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Dev mode Token'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('enterprise_wechat_dev_mode_token'),
+    '#description' => t('Set the token for dev mode.'),
+  );
+
+  $form['enterprise_wechat_dev_mode_encoding_aes_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Dev mode EncodingAESKey'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
+    '#description' => t('Set the EncodingAESKey for dev mode.'),
+  );
+
+  $form['vacation_approver_wechat_tag_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Approval Wechat Tag Name'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('vacation_approver_wechat_tag_name'),
+    '#description' => t('Set the Wechat tag name for approvers.'),
+  );
+  $form['vacation_approver_wechat_staff_password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Stuff Password'),
+    '#size' => 60,
+    '#maxlength' => 128,
+    '#required' => TRUE,
+    '#default_value' => variable_get('vacation_approver_wechat_staff_password', 'cit2016'),
+    '#description' => t('Set the stuff password of Weixin'),
+  );
+
+  return system_settings_form($form);
+}
+
+function ciandt_wechat_vacation_holiday_nid_settings($form, &$form_state){
+    $form['holiday_nid'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Holiday Nid'),
+      '#size' => 60,
+      '#maxlength' => 128,
+      '#required' => TRUE,
+      '#default_value' => variable_get('holiday_nid'),
+      '#description' => t('Set the china official holiday nid.'),
+    );
+    $form['#validate'][] = 'holiday_nid_settings_form_validate';
+    return system_settings_form($form);
+}
+
+function holiday_nid_settings_form_validate(&$form,&$form_state){
+    $num = intval($form['holiday_nid']['#value']);
+    $num = strval($num);
+   if($num!=$form['holiday_nid']['#value']){     
+       form_set_error('holiday_nid',t('Must be an integer'));
+   }
+}
+
+/**
+ * Rules action for push notification.
+ */
+function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url, $picurl) {
+  // Get wechat uid/token_id by $target.
+  $wechat_uid = $target;
+  $data = array(
+    "touser" => $wechat_uid,
+    "agentid" => variable_get('ciandt_wechat_vacation_agentid'),//9
+    "msgtype" => 'news',
+    "news" => array(
+      "articles" => array(
+        array(
+          //"title" => "Title",//标题
+          "description" => $message,//描述
+          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份
+          "picurl" => $picurl,
+        ),
+      ),
+    ),
+  );
+  // Send message with wechat api.
+  $options = array(
+    'token' => '',
+    'encodingaeskey' => '',
+    
+  );
+  $wechat_object = _ciandt_wechat_vacation_init_obj();
+  $result = $wechat_object->sendMessage($data);
+
+  if ($result) {
+    drupal_set_message(t("vacation approve notification has been sent."));
+  }
+}
+
+/**
+ * Function to set Weixin API data.
+ */
+function _ciandt_wechat_vacation_init_obj() {
+  $we_obj = &drupal_static(__FUNCTION__);
+  if (!isset($we_obj)) {
+    module_load_include('php', 'ciandt_wechat_vacation', 'sdk/qywechat.class');
+    $options = array(
+      'token' => variable_get('enterprise_wechat_dev_mode_token'),
+      'appid' => variable_get('enterprise_wechat_corp_id'),
+      'appsecret' => variable_get('enterprise_wechat_secret'),
+      'encodingaeskey' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
+    );
+//    $options['token'] = 'wNmiTryqVuEJgBw';
+//    $options['encodingaeskey'] = '8cYGM2XvO2xMmQia2MS7a4d3NTaivrnHwF91RLwF8Vs';
+    $we_obj = new Wechat($options);
+  }
+  return $we_obj;
+}
+
+/**
+ * Function to get tag list of Weixin API.
+ */
+function _ciandt_wechat_vacation_get_tag_lists() {
+  $we_obj = _ciandt_wechat_vacation_init_obj();
+  $taglist = $we_obj->getTagList();
+  $tag_name = variable_get('vacation_approver_wechat_tag_name');
+  if (isset($taglist['taglist'])) {
+    foreach ($taglist['taglist'] as $v) {
+      if ($tag_name == $v['tagname']) {
+        $tagid = $v['tagid'];
+        // Get Tag Users.
+        $userlist = $we_obj->getTag($tagid);
+        $user_infos = [];
+        foreach ($userlist['userlist'] as $u) {
+          $info = $we_obj->getUserInfo($u['userid']);
+          $user_infos[$info['userid']] = [
+            'email' => $info['email'],
+            'avatar' => $info['avatar'] . '64',
+            'userid' => $info['userid'],
+            'name' => $info['name'],
+          ];
+        }
+        return $user_infos;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Function to authorize(Weixin API).
+ */
+function _ciandt_wechat_vacation_authorize() {
+  $drupal_get_path_alias = drupal_get_path_alias();
+  if (empty($_SESSION['weixin']['user_id'])) {
+    $code = isset($_GET['code']) ? $_GET['code'] : '';
+    if (empty($code)) {
+      // Get Code.
+      $we_obj = _ciandt_wechat_vacation_init_obj();
+      $callback = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+
+      $url = $we_obj->getOauthRedirect($callback);
+      drupal_goto($url);
+    }
+
+    // Get User id.
+    $we_obj = _ciandt_wechat_vacation_init_obj();
+    $user_id_arr = $we_obj->getUserId($code);
+    $user_id = $user_id_arr['UserId'];
+
+    $user_info = $we_obj->getUserInfo($user_id);
+    $_SESSION['weixin'] = [
+      'user_id' => $user_id,
+      'name' => $user_info['name'],
+      'email' => $user_info['email'],
+    ];
+    if (!user_load_by_name($user_id)) {
+      // Create user.
+      $password = variable_get('vacation_approver_wechat_staff_password', 'cit2016');
+      $fields = array(
+        'name' => $user_id,
+        'mail' => $user_info['email'],
+        'pass' => $password,
+        'status' => 1,
+        'init' => 'email address',
+        'roles' => array(
+          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+        ),
+        'field_weixin_name' => [],
+      );
+      $fields['field_weixin_name'][LANGUAGE_NONE][0]['value'] = $user_info['name'];
+      // The first parameter is left blank so a new user is created.
+      user_save('', $fields);
+    }
+  }
+  if (user_is_anonymous() && !empty($_SESSION['weixin']['user_id'])) {
+    global $user;
+    $user = user_load_by_name($_SESSION['weixin']['user_id']);
+    $login_array = array ('name' => $user->name);
+    user_login_finalize($login_array);
+    // Refresh page to avoid form outdated error.
+    drupal_goto($drupal_get_path_alias);
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ciandt_wechat_vacation_block_info() {
+  $blocks = array();
+  $blocks['weixin_authorize'] = array(
+    'info' => t('Weixin Authorize'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['vacation_approval_buttons'] = array(
+    'info' => t('Vacation Approval Buttons'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ciandt_wechat_vacation_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'weixin_authorize':
+      $block['content'] = _ciandt_wechat_vacation_authorize();
+      break;
+
+    case 'vacation_approval_buttons':
+      $block['content'] = drupal_get_form('_ciandt_wechat_vacation_approval_buttons');;
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @param string or int or object... $form
+ * @param string or int or object... $form_state
+ */
+function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_state) {
+  global $user;
+  if (user_is_anonymous()) {
+    _ciandt_wechat_vacation_authorize();
+  }
+  // Get approvers list.
+  $options = _ciandt_wechat_vacation_get_tag_lists();
+  // Get rid of current login user.
+  if (isset($user->name) && isset($options[$user->name])) {
+    unset($options[$user->name]);
+  }
+  $output = '<div class="popup"><div class="popup-top"><span class="close-btn">X</span></div><ul>';
+  foreach ($options as $key => $option) {
+    $image = '<img src="' . $option['avatar'] . '"/>';
+    $output .= '<li class="user-item" data-uid="' . $option['userid'] . '"><span class="image">' . $image . '</span><span class="name">' . $option['name'] . '</span></li>';
+  }
+  $output .= "</ul></div>";
+
+  if ($option) {
+    $form['approve_user_list'] = array(
+      '#title' => 'Approve Users List',
+      '#markup' => $output,
+    );
+    $form_state['storage']['approve_user_list'] = $options;
+  }
+  
+  $form["field_total_days"]['#disabled'] = 'true';
+
+  array_unshift($form['actions']["submit"]["#submit"], 'ciandt_wechat_vacation_form_vocation_node_form_submit');
+  
+  //Gets the content of the node
+  if(arg(1)>0){
+    $node = node_load(arg(1));
+    $approver_all = $node->field_approver[LANGUAGE_NONE];
+    $user_info_arr = array();
+    $userinfo_userid = '';
+    if(count($approver_all) != 0) {
+      foreach ($approver_all as $key => $approver) {
+        $field_target_id = $node->field_approver[LANGUAGE_NONE][$key]['target_id'];
+        $user_info = user_load($field_target_id);
+        if (array_key_exists($user_info->name, $options)) {
+          $user_infomation = $options[$user_info->name];
+          //debug($user_info);
+          if (!empty($user_info)) {
+            $user_info_arr[$key]['user_info_user_id'] = $user_infomation['userid'];
+            $user_info_arr[$key]['user_info_avatar'] = $user_infomation['avatar'];
+            $user_info_arr[$key]['user_info_name'] = $user_infomation['name'];
+            $userinfo_userid .= $user_info->name . ',';
+          }
+        }
+      };
+    }
+    $form['userinfo_userid'] = array(
+      '#type' => 'hidden',
+      '#value' => rtrim($userinfo_userid, ","),
+    );
+    $form['user_info_arr'] = array(
+      '#type' => 'hidden',
+      '#value' => serialize($user_info_arr),
+    );
+    $field_type_of_leave = $node->field_type_of_leave[LANGUAGE_NONE][0]['value'];
+    $starttime = $node->field_leave_duration[LANGUAGE_NONE][0]['value'];
+    $endtime = $node->field_leave_duration[LANGUAGE_NONE][0]['value2'];
+    $field_total_days = $node->field_total_days[LANGUAGE_NONE][0]['value'];
+    $field_comment = '';
+    if (count($node->field_comment) != 0) {
+      $field_comment = $node->field_comment[LANGUAGE_NONE][0]['value'];
+    }
+    $form['field_type_of_leave'][LANGUAGE_NONE]['#default_value'] = $field_type_of_leave;
+    $form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value'] = $starttime;
+    $form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value2'] = $endtime;
+    $form['field_total_days'][LANGUAGE_NONE][0]['value']['#default_value'] = $field_total_days;
+    $form['field_comment'][LANGUAGE_NONE][0]['value']['#default_value'] = $field_comment;
+  }
+}
+
+/**
+ *  Function to calculate the number of days
+ *  @param array();
+ */
+function ciandt_wechat_vocation_calculate_duration($data){
+  if(!empty($data['starttime']) && !empty($data['endtime'])){  
+        $starttime = strtotime($data['starttime']);
+        $endtime = strtotime($data['endtime']);
+        
+        //Open holidays removed
+        $holiday_nid = intval(variable_get('holiday_nid'));
+        $content = db_select('field_data_field_holidays','f')
+        ->fields('f',array('field_holidays_cid'))
+        ->condition('entity_id',$holiday_nid,'=')
+        ->execute()
+        ->fetchAssoc();
+        
+        if(!empty($content['field_holidays_cid'])){
+          $starttime_ymd = date("Y-m-d",$starttime);
+          $endtime_ymd = date("Y-m-d",$endtime);
+          $num = 0;
+          $arr = array();
+          $result = db_select('availability_calendar_availability', 'n')
+          ->fields('n',array('date'))
+          ->condition('cid',$content['field_holidays_cid'],'=')
+          ->condition('sid',2,'=')
+          ->condition('date',$starttime_ymd,'>=')
+          ->condition('date',$endtime_ymd,'<=')
+          ->execute();
+          while($record = $result->fetchAssoc()) {
+            $arr[$num] = $record['date'];
+            $num++;
+          }
+        
+          //When the last day is a holiday
+          if($endtime_ymd==$arr[$num-1]){
+            $date = date("Y-m-d",($endtime-86400))." 18:00:00";
+            $endtime = strtotime($date);
+            $num = $num-1;
+          }
+
+          //When the first day is a holiday
+          if($starttime_ymd==$arr[0]){
+            $date = date("Y-m-d",($starttime+86400))." 09:00:00";
+            $starttime = strtotime($date);
+            $num = $num-1;
+          }
+        }
+        
+        
+        
+        $mod = ($endtime-$starttime)%86400;    
+        if($mod>0 && $mod<=14400){
+            $days = intval(floor(($endtime-$starttime)/86400))+0.5;
+        }elseif($mod>14400){
+            $days = intval(floor(($endtime-$starttime)/86400))+1;
+        }else{
+            $days = intval(floor(($endtime-$starttime)/86400));
+        }        
+        $days = $days-$num;
+    }else{
+        $days = 0;
+    }
+    return $days;
+} 
+
+/**
+ * Submit vocation.
+ *
+ * @param string or int or object... $form
+ * @param string or int or object... $form_state
+ */
+function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_state) {
+
+  //half a day as a unit
+  $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
+  $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+  $days = ciandt_wechat_vocation_calculate_duration($data);
+  $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $days;
+
+  $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
+  $approve_user_id_arr = explode(',', $approve_user_id_all);
+  foreach ($approve_user_id_arr as $key => $approve_user_id) {
+    $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_id];
+
+    $approve_user = user_load_by_mail($full_user_info['email']);
+
+    if (!$approve_user) {
+      $edit = array(
+        'mail' => $full_user_info['email'],
+        'name' => $full_user_info['userid'],
+        'roles' => array(
+          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+          DRUPAL_APPROVER_RID => 'Vacation Approver',
+        ),
+      );
+      $approve_user = user_save(NULL, $edit);
+    } elseif (!user_has_role(DRUPAL_APPROVER_RID, $approve_user)) {
+      $edit = array(
+        'mail' => $full_user_info['email'],
+        'name' => $full_user_info['userid'],
+        'roles' => array(
+          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+          DRUPAL_APPROVER_RID => 'Vacation Approver',
+        ),
+      );
+      $approve_user = user_save($approve_user, $edit);
+    }
+    $form_state['values']['field_approver'][LANGUAGE_NONE][$key]['target_id'] = $approve_user->uid;
+    $form_state['values']['field_approver'][LANGUAGE_NONE][$key]['target_type'] = 'user';
+    $term_tid = get_approver_vocation_status('pending', 'vocation_status');
+    $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_id'] = $term_tid;//pending
+    $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_type'] = 'taxonomy_term';
+  }
+  //fix node
+  if(arg(1)>0){
+    $form_state['values']['nid'] = arg(1);
+    $form_state['values']['vid'] = arg(1);
+  }
+}
+
+/**
+ * Function to show approve form.
+ */
+function _ciandt_wechat_vacation_approval_buttons($form, &$form_state) {
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    // Get the nid.
+    $nid = arg(1);
+    $node = node_load($nid);
+    global $user;
+    $term_tid = get_approver_vocation_status('approved', 'vocation_status');
+    $approver_all = $node->field_approver[LANGUAGE_NONE];
+    foreach ($approver_all as $key => $approver) {
+      $field_target_id = $node->field_approver_vocation_status[LANGUAGE_NONE][$key]['target_id'];
+      if ($user -> uid == $node->field_approver[LANGUAGE_NONE][$key]['target_id'] && $term_tid == $field_target_id) {
+       return FALSE;
+      }
+    };
+    $status = isset($node->field_vocation_status[LANGUAGE_NONE][0]['value']) ? $node->field_vocation_status[LANGUAGE_NONE][0]['value'] : '';
+
+    $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
+
+    // Validate User.
+    if (empty($_SESSION['weixin']['user_id']) || $_SESSION['weixin']['user_id'] != $weixin_userid) {
+      return FALSE;
+    }
+    // Validate Status.
+    if ('pending' != $status) {
+      return FALSE;
+    }
+
+    $form['node_id'] = array(
+      '#type' => 'hidden',
+      '#value' => $nid,
+    );
+    $form['reject_reason'] = array(
+      '#type' => 'textarea',
+      '#cols' => 60,
+      '#rows' => 5,
+      '#title' => t('What do you have reject reason?'),
+    );
+
+    $form['reject'] = array(
+      '#type' => 'submit',
+      '#value' => t('Reject'),
+    );
+
+    $form['approve'] = array(
+      '#type' => 'submit',
+      '#value' => t('Approve'),
+    );
+    return $form;
+  }
+}
+
+
+/**
+ * Function to get approver_vocation_status.
+ */
+function get_approver_vocation_status ($tax_name, $vocabulary = NULL) {
+  $term_tid = -1;
+  $termArr = taxonomy_get_term_by_name($tax_name, $vocabulary);
+  foreach ($termArr as $item) {
+    $term_tid = $item->tid;
+    break;
+  }
+  return $term_tid;
+}
+
+/**
+ * Function to approve leave.
+ */
+function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) {
+  $nid = isset($form_state['input']['node_id']) ? $form_state['input']['node_id'] : '';
+  $reject_reason = isset($form_state['input']['reject_reason']) ? $form_state['input']['reject_reason'] : '';
+  $node = node_load($nid);
+  global $user;
+  $is_OK = false;
+  $is_can_approved = true;
+  $delta_str = -1;
+  $approver_all = $node->field_approver[LANGUAGE_NONE];
+  foreach ($approver_all as $key => $approver) {
+    $approver_array[] = $node->field_approver[LANGUAGE_NONE][$key]['target_id'];
+    if ($user -> uid == $node->field_approver[LANGUAGE_NONE][$key]['target_id']) {
+      $is_OK = true;
+      $delta_str = $key;
+    }
+    else {
+      $term_tid = get_approver_vocation_status('pending', 'vocation_status');
+      if ($term_tid == $node->field_approver_vocation_status[LANGUAGE_NONE][$key]['target_id'] ) {
+        $is_can_approved = false;
+      }
+    }
+  };
+  if ($node && $is_OK) {
+    $status = isset($node->field_vocation_status[LANGUAGE_NONE][0]['value']) ? $node->field_vocation_status[LANGUAGE_NONE][0]['value'] : '';
+    $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
+    if (!empty($_SESSION['weixin']['user_id']) && $_SESSION['weixin']['user_id'] == $weixin_userid && 'pending' == $status) {
+      $new_status = $form_state['input']['op'] == t('Approve') ? 'approved' : 'rejected';
+
+      if( empty($reject_reason) && $new_status == 'rejected') {
+        form_set_error('reject_reason', t('Please enter the refused reason.'));
+      }
+      else {
+        if($new_status == 'rejected') {
+          $term_tid = get_approver_vocation_status('rejected', 'vocation_status');
+          $node->field_approver_vocation_status[LANGUAGE_NONE][$delta_str]['target_id'] = $term_tid;
+        }
+        if($new_status == 'approved') {
+
+          $term_tid = get_approver_vocation_status('approved', 'vocation_status');
+          $node->field_approver_vocation_status[LANGUAGE_NONE][$delta_str]['target_id'] = $term_tid;
+          if ( !$is_can_approved ) {
+            $new_status = 'pending';
+          }
+        }
+        $node->field_vocation_status[LANGUAGE_NONE][0]['value'] = $new_status;
+        $node->field_reject_reason[LANGUAGE_NONE][0]['value'] = $reject_reason;
+
+        node_save($node);
+        if ($status == 'pending' && $node->field_vocation_status[LANGUAGE_NONE][0]['value'] == 'approved') {
+          rules_invoke_event('vocation_approved', $node);
+        }
+        drupal_goto('vacation/approved-list');
+      }
+    }
+  }
+}
+
+/**
+ * Send notification to group.
+ */
+function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl) {
+  $tag_list = get_tag_list();
+  $tag_id = array_search($tag, $tag_list);
+  // Get wechat uid/token_id by $target.
+  $data = array(
+    "totag" => $tag_id,
+    "agentid" => variable_get('ciandt_wechat_vacation_agentid'),//9
+    "msgtype" => 'news',
+    "news" => array(
+      "articles" => array(
+        array(
+          "description" => $message,//描述
+          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份
+          "picurl" => $picurl,
+        ),
+      ),
+    ),
+  );
+  // Send message with wechat api.
+  $wechat_object = _ciandt_wechat_vacation_init_obj();
+  $result = $wechat_object->sendMessage($data);
+
+  if ($result) {
+    drupal_set_message(t("Successfully sent notification to group user."));
+  }
+}
+
+/**
+ * Get wechat tag list.
+ */
+function get_tag_list() {
+  $tag_var = &drupal_static(__FUNCTION__);
+  if (empty($tag_var)) {
+    if ($cache = cache_get('wechat_tag_list')) {
+      $tag_var = $cache->data;
+    }
+    else {
+      $wechat_object = _ciandt_wechat_vacation_init_obj();
+      $result = $wechat_object->getTagList();
+      if ($result && !empty($result["taglist"])) {
+        foreach ($result["taglist"] as $tag) {
+          $tag_var[$tag["tagid"]] = $tag["tagname"];
+        }
+      }
+      cache_set('wechat_tag_list', $tag_var);
+    }
+  }
+  return $tag_var;
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function ciandt_wechat_vacation_views_api() {
+  return array(
+    'api' => 3,
+    'template path' => drupal_get_path('module', 'ciandt_wechat_vacation') . '/templates',
+  );
+}

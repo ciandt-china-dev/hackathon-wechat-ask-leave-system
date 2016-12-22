@@ -1,0 +1,22 @@
+<?php
+/**
+ * @file
+ * Code for the Availability Calendars Migration Example feature.
+ */
+
+include_once 'availability_calendar_migrate.features.inc';
+
+/**
+ * Implements hook_migrate_api().
+ */
+function availability_calendar_migrate_migrate_api() {
+  $api = array(
+    'api' => 2,
+    'migrations' => array(
+      'ExampleAvailabilityCalendar' => array(
+        'class_name' => 'MigrateExampleAvailabilityCalendar',
+      ),
+    ),
+  );
+  return $api;
+}

@@ -1,0 +1,25 @@
+
+name = Ask Leave System
+description = A flexible, recolorable theme for CI&T Ask Leave System.
+package = Core
+version = VERSION
+core = 7.x
+
+
+stylesheets[all][] = css/layer.css
+stylesheets[all][] = css/style.css
+
+scripts[] = scripts/layer.m.js
+scripts[] = scripts/vacation.js
+
+regions[header] = Header
+regions[help] = Help
+regions[page_top] = Page top
+regions[page_bottom] = Page bottom
+regions[highlighted] = Highlighted
+
+regions[featured] = Featured
+regions[content] = Content
+regions[sidebar_first] = Sidebar first
+regions[sidebar_second] = Sidebar second
+regions[footer] = Footer
