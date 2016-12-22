@@ -587,10 +587,13 @@ function _ciandt_wechat_vacation_approval_buttons($form, &$form_state) {
     };
     $status = isset($node->field_vocation_status[LANGUAGE_NONE][0]['value']) ? $node->field_vocation_status[LANGUAGE_NONE][0]['value'] : '';
 
-    $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
+    $weixin_userid = array();
+    foreach($node->field_approver[LANGUAGE_NONE] as $value){
+        $weixin_userid[] = $value['entity']->name;
+    }
 
     // Validate User.
-    if (empty($_SESSION['weixin']['user_id']) || $_SESSION['weixin']['user_id'] != $weixin_userid) {
+    if (empty($_SESSION['weixin']['user_id']) || !in_array($_SESSION['weixin']['user_id'],$weixin_userid)) {
       return FALSE;
     }
     // Validate Status.
