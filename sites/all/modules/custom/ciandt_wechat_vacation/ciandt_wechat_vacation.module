@@ -671,8 +671,12 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
   };
   if ($node && $is_OK) {
     $status = isset($node->field_vocation_status[LANGUAGE_NONE][0]['value']) ? $node->field_vocation_status[LANGUAGE_NONE][0]['value'] : '';
-    $weixin_userid = isset($node->field_approver[LANGUAGE_NONE][0]['entity']->name) ? $node->field_approver[LANGUAGE_NONE][0]['entity']->name : '';
-    if (!empty($_SESSION['weixin']['user_id']) && $_SESSION['weixin']['user_id'] == $weixin_userid && 'pending' == $status) {
+    
+    $weixin_userid = array();
+    foreach($node->field_approver[LANGUAGE_NONE] as $value){
+        $weixin_userid[] = $value['entity']->name;
+    }
+    if (!empty($_SESSION['weixin']['user_id']) && in_array($_SESSION['weixin']['user_id'],$weixin_userid) && 'pending' == $status) {
       $new_status = $form_state['input']['op'] == t('Approve') ? 'approved' : 'rejected';
 
       if( empty($reject_reason) && $new_status == 'rejected') {
