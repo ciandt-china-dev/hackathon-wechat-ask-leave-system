@@ -195,30 +195,35 @@ function holiday_nid_settings_form_validate(&$form,&$form_state){
  */
 function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url, $picurl) {
   // Get wechat uid/token_id by $target.
-  $wechat_uid = $target;
-  $data = array(
-    "touser" => $wechat_uid,
-    "agentid" => variable_get('ciandt_wechat_vacation_agentid'),//9
-    "msgtype" => 'news',
-    "news" => array(
-      "articles" => array(
-        array(
-          //"title" => "Title",//标题
-          "description" => $message,//描述
-          "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份
-          "picurl" => $picurl,
-        ),
-      ),
-    ),
-  );
-  // Send message with wechat api.
-  $options = array(
-    'token' => '',
-    'encodingaeskey' => '',
-    
-  );
-  $wechat_object = _ciandt_wechat_vacation_init_obj();
-  $result = $wechat_object->sendMessage($data);
+  $target_new = explode(",",$target);
+  foreach($target_new as $v){
+      if(!empty($v)){
+        $message = str_replace($target,$v,$message);
+        $wechat_uid = $v;
+        $data = array(
+          "touser" => $wechat_uid,
+          "agentid" => variable_get('ciandt_wechat_vacation_agentid'),//9
+          "msgtype" => 'news',
+          "news" => array(
+            "articles" => array(
+              array(
+                //"title" => "Title",//标题
+                "description" => $message,//描述
+                "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份
+                "picurl" => $picurl,
+              ),
+             ),
+           ),
+        );
+        // Send message with wechat api.
+        $options = array(
+        'token' => '',
+        'encodingaeskey' => '',
+        );
+        $wechat_object = _ciandt_wechat_vacation_init_obj();
+        $result = $wechat_object->sendMessage($data);
+      }
+  }  
 
   if ($result) {
     drupal_set_message(t("vacation approve notification has been sent."));
