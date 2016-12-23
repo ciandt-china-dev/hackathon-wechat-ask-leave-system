@@ -592,13 +592,13 @@ function _ciandt_wechat_vacation_approval_buttons($form, &$form_state) {
     foreach($node->field_approver[LANGUAGE_NONE] as $value){
         $weixin_userid[] = $value['entity']->name;
     }
-    
+
     // Validate User.
     if (empty($_SESSION['weixin']['user_id']) || !in_array($_SESSION['weixin']['user_id'],$weixin_userid)) {
       return FALSE;
     }
     // Validate Status.
-    if ('pending' != $status) {
+    if ('approved' == $status || 'rejected' == $status) {
       return FALSE;
     }
 
@@ -672,7 +672,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
     foreach($node->field_approver[LANGUAGE_NONE] as $value){
         $weixin_userid[] = $value['entity']->name;
     }
-    if (!empty($_SESSION['weixin']['user_id']) && in_array($_SESSION['weixin']['user_id'],$weixin_userid) && 'pending' == $status) {
+    if (!empty($_SESSION['weixin']['user_id']) && in_array($_SESSION['weixin']['user_id'],$weixin_userid) && ('pending' == $status || 'onprogress' == $status )) {
       $new_status = $form_state['input']['op'] == t('Approve') ? 'approved' : 'rejected';
 
       if( empty($reject_reason) && $new_status == 'rejected') {
@@ -687,15 +687,15 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
 
           $term_tid = get_approver_vocation_status('approved', 'vocation_status');
           $node->field_approver_vocation_status[LANGUAGE_NONE][$delta_str]['target_id'] = $term_tid;
-          if ( !$is_can_approved ) {
-            $new_status = 'pending';
+          if ( !$is_can_approved && count($approver_all)>1) {
+            $new_status = 'onprogress';
           }
         }
         $node->field_vocation_status[LANGUAGE_NONE][0]['value'] = $new_status;
         $node->field_reject_reason[LANGUAGE_NONE][0]['value'] = $reject_reason;
 
         node_save($node);
-        if ($status == 'pending' && $node->field_vocation_status[LANGUAGE_NONE][0]['value'] == 'approved') {
+        if ($node->field_vocation_status[LANGUAGE_NONE][0]['value'] == 'approved') {
           rules_invoke_event('vocation_approved', $node);
         }
         drupal_goto('vacation/approved-list');
