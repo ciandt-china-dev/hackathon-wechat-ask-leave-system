@@ -98,8 +98,8 @@ if($field_vocation_status[0]['value']=='rejected' || $field_vocation_status[0]['
     $edit = true;
 }
 if (!empty($field_leave_duration[0]["value"]) && !empty($field_leave_duration[0]["value2"])):
-$start_date = date("Y-m-d H:i:s",strtotime($field_leave_duration[0]["value"])+8*3600);
-$end_date = date("Y-m-d H:i:s",strtotime($field_leave_duration[0]["value2"])+8*3600);
+$start_date =$field_leave_duration[0]["value"];
+$end_date = $field_leave_duration[0]["value2"];
 $start_date_timestamp = strtotime($field_leave_duration[0]["value"]);
 $end_date_timestamp = strtotime($field_leave_duration[0]["value2"]);
 $start_date_set = array(
