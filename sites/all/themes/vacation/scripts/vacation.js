@@ -156,7 +156,7 @@ var message = {
 
 			$approver.val(uidArray.join(','));
                         
-                        if($totalDays.val()>3){
+                        if($totalDays.val()>2){
                             if(uidArray.length<2){
                                 message.alert(MESSAGE.ApproverError);
                                 return false;
