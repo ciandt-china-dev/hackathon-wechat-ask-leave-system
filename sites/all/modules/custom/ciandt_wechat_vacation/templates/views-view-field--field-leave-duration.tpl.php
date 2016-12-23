@@ -26,7 +26,7 @@
     $endtime = $row->_field_data['nid']['entity']->field_leave_duration[LANGUAGE_NONE][0]['value2'];
     $starttime = strtotime($starttime);
     $endtime = strtotime($endtime);
-    print date('Y-m-d',$starttime)." ".t('from')." ".date('Y-m-d',$endtime);   
+    print date('Y-m-d',$starttime)." ".t('to')." ".date('Y-m-d',$endtime);   
 ?>
 
 
