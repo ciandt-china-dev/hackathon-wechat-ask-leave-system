@@ -40,7 +40,8 @@ var message = {
     ApproverRequired: Drupal.t('Please add an Approver'),
     ApproverError: Drupal.t('Please select two or more Approver'),
     TotalDaysError: Drupal.t('Please input a valid number'),
-    DateRangeError: Drupal.t('Please enter the valid date and time')
+    DateRangeError: Drupal.t('Please enter the valid date and time'),
+    RejectReasonRequired: Drupal.t('Please enter the reject reason')
   };
 
   function formatDate(date) {
@@ -199,6 +200,13 @@ var message = {
 
       removeUid($userItem.data('uid'));
       $userItem.remove();
+    });
+
+    $('#edit-reject').on('click', function(e) {
+      if ($('#edit-reject-reason').val() == '') {
+        message.alert(MESSAGE.RejectReasonRequired);
+        return false;
+      }
     });
 
   });
