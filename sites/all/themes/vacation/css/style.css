@@ -1,4 +1,5 @@
 /* ---------- Overall Specifications ---------- */
+
 html {
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
@@ -87,8 +88,11 @@ select::-ms-expand {
   font-size: 0;
 }
 
+
 /* ------------------ Reset Styles ------------------ */
-.page-vacation-request .container {
+
+.page-vacation-edit #main-wrapper,
+.page-vacation-request #main-wrapper {
   padding: 0 20px;
 }
 
@@ -102,14 +106,20 @@ form .draggable {
 
 #header {
   text-align: center;
-  position: absolute;
-  left: 10px;
-  top: 8px;
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 5px;
+}
+
+#header img {
+  display: block;
 }
 
 h1 {
-  font-size: 24px;
-  margin: 12px 0 10px 90px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  font-size: 20px;
 }
 
 .view-empty {
@@ -126,12 +136,16 @@ h1 {
   margin: 0;
 }
 
+
 /* message */
+
 .layermbox p {
   margin: 0;
 }
 
+
 /* form */
+
 #vocation-node-form {
   position: relative;
 }
@@ -191,10 +205,15 @@ label {
   outline: none;
 }
 
-.form-submit-edit{
-  display:block;
-  text-align:center;
+.form-submit-edit {
+  display: block;
+  text-align: center;
   box-sizing: border-box;
+}
+
+.form-submit-edit:hover {
+  text-decoration: none;
+  opacity: 0.8;
 }
 
 .form-actions {
@@ -208,7 +227,6 @@ fieldset {
 }
 
 #edit-field-name {
-
   /*display: none;*/
 }
 
@@ -320,7 +338,9 @@ fieldset {
   margin-right: 10px;
 }
 
+
 /* date */
+
 #edit-field-leave-duration {
   display: none;
 }
@@ -359,7 +379,9 @@ fieldset {
   height: 36px;
 }
 
+
 /* vacation detail */
+
 .node-type-vocation .messages,
 .node-type-vocation #page-title,
 .node-type-vocation #header {
@@ -379,7 +401,7 @@ fieldset {
 
 h2 {
   color: #fff;
-  margin: 0 0  10px;
+  margin: 0 0 10px;
 }
 
 .detail-content {
@@ -428,8 +450,14 @@ h2 {
 }
 
 .block-ciandt-wechat-vacation {
-  text-align: center;
-  margin: 20px 0 30px;
+  margin: 0 20px 30px;
+}
+
+.form-item-reject-reason {
+  padding: 15px 0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  margin: 0 0 20px;
 }
 
 .block-ciandt-wechat-vacation .form-submit {
@@ -441,9 +469,12 @@ h2 {
   background: #1fbdc5;
 }
 
+
 /* List */
 
+
 /*.view-vacation-pending .views-field {*/
+
 .view-vacation-approved,
 .view-vacation-history,
 .view-vacation-pending {
@@ -474,6 +505,7 @@ h2 {
 
 .views-field {
   display: inline-block;
+  vertical-align: middle;
   width: 25%;
   font-size: 14px;
 }
@@ -483,7 +515,7 @@ h2 {
   width: 35%;
 }
 
-.view-vacation-history  .views-field {
+.view-vacation-history .views-field {
   width: 20%;
 }
 
@@ -491,7 +523,7 @@ h2 {
   width: 35%;
 }
 
-.view-vacation-history  .views-field-field-leave-duration {
+.view-vacation-history .views-field-field-leave-duration {
   width: 100%;
 }
 
@@ -499,4 +531,44 @@ h2 {
   width: 100%;
   font-size: 12px;
   color: #999;
+}
+
+.tabledrag-toggle-weight-wrapper {
+  display: none;
+}
+
+.date-display-range {
+  display: inline-block;
+}
+
+
+/* page */
+
+.page-user #page-wrapper {
+  padding: 0 15px;
+}
+
+.pane-system-main-menu ul {
+  padding: 0;
+  margin: 0;
+}
+
+.pane-system-main-menu ul.menu li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pane-system-main-menu ul.menu li a {
+  padding: 10px 20px;
+  background: #1fbdc5;
+  color: #fff;
+  display: block;
+  border-bottom: 1px solid #fff;
+  text-align: center;
+}
+
+.pane-system-main-menu ul.menu li a:hover {
+  text-decoration: none;
+  background: #db1f3e;
 }
