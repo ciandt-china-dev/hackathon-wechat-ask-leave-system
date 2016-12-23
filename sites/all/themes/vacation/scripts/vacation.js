@@ -61,19 +61,15 @@ var message = {
 
     autototalDaysUrl = location.protocol + '//' + location.host + '/calculate_vocation_duration/' + startDate + '%20' + startTime + '/' + endDate + '%20' + endTime;
 
-    if ((startDate > endDate) || (startDate == endDate && startTime > endTime)) {
-
-      $totalDays.val('');
-      message.alert(MESSAGE.DateRangeError);
-
-    } else {
-      $.getJSON(autototalDaysUrl).done(function(res) {
+    $.getJSON(autototalDaysUrl).done(function(res) {
+      if(res.days>0){
         $totalDays.val(res.days);
-      }).fail(function() {
-        message.alert(MESSAGE.DateRangeError);
-      });
-    }
-
+      }else{
+        $totalDays.val('');
+      }
+    }).fail(function() {
+      message.alert(MESSAGE.DateRangeError);
+    });
   }
 
   $(document).ready(function() {
@@ -153,7 +149,7 @@ var message = {
 
       $approver.val(uidArray.join(','));
 
-      if ($totalDays.val() > 3) {
+      if ($totalDays.val() > 2) {
         if (uidArray.length < 2) {
           message.alert(MESSAGE.ApproverError);
           return false;
