@@ -196,7 +196,7 @@ endif;
           <?php print render($content['field_vocation_status']);?>
         </div>
       <?php endif; ?>
-      <?php if(!empty($content['field_reject_reason'])): ?>
+      <?php if($field_vocation_status[0]['value']=='rejected'): ?>
         <div class="item">
           <?php print render($content['field_reject_reason']);?>
         </div>
