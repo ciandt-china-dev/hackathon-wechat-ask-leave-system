@@ -196,6 +196,11 @@ endif;
           <?php print render($content['field_vocation_status']);?>
         </div>
       <?php endif; ?>
+      <?php if(!empty($content['field_reject_reason'])): ?>
+        <div class="item">
+          <?php print render($content['field_reject_reason']);?>
+        </div>
+      <?php endif; ?>
         <?php if($edit && $user->uid==$node->uid):?>
           <div class="item">
             <a  class="form-submit form-submit-edit" href="/vacation/<?php print $node->nid; ?>/edit">编辑</a>

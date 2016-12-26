@@ -401,6 +401,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   $form["field_total_days"]['#disabled'] = 'true';
 
   array_unshift($form['actions']["submit"]["#submit"], 'ciandt_wechat_vacation_form_vocation_node_form_submit');
+  array_unshift($form['#validate'],'ciandt_wechat_vacation_form_vocation_node_form_validate');
   
   //Gets the content of the node
   if(arg(1)>0){
@@ -513,6 +514,47 @@ function ciandt_wechat_vocation_calculate_duration($data){
     }
     return $days;
 } 
+
+/**
+ * Vlidate vocation.
+ *
+ * @param string or int or object... $form
+ * @param string or int or object... $form_state
+ */
+function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_state){
+    global $user;
+    $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
+    $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+    
+    $leave_duration = db_select('field_data_field_leave_duration', 'a');
+    $leave_duration->join('node', 'b', 'a.entity_id = b.nid');
+    $leave_duration->join('field_data_field_vocation_status', 'c', 'c.entity_id = b.nid');
+    $leave_duration->fields('a',array('entity_id'));
+    
+    //Remove self
+    if(arg(1)>0){
+      $leave_duration ->condition('b.nid',arg(1),'<>');
+    }
+    
+    $leave_duration ->condition('b.uid',$user->uid,'=')
+      ->condition('b.type','vocation','=')
+      ->condition('c.field_vocation_status_value','rejected','<>');
+    $and = db_and()->condition('a.field_leave_duration_value',$data['starttime'],'<=')
+      ->condition('a.field_leave_duration_value2',$data['starttime'],'>=');
+    $and2 = db_and()->condition('a.field_leave_duration_value',$data['endtime'],'<=')
+      ->condition('a.field_leave_duration_value2',$data['endtime'],'>=');
+    $db_or = db_or()->condition($and)
+      ->condition($and2);
+    $leave_duration->condition($db_or);
+    $result = $leave_duration->execute()
+      ->fetchAssoc();
+    
+    $message = t('There is a conflict with the previous application');
+    
+    if(!empty($result)){
+      form_set_error('field_leave_duration',$message);
+    }   
+}
 
 /**
  * Submit vocation.
