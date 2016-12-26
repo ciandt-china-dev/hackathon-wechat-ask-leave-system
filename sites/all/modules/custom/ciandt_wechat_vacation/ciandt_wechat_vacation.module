@@ -531,43 +531,28 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
     $leave_duration->join('field_data_field_vocation_status', 'c', 'c.entity_id = b.nid');
     $leave_duration->fields('a',array('entity_id'));
     
+    //Remove self
     if(arg(1)>0){
       $leave_duration ->condition('b.nid',arg(1),'<>');
     }
     
-    $result = $leave_duration ->condition('b.uid',$user->uid,'=')
+    $leave_duration ->condition('b.uid',$user->uid,'=')
       ->condition('b.type','vocation','=')
-      ->condition('c.field_vocation_status_value','rejected','<>')
-      ->condition('a.field_leave_duration_value',$data['starttime'],'<=')
-      ->condition('a.field_leave_duration_value2',$data['starttime'],'>=')
-      ->execute()
+      ->condition('c.field_vocation_status_value','rejected','<>');
+    $and = db_and()->condition('a.field_leave_duration_value',$data['starttime'],'<=')
+      ->condition('a.field_leave_duration_value2',$data['starttime'],'>=');
+    $and2 = db_and()->condition('a.field_leave_duration_value',$data['endtime'],'<=')
+      ->condition('a.field_leave_duration_value2',$data['endtime'],'>=');
+    $db_or = db_or()->condition($and)
+      ->condition($and2);
+    $leave_duration->condition($db_or);
+    $result = $leave_duration->execute()
       ->fetchAssoc();
     
     $message = t('There is a conflict with the previous application');
     
-    if(empty($result)){
-       $leave_duration2 = db_select('field_data_field_leave_duration', 'a');
-       $leave_duration2->join('node', 'b', 'a.entity_id = b.nid');
-       $leave_duration2->join('field_data_field_vocation_status', 'c', 'c.entity_id = b.nid');
-       $leave_duration2->fields('a',array('entity_id'));
-       
-       if(arg(1)>0){
-         $leave_duration2 ->condition('b.nid',arg(1),'<>');
-       }
-       
-       $result2 = $leave_duration2->condition('b.uid',$user->uid,'=')
-         ->condition('b.type','vocation','=')
-         ->condition('c.field_vocation_status_value','rejected','<>')
-         ->condition('a.field_leave_duration_value',$data['endtime'],'<=')
-         ->condition('a.field_leave_duration_value2',$data['endtime'],'>=')
-         ->execute()
-         ->fetchAssoc();
-       
-       if(!empty($result2)){
-           form_set_error('field_leave_duration',$message);
-       }
-    }else{
-        form_set_error('field_leave_duration',$message);
+    if(!empty($result)){
+      form_set_error('field_leave_duration',$message);
     }   
 }
 
