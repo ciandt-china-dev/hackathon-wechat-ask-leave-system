@@ -30,6 +30,10 @@ function ciandt_wechat_vacation_rules_action_info() {
         'type' => 'text',
         'label' => t('Picture URL'),
       ),
+      'title' => array(
+        'type' => 'text',
+        'label' => t('Title'),
+      ),
     ),
   );
   $items['ciandt_wechat_vacation_group_notification'] = array(
@@ -51,6 +55,10 @@ function ciandt_wechat_vacation_rules_action_info() {
       'picurl' => array(
         'type' => 'text',
         'label' => t('Picture URL'),
+      ),
+      'title' => array(
+        'type' => 'text',
+        'label' => t('Title'),
       ),
     ),
   );

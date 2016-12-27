@@ -193,7 +193,7 @@ function holiday_nid_settings_form_validate(&$form,&$form_state){
 /**
  * Rules action for push notification.
  */
-function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url, $picurl) {
+function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url, $picurl, $title) {
   // Get wechat uid/token_id by $target.
   $target = str_replace(",","|",$target);
   $target = str_replace(" ","",$target);
@@ -205,7 +205,7 @@ function ciandt_wechat_vacation_push_wechat_notification($target, $message, $url
     "news" => array(
       "articles" => array(
         array(
-          //"title" => "Title",//标题
+          "title" => $title,//标题
           "description" => $message,//描述
           "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份
           "picurl" => $picurl,
@@ -749,7 +749,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
 /**
  * Send notification to group.
  */
-function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl) {
+function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl, $title) {
   $tag_list = get_tag_list();
   $tag_id = array_search($tag, $tag_list);
   // Get wechat uid/token_id by $target.
@@ -760,6 +760,7 @@ function ciandt_wechat_vacation_group_notification($tag, $message, $url, $picurl
     "news" => array(
       "articles" => array(
         array(
+          "title" => $title,//标题
           "description" => $message,//描述
           "url" => $url,//点击后跳转的链接。可根据url里面带的code参数校验员工的真实身份
           "picurl" => $picurl,
