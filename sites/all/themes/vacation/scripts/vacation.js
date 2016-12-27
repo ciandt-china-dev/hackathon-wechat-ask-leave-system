@@ -41,7 +41,8 @@ var message = {
     ApproverError: Drupal.t('Please select two or more Approver'),
     TotalDaysError: Drupal.t('Please input a valid number'),
     DateRangeError: Drupal.t('Please enter the valid date and time'),
-    RejectReasonRequired: Drupal.t('Please enter the reject reason')
+    RejectReasonRequired: Drupal.t('Please enter the reject reason'),
+    CommentError: Drupal.t('Please write description'),
   };
 
   function formatDate(date) {
@@ -123,6 +124,13 @@ var message = {
       if ($typeOfLeave.val() == '_none') {
         message.alert(MESSAGE.TypeOfLeaveRequired);
         return false;
+      }
+      
+      if($typeOfLeave.val() == 'adjust-break'){
+          if($('#edit-field-comment-und-0-value').val() == ''){
+            message.alert(MESSAGE.CommentError);
+            return false;
+          }
       }
 
       for (i; i < len; i++) {
