@@ -484,30 +484,29 @@ function ciandt_wechat_vocation_calculate_duration($data){
           }
         
           //When the last day is a holiday
-          if($endtime_ymd==$arr[$num-1]){
+          if($endtime_ymd==@$arr[$num-1]){
             $date = date("Y-m-d",($endtime-86400))." 18:00:00";
             $endtime = strtotime($date);
             $num = $num-1;
           }
 
           //When the first day is a holiday
-          if($starttime_ymd==$arr[0]){
-            $date = date("Y-m-d",($starttime+86400))." 09:00:00";
+          if($starttime_ymd==@$arr[0]){
+            $date = date("Y-m-d",($starttime))." 09:00:00";
             $starttime = strtotime($date);
-            $num = $num-1;
           }
         }
         
         
-        
-        $mod = ($endtime-$starttime)%86400;    
+
+        $mod = ($endtime-$starttime)%86400;
         if($mod>0 && $mod<=14400){
             $days = intval(floor(($endtime-$starttime)/86400))+0.5;
         }elseif($mod>14400){
             $days = intval(floor(($endtime-$starttime)/86400))+1;
         }else{
             $days = intval(floor(($endtime-$starttime)/86400));
-        }        
+        }  
         $days = $days-$num;
     }else{
         $days = 0;
@@ -808,4 +807,83 @@ function ciandt_wechat_vacation_views_api() {
     'api' => 3,
     'template path' => drupal_get_path('module', 'ciandt_wechat_vacation') . '/templates',
   );
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function ciandt_wechat_vacation_views_post_execute(&$view) {
+    if($view->name=='vacation_admin_summary'){
+      if(empty($_GET['field_leave_duration_value2']['value']['date'])){
+        $starttime = date("Y-m-01")." 09:00:00";
+      }else{
+        $starttime = $_GET['field_leave_duration_value2']['value']['date'];
+        $starttime = date("Y-m-d",strtotime($starttime))." 09:00:00";
+      }
+      
+      if(empty($_GET['field_leave_duration_value']['value']['date'])){
+        $begindate=date('Y-m-01', strtotime(date("Y-m-d")));
+        $endtime = date('Y-m-d', strtotime("$begindate +1 month -1 day"))." 18:00:00";
+      }else{
+        $endtime = $_GET['field_leave_duration_value']['value']['date'];
+        $endtime = date("Y-m-d",(strtotime($endtime)))." 18:00:00";
+      }  
+            
+      
+      //get all users
+      $user_ids = array();
+      foreach ($view->result as $k => $v) {
+          $user_ids[] = $v->users_node_uid;
+      }      
+      
+      $query = db_select('field_data_field_leave_duration','d')
+        ->condition('d.field_leave_duration_value',$endtime,'<=')          
+        ->condition('d.field_leave_duration_value2',$starttime,'>=');
+      $query->leftJoin('node', 'n', 'n.nid = d.entity_id');
+      $query->condition('n.uid',$user_ids,'in');
+      
+      if(@$_GET['field_type_of_leave_value']!='All' and !empty($_GET['field_type_of_leave_value'])){
+        $query->leftJoin('field_data_field_type_of_leave', 'v', 'd.entity_id = v.entity_id');
+        $query->condition('v.field_type_of_leave_value',$_GET['field_type_of_leave_value'],'=');
+      }
+      
+      $query->leftJoin('field_data_field_vocation_status', 's', 'd.entity_id = s.entity_id');      
+      $query->condition('s.field_vocation_status_value','approved','=');
+      
+      $result = $query->fields('n',array('uid'))
+        ->fields('d',array('field_leave_duration_value','field_leave_duration_value2'))
+        ->execute();
+      
+      $arr = array();
+      while($row = $result->fetchAssoc()) {
+        $data = array();
+        if(!isset($arr[$row['uid']])){
+          $arr[$row['uid']] = 0;
+        }
+
+        if($row['field_leave_duration_value']<$starttime){
+          $data['starttime'] = $row['field_leave_duration_value'];
+          $data['endtime'] = $starttime;
+          $days = ciandt_wechat_vocation_calculate_duration($data);
+          $arr[$row['uid']] = $arr[$row['uid']]+$days;
+        }        
+        
+        if($row['field_leave_duration_value2']>$endtime){
+            $data['starttime'] = $endtime;
+            $data['endtime'] = $row['field_leave_duration_value2'];
+            $days = ciandt_wechat_vocation_calculate_duration($data);
+            $arr[$row['uid']] = $arr[$row['uid']]+$days;
+        } 
+        
+      }
+      
+      foreach($view->result as $k => $v){
+        $uid = $v->users_node_uid;
+        $totaldays = $v->field_data_field_total_days_field_total_days_value;
+        $totaldays = $totaldays - @$arr[$uid];
+        $view->result[$k]->field_field_total_days[0]['rendered']['#markup'] = $totaldays;
+      }
+      
+    }
+
 }
