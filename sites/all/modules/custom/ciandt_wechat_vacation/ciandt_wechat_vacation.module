@@ -887,3 +887,105 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
     }
 
 }
+
+
+/**
+* Implements hook_cron().
+*/
+function ciandt_wechat_vacation_cron() {
+  
+  //Updates the status once a year
+  if(date("m-d")=="01-01"){
+    db_update('field_data_field_annual_leave_status2')
+      ->fields(array(
+        'field_annual_leave_status2_value' => 0,
+      ))
+      ->execute();
+    db_update('field_data_field_annual_leave_status')
+      ->fields(array(
+        'field_annual_leave_status_value' => 0,
+      ))
+      ->execute();
+  }  
+  
+  //annual leave(company)
+  $query = db_select('users','u');
+  $query->leftJoin('field_data_field_annual_leave_status2','s','u.uid = s.entity_id');
+  $result = $query->condition('s.entity_type','user','=')          
+    ->condition('s.field_annual_leave_status2_value','0','=')
+    ->fields('u',array('uid'))
+    ->execute();
+  while($arr = $result->fetchAssoc()){
+    $user_info = array();    
+    $user_info = user_load($arr['uid']);
+    
+    if(isset($user_info->field_positive_time[LANGUAGE_NONE][0]['value'])){
+      $income_time = date("Y-m-d",strtotime($user_info->field_positive_time[LANGUAGE_NONE][0]['value']."+1 year"));
+      if($income_time<=date("Y-m-d")){
+        $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value']+10;
+        @$account->uid = $arr['uid'];
+        $fields['field_annual_leave'][LANGUAGE_NONE][0]['value'] = $num;
+        $fields['field_annual_leave_status2'][LANGUAGE_NONE][0]['value'] = 1;
+        @user_save($account,$fields);
+      }
+    } 
+    
+  }
+  
+  //annual leave(official)
+  $query = db_select('users','u');
+  $query->leftJoin('field_data_field_annual_leave_status','s','u.uid = s.entity_id');
+  $result = $query->condition('s.entity_type','user','=')          
+    ->condition('s.field_annual_leave_status_value','0','=')
+    ->fields('u',array('uid'))
+    ->execute();
+  
+  while($arr = $result->fetchAssoc()){
+    $user_info = array();    
+    $user_info = user_load($arr['uid']);
+    
+    $days = 0;
+    if(isset($user_info->field_graduation_time[LANGUAGE_NONE][0]['value'])){
+      $income_time = date("Y-m-d",strtotime($user_info->field_graduation_time[LANGUAGE_NONE][0]['value']."+1 year"));
+      $last_day_now = strtotime(date("Y")."-12-31 24:00:00");//当前时间的最后一天
+      //是否在一年前毕业的
+      if($income_time<=date("Y-m-d")){
+        if(date("Y",strtotime($user_info->field_entry_time[LANGUAGE_NONE][0]['value']))==date("Y")){
+          
+          //毕业一年后的时间是在当前年的
+          if(date("Y",strtotime($user_info->field_graduation_time[LANGUAGE_NONE][0]['value']))+1==date("Y")){
+            
+            if($income_time>$user_info->field_entry_time[LANGUAGE_NONE][0]['value']){
+              $graduation_after = strtotime($income_time);//毕业满一年的时间
+              $days = intval(($last_day_now-$graduation_after)/86400/365*5);
+            }else{
+              $enty_time = strtotime($user_info->field_entry_time[LANGUAGE_NONE][0]['value']);
+              $days = intval(($last_day_now-$enty_time)/86400/365*5);
+            }
+            
+          }else{
+            $enty_time = strtotime($user_info->field_entry_time[LANGUAGE_NONE][0]['value']);
+            $days = intval(($last_day_now-$enty_time)/86400/365*5);
+          }
+          
+        }else{
+          
+          //毕业一年后的时间是在当前年的
+          if(date("Y",strtotime($user_info->field_graduation_time[LANGUAGE_NONE][0]['value']))+1==date("Y")){
+            $graduation_after = strtotime($income_time);//毕业满一年的时间
+            $days = intval(($last_day_now-$graduation_after)/86400/365*5);
+          }else{
+            $days = 5;
+          }
+          
+        }
+        $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value']+$days;
+        @$account->uid = $arr['uid'];
+        $fields['field_annual_leave'][LANGUAGE_NONE][0]['value'] = $num;
+        $fields['field_annual_leave_status'][LANGUAGE_NONE][0]['value'] = 1;
+        @user_save($account,$fields);
+      }      
+    }
+    
+  }
+}
