@@ -552,7 +552,20 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
     
     if(!empty($result)){
       form_set_error('field_leave_duration',$message);
-    }   
+    }
+    
+    //Available annual leave
+    if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value']=='annual-leave'){
+      global $user;
+      $user_info = user_load($user->uid);
+      $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
+      $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+      $days = ciandt_wechat_vocation_calculate_duration($data);
+      if($user_info->field_annual_leave[LANGUAGE_NONE][0]['value']<$days){
+        form_set_error('field_total_days',t('Available annual leave less than request'));
+      }
+    }
+
 }
 
 /**
