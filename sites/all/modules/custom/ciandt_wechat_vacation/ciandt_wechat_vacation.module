@@ -561,7 +561,14 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
       $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
       $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
       $days = ciandt_wechat_vocation_calculate_duration($data);
-      if($user_info->field_annual_leave[LANGUAGE_NONE][0]['value']<$days){
+      $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value'];
+      if(arg(1)>0){
+        $node_info = node_load(arg(1));
+        if($node_info->field_type_of_leave[LANGUAGE_NONE][0]['value']=='annual-leave'){
+          $num = $num+$node_info->field_total_days[LANGUAGE_NONE][0]['value'];
+        }
+      }
+      if($num<$days){
         form_set_error('field_total_days',t('Available annual leave less than request'));
       }
     }
@@ -581,6 +588,18 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
   $days = ciandt_wechat_vocation_calculate_duration($data);
   $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $days;
+  
+  //annual leave
+  if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value']=='annual-leave'){
+    global $user;
+    $user_info = user_load($user->uid);
+    $freeze_num = $user_info->field_freeze_annual_leave[LANGUAGE_NONE][0]['value']+$days;
+    $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value']-$days;
+    @$account->uid = $user->uid;
+    $fields['field_freeze_annual_leave'][LANGUAGE_NONE][0]['value'] = $freeze_num;
+    $fields['field_annual_leave'][LANGUAGE_NONE][0]['value'] = $num;
+    @user_save($account,$fields);
+  }
 
   $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
   $approve_user_id_arr = explode(',', $approve_user_id_all);
@@ -618,6 +637,20 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   }
   //fix node
   if(arg(1)>0){
+    
+    //annual leave
+    $node_info = node_load(arg(1));
+    global $user;
+    if($node_info->field_type_of_leave[LANGUAGE_NONE][0]['value']=='annual-leave' && $node_info->	field_vocation_status[LANGUAGE_NONE][0]['value']=='pending'){
+      $user_info = user_load($user->uid);
+      $freeze_num = $user_info->field_freeze_annual_leave[LANGUAGE_NONE][0]['value']-$node_info->field_total_days[LANGUAGE_NONE][0]['value'];
+      $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value']+$node_info->field_total_days[LANGUAGE_NONE][0]['value'];
+      @$account->uid = $user->uid;
+      $fields['field_freeze_annual_leave'][LANGUAGE_NONE][0]['value'] = $freeze_num;
+      $fields['field_annual_leave'][LANGUAGE_NONE][0]['value'] = $num;
+      @user_save($account,$fields);
+    }
+    
     $form_state['values']['nid'] = arg(1);
     $form_state['values']['vid'] = arg(1);
   }
@@ -747,7 +780,27 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
         }
         $node->field_vocation_status[LANGUAGE_NONE][0]['value'] = $new_status;
         $node->field_reject_reason[LANGUAGE_NONE][0]['value'] = $reject_reason;
-
+        
+        
+        //annual leave
+        if($node->field_type_of_leave[LANGUAGE_NONE][0]['value']=='annual-leave'){
+          if($new_status=='approved'){
+            $user_info = user_load($node->uid);
+            $freeze_num = $user_info->field_freeze_annual_leave[LANGUAGE_NONE][0]['value']-$node->field_total_days[LANGUAGE_NONE][0]['value'];
+            @$account->uid = $node->uid;
+            $fields['field_freeze_annual_leave'][LANGUAGE_NONE][0]['value'] = $freeze_num;
+            @user_save($account,$fields);
+          }elseif($new_status=='rejected'){
+            $user_info = user_load($node->uid);
+            $freeze_num = $user_info->field_freeze_annual_leave[LANGUAGE_NONE][0]['value']-$node->field_total_days[LANGUAGE_NONE][0]['value'];
+            $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value']+$node->field_total_days[LANGUAGE_NONE][0]['value'];
+            @$account->uid = $node->uid;
+            $fields['field_freeze_annual_leave'][LANGUAGE_NONE][0]['value'] = $freeze_num;
+            $fields['field_annual_leave'][LANGUAGE_NONE][0]['value'] = $num;
+            @user_save($account,$fields);
+          }
+        }  
+        
         node_save($node);
         if ($node->field_vocation_status[LANGUAGE_NONE][0]['value'] == 'approved') {
           rules_invoke_event('vocation_approved', $node);
