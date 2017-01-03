@@ -987,7 +987,8 @@ function ciandt_wechat_vacation_cron() {
     
     if(isset($user_info->field_positive_time[LANGUAGE_NONE][0]['value'])){
       $income_time = date("Y-m-d",strtotime($user_info->field_positive_time[LANGUAGE_NONE][0]['value']."+1 year"));
-      if($income_time<=date("Y-m-d")){
+      $income_time2 = date('m-d',strtotime($user_info->field_positive_time[LANGUAGE_NONE][0]['value']));
+      if($income_time<=date("Y-m-d") && $income_time2==date("m-d")){
         $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value']+10;
         @$account->uid = $arr['uid'];
         $fields['field_annual_leave'][LANGUAGE_NONE][0]['value'] = $num;
