@@ -679,7 +679,7 @@ function _ciandt_wechat_vacation_approval_buttons($form, &$form_state) {
     foreach($node->field_approver[LANGUAGE_NONE] as $value){
         $weixin_userid[] = $value['entity']->name;
     }
-$_SESSION['weixin']['user_id'] = 'jason';
+
     // Validate User.
     if (empty($_SESSION['weixin']['user_id']) || !in_array($_SESSION['weixin']['user_id'], $weixin_userid)) {
       return FALSE;
