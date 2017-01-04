@@ -564,7 +564,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
       $num = $user_info->field_annual_leave[LANGUAGE_NONE][0]['value'];
       if(arg(1) > 0){
         $node_info = node_load(arg(1));
-        if($node_info->field_type_of_leave[LANGUAGE_NONE][0]['value'] == 'annual-leave'){
+        if($node_info->field_type_of_leave[LANGUAGE_NONE][0]['value'] == 'annual-leave' && $node_info->	field_vocation_status[LANGUAGE_NONE][0]['value'] == 'pending'){
           $num = $num + $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
         }
       }
