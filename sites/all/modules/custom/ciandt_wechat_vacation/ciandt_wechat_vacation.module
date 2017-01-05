@@ -63,8 +63,20 @@ function ciandt_wechat_calculate_duration_api($starttime,$endtime){
 function ciandt_wechat_remaining_vacation_days(){
   global $user;
   $user_info = user_load($user->uid);
-  $output = t("remaining vacation days: ").$user_info->field_annual_leave[LANGUAGE_NONE][0]['value'];
-  return $output;
+  return theme('remaining_vacation_days', array('remaining_vacation_days' => $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value']));
+}
+
+
+/**
+ * hook_theme.
+ */
+function ciandt_wechat_vacation_theme() {
+  return array(
+    'remaining_vacation_days' => array(
+      'variables' => array('remaining_vacation_days' => 0),
+      'template' => 'templates/remaining-vacation-days',
+    ),
+  );
 }
 
 
@@ -1013,7 +1025,7 @@ function ciandt_wechat_vacation_calculate_official_vacation($start_time='', $now
 /**
  * annual leave(company)
  */
-function ciandt_wechat_vacation_auto_annual_leave_commpany(){
+function ciandt_wechat_vacation_adjust_commpany_vacation(){
   
   $year_ago_time = date("Y-m-d", strtotime(date("Y-m-d")."-1 year"));
   $query = db_select('users', 'u');
@@ -1145,6 +1157,6 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
 * Implements hook_cron().
 */
 function ciandt_wechat_vacation_cron() {  
-  ciandt_wechat_vacation_auto_annual_leave_commpany();
+  ciandt_wechat_vacation_adjust_commpany_vacation();
   ciandt_wechat_vacation_adjust_official_vacation();  
 }
