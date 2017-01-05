@@ -63,7 +63,7 @@ function ciandt_wechat_calculate_duration_api($starttime,$endtime){
 function ciandt_wechat_remaining_vacation_days(){
   global $user;
   $user_info = user_load($user->uid);
-  $output = "remaining vacation days: ".$user_info->field_annual_leave[LANGUAGE_NONE][0]['value'];
+  $output = t("remaining vacation days: ").$user_info->field_annual_leave[LANGUAGE_NONE][0]['value'];
   return $output;
 }
 
