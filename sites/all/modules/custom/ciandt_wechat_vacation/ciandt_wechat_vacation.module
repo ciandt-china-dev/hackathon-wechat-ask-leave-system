@@ -38,7 +38,7 @@ function ciandt_wechat_vacation_menu() {
     'description' => 'Set china official holiday nid.',
   );
   
-  $items['remaining_vacation_days'] = array(    
+  $items['vacation/remaining-days'] = array(    
     'access arguments' => array('access user profiles'),
     'page callback' => 'ciandt_wechat_remaining_vacation_days',
     'title' => 'Remaining Vacation Days',
