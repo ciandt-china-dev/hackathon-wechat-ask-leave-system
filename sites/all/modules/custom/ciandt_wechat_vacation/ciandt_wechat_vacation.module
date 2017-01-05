@@ -372,6 +372,27 @@ function ciandt_wechat_vacation_block_view($delta = '') {
  * @param string or int or object... $form
  * @param string or int or object... $form_state
  */
+function ciandt_wechat_vacation_form_user_profile_form_alter(&$form, &$form_state) {
+  global $user;
+  if(!in_array('administrator', $user->roles)){
+    unset($form['field_weixin_name']);
+    unset($form['field_position']);
+    unset($form['field_annual_leave']);
+    unset($form['field_freeze_annual_leave']);
+    unset($form['field_positive_time']);
+    unset($form['field_graduation_time']);
+    unset($form['field_entry_time']);
+    unset($form['field_last_give_time_official']);
+    unset($form['field_last_give_time_company']);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @param string or int or object... $form
+ * @param string or int or object... $form_state
+ */
 function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_state) {
   global $user;
   if (user_is_anonymous()) {
