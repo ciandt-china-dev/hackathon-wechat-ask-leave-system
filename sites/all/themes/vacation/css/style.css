@@ -435,6 +435,11 @@ h2 {
   font-weight: bold;
 }
 
+.remaining-days {
+  font-size: 34px;
+  font-weight: bold;
+}
+
 .circle {
   display: inline-block;
   width: 90px;
