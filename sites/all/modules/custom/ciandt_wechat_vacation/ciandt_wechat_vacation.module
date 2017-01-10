@@ -1001,7 +1001,11 @@ function ciandt_wechat_vacation_calculate_company_vacation($positive_time, $nowt
     }else{
       $start_time = date("Y",strtotime($nowtime."-1 year"))."-".$positive_time_m_d;
     }
-    $company_annual_leave = intval((strtotime($nowtime)-strtotime($start_time)) / 86400 / 365 * 10);
+    if($positive_year_time>$start_time){
+      $company_annual_leave = 0;
+    }else{
+      $company_annual_leave = intval((strtotime($nowtime)-strtotime($start_time)) / 86400 / 365 * 10);
+    }    
   }else{
     $company_annual_leave = 0;
   }
@@ -1141,7 +1145,7 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
         }
 
       }      
-      
+
       $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $official_annual_leave;
       $account = $user_info;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
