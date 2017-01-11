@@ -586,6 +586,9 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
     if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'] == 'annual-leave'){
       global $user;
       $user_info = user_load($user->uid);
+      if(empty($user_info->field_formal_employee_time)){
+        form_set_error('field_type_of_leave', t('You can not take annual leave'));
+      }
       $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
       $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
       $duration = ciandt_wechat_vocation_calculate_duration($data);
@@ -596,6 +599,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
           $annual_leave = $annual_leave + $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
         }
       }
+      $annual_leave = $annual_leave + 3;
       if($annual_leave < $duration){
         form_set_error('field_total_days', t('Available remaining vacation less than request'));
       }

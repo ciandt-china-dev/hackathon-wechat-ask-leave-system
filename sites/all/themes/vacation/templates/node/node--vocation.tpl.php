@@ -126,6 +126,9 @@ else:
   $start_date_circle = $end_date_circle = $start_date = $end_date = '';
 endif;
 ?>
+<?php
+  $user_info = user_load($node->uid);
+?>
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
 
   <?php print $user_picture; ?>
@@ -174,6 +177,10 @@ endif;
       <div class="item">
         <?php print t("End:");?>
         <?php print $end_date;?>
+      </div>
+      <div class="item">
+        <?php print $user_info->name." ".t("Remaining Vacation Days:");?>
+        <?php print $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'];?>
       </div>
       <?php if(!empty($content['field_comment'])): ?>
         <div class="item">
