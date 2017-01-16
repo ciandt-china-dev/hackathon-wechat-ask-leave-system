@@ -160,7 +160,7 @@ label {
 .form-select,
 .form-text {
   padding: 8px;
-  font-size: 16px;
+  font-size: 14px;
   border: 1px solid rgba(44, 44, 43, 0.15);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -260,9 +260,16 @@ fieldset {
 }
 
 .popup .user-item {
-  padding: 8px 20px;
+  padding: 8px 15px;
   border-bottom: 1px solid #ccc;
   font-size: 0;
+  width: 50%;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.popup .user-item:nth-child(odd){
+  border-right: 1px solid #ccc;
 }
 
 .popup .user-item .image {
@@ -274,7 +281,7 @@ fieldset {
 .popup .user-item .name {
   display: inline-block;
   vertical-align: middle;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .selected-approver img,
@@ -283,6 +290,7 @@ fieldset {
   height: 40px;
   border-radius: 20px;
   display: block;
+  margin: 0 auto;
 }
 
 .selected-approver .name {
@@ -380,6 +388,8 @@ fieldset {
   -webkit-appearance: none;
   height: 36px;
   vertical-align: top;
+  font-size: 14px;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 
@@ -479,10 +489,6 @@ h2 {
 
 
 /* List */
-
-
-/*.view-vacation-pending .views-field {*/
-
 .view-vacation-approved,
 .view-vacation-history,
 .view-vacation-pending {
