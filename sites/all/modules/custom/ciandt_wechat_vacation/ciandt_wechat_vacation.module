@@ -268,8 +268,6 @@ function _ciandt_wechat_vacation_init_obj() {
       'appsecret' => variable_get('enterprise_wechat_secret'),
       'encodingaeskey' => variable_get('enterprise_wechat_dev_mode_encoding_aes_key'),
     );
-//    $options['token'] = 'wNmiTryqVuEJgBw';
-//    $options['encodingaeskey'] = '8cYGM2XvO2xMmQia2MS7a4d3NTaivrnHwF91RLwF8Vs';
     $we_obj = new Wechat($options);
   }
   return $we_obj;
