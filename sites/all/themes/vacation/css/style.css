@@ -255,6 +255,8 @@ fieldset {
   list-style: none;
   margin: 0;
   padding: 0;
+  max-height: 90%;
+  overflow: auto;
 }
 
 .popup .user-item {
@@ -377,6 +379,7 @@ fieldset {
   padding: 5px 8px;
   -webkit-appearance: none;
   height: 36px;
+  vertical-align: top;
 }
 
 
