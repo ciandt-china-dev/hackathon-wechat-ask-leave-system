@@ -298,7 +298,7 @@ function _ciandt_wechat_vacation_get_tag_lists() {
             'name' => $info['name'],
           ];
         }
-        return $user_infos;
+        return ksort($user_infos);
       }
     }
   }
