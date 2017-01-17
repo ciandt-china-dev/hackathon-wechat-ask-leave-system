@@ -408,6 +408,12 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   }
   // Get approvers list.
   $options = _ciandt_wechat_vacation_get_tag_lists();
+  foreach ($options as $key => $val) {
+    $strtolower_key = strtolower($key);
+    unset($options[$key]);
+    $options[$strtolower_key] = $val;
+  }
+  ksort($options);
   // Get rid of current login user.
   if (isset($user->name) && isset($options[$user->name])) {
     unset($options[$user->name]);
