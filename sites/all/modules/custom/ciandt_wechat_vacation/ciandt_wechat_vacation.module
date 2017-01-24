@@ -329,7 +329,7 @@ function _ciandt_wechat_vacation_authorize() {
 
     $user_info = $we_obj->getUserInfo($user_id);
     $_SESSION['weixin'] = [
-      'user_id' => $user_id,
+      'user_id' => strtolower($user_id),
       'name' => $user_info['name'],
       'email' => $user_info['email'],
     ];
