@@ -623,7 +623,6 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $duration;
   
   global $user;
-  
   //annual leave
   if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value']=='annual-leave'){
     $user_info = user_load($user->uid);
@@ -634,6 +633,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
     $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
     $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
     user_save($account, $fields);
+    ciandt_wechat_vacation_log('年假',$duration,$user_info->uid,"年假冻结",'Freeze');
   }
 
   $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
@@ -683,6 +683,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
       $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       user_save($account, $fields);
+      ciandt_wechat_vacation_log('年假',$node_info->field_total_days[LANGUAGE_NONE][0]['value'],$user->uid,"年假解冻",'Unfreeze');
     }
     $form_state['values']['nid'] = arg(1);
     $form_state['values']['vid'] = arg(1);
@@ -823,6 +824,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
             $account = $user_info;
             $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
             user_save($account,$fields);
+            ciandt_wechat_vacation_log('年假',$node->field_total_days[LANGUAGE_NONE][0]['value'],$user_info->uid,"年假冻结减少",'Delete');
           }elseif($new_status == 'rejected'){
             $user_info = user_load($node->uid);
             $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] - $node->field_total_days[LANGUAGE_NONE][0]['value'];
@@ -831,6 +833,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
             $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
             $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
             user_save($account, $fields);
+            ciandt_wechat_vacation_log('年假',$node->field_total_days[LANGUAGE_NONE][0]['value'],$user_info->uid,"年假解冻",'Unfreeze');
           }
         }  
         
@@ -1074,7 +1077,10 @@ function ciandt_wechat_vacation_adjust_commpany_vacation(){
       $account = $user_info;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       $fields['field_company_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
-      user_save($account, $fields);  
+      user_save($account, $fields); 
+      if($company_annual_leave!=0){
+        ciandt_wechat_vacation_log('年资假',$company_annual_leave,$user_info->uid,"年资假增加");
+      }      
     }
   }
   
@@ -1155,9 +1161,38 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
       $account = $user_info;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       $fields['field_official_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
-      user_save($account, $fields);  
+      user_save($account, $fields); 
+      if($official_annual_leave!=0){
+        ciandt_wechat_vacation_log('年休假',$official_annual_leave,$user_info->uid,"年休假增加");
+      }
     }    
   }
+}
+
+/**
+ * Add vacation days log
+ */
+function ciandt_wechat_vacation_log($type='年假',$days=0,$user_id,$description,$status='Add'){
+  $user_info = user_load($user_id);
+  if($status=='Add'){
+    $user_status = '增加';
+  }elseif($status=='Delete'){
+    $user_status = '减少';
+  }elseif($status=='Freeze'){
+    $user_status = '冻结';
+  }else{
+    $user_status = '解冻';
+  }
+  $node = (object)array();
+  global $user;
+  $node->uid = $user->uid;
+  $node->title = $user_info->name.$user_status.$type.$days."天";
+  $node->field_days[LANGUAGE_NONE][0]['value'] = $days;
+  $node->field_status[LANGUAGE_NONE][0]['value'] = $status;
+  $node->field_description[LANGUAGE_NONE][0]['value'] = $description;
+  $node->field_log_user[LANGUAGE_NONE][0]['target_id'] = $user_id;
+  $node->type = 'vacation_days_logs';
+  node_save($node);
 }
 
 
@@ -1168,4 +1203,40 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
 function ciandt_wechat_vacation_cron() {  
   ciandt_wechat_vacation_adjust_commpany_vacation();
   ciandt_wechat_vacation_adjust_official_vacation();  
+}
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ */
+function ciandt_wechat_vacation_form_vacation_days_logs_node_form_alter(&$form, &$form_state){
+  array_unshift($form['actions']["submit"]["#submit"], 'ciandt_wechat_vacation_form_vacation_days_logs_node_form_submit');
+}
+
+
+function ciandt_wechat_vacation_form_vacation_days_logs_node_form_submit(&$form, &$form_state){
+  $status = $form_state['values']['field_status'][LANGUAGE_NONE][0]['value'];
+  $days = $form_state['values']['field_days'][LANGUAGE_NONE][0]['value'];
+  $user_id = $form_state['values']['field_log_user'][LANGUAGE_NONE][0]['target_id'];
+  $user_info = user_load($user_id);
+  $account = $user_info;
+  if($status=='Add'){  
+    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $days;
+    $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
+  }elseif($status=='Delete'){
+    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] - $days;
+    $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
+  }elseif($status=='Freeze'){
+    $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] + $days;
+    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] - $days;
+    $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
+    $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
+  }elseif($status=='Unfreeze'){
+    $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] - $days;
+    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $days;
+    $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
+    $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
+  }
+  user_save($account, $fields);
 }
