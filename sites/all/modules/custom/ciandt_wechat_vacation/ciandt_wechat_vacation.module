@@ -634,8 +634,6 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
     $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
     $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
     user_save($account, $fields);
-    //Add annual leave logs
-    watchdog($user_info->name.t(' annual leave logs'), t('Frozen annual leave @days day', array('@days' => $duration)));
   }
 
   $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
@@ -685,8 +683,6 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
       $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       user_save($account, $fields);
-      //Add annual leave logs
-      watchdog($user_info->name.t(' annual leave logs'), t('Thaw annual leave @days day', array('@days' => $node_info->field_total_days[LANGUAGE_NONE][0]['value'])));
     }
     $form_state['values']['nid'] = arg(1);
     $form_state['values']['vid'] = arg(1);
@@ -827,8 +823,6 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
             $account = $user_info;
             $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
             user_save($account,$fields);
-            //Add annual leave logs
-            watchdog($user_info->name.t(' annual leave logs'), t('Annual leave is reduced by @days day', array('@days' => $node->field_total_days[LANGUAGE_NONE][0]['value'])));
           }elseif($new_status == 'rejected'){
             $user_info = user_load($node->uid);
             $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] - $node->field_total_days[LANGUAGE_NONE][0]['value'];
@@ -837,8 +831,6 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
             $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
             $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
             user_save($account, $fields);
-            //Add annual leave logs
-            watchdog($user_info->name.t(' annual leave logs'), t('Thaw annual leave for @days day', array('@days' => $node->field_total_days[LANGUAGE_NONE][0]['value'])));
           }
         }  
         
@@ -1083,10 +1075,6 @@ function ciandt_wechat_vacation_adjust_commpany_vacation(){
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       $fields['field_company_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
       user_save($account, $fields);  
-      //Add annual leave logs
-      if($company_annual_leave!=0){
-        watchdog($user_info->name.t(' annual leave logs'), t('Add annual leave(company) for @days day', array('@days' => $company_annual_leave)));      
-      }
     }
   }
   
@@ -1168,10 +1156,6 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       $fields['field_official_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
       user_save($account, $fields);  
-      //Add annual leave logs
-      if($official_annual_leave!=0){
-        watchdog($user_info->name.t(' annual leave logs'), t('Add annual leave(official) for @days day', array('@days' => $official_annual_leave)));      
-      }
     }    
   }
 }
