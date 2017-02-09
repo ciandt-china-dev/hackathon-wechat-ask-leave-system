@@ -635,7 +635,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
     $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
     user_save($account, $fields);
     //Add annual leave logs
-    watchdog(t('annual leave logs'), t('Frozen annual leave @days day', array('@days' => $duration)), array(), WATCHDOG_INFO);
+    watchdog(t('Update Vacation By Request'), t('Freeze annual leave by @days days with user vacation created', array('@days' => $duration)), array(), WATCHDOG_INFO);
   }
 
   $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
@@ -686,7 +686,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       user_save($account, $fields);
       //Add annual leave logs
-      watchdog(t('annual leave logs'), t('Thaw annual leave @days day', array('@days' => $node_info->field_total_days[LANGUAGE_NONE][0]['value'])), array(), WATCHDOG_INFO);
+      watchdog(t('Update Vacation By Request'), t('Thaw annual leave by @days days with user vacation updated', array('@days' => $node_info->field_total_days[LANGUAGE_NONE][0]['value'])), array(), WATCHDOG_INFO);
     }
     $form_state['values']['nid'] = arg(1);
     $form_state['values']['vid'] = arg(1);
@@ -828,7 +828,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
             $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
             user_save($account,$fields);
             //Add annual leave logs
-            watchdog(t('annual leave logs'), t('Annual leave is reduced by @days day', array('@days' => $node->field_total_days[LANGUAGE_NONE][0]['value'])), array(), WATCHDOG_INFO);
+            custom_watchdog($user_info->uid, t('Update Vacation By Request'), t('Annual leave is reduced by @days day with vacation approved', array('@days' => $node->field_total_days[LANGUAGE_NONE][0]['value'])), array(), WATCHDOG_INFO);
           }elseif($new_status == 'rejected'){
             $user_info = user_load($node->uid);
             $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] - $node->field_total_days[LANGUAGE_NONE][0]['value'];
@@ -838,7 +838,7 @@ function _ciandt_wechat_vacation_approval_buttons_validate($form, &$form_state) 
             $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
             user_save($account, $fields);
             //Add annual leave logs
-            watchdog(t('annual leave logs'), t('Thaw annual leave for @days day', array('@days' => $node->field_total_days[LANGUAGE_NONE][0]['value'])), array(), WATCHDOG_INFO);
+            custom_watchdog($user_info->uid, t('Update Vacation By Request'), t('Thaw annual leave by @days day with vacation rejected', array('@days' => $node->field_total_days[LANGUAGE_NONE][0]['value'])), array(), WATCHDOG_INFO);
           }
         }  
         
@@ -1085,7 +1085,7 @@ function ciandt_wechat_vacation_adjust_commpany_vacation(){
       user_save($account, $fields);  
       //Add annual leave logs
       if($company_annual_leave!=0){
-        custom_watchdog(t(' annual leave logs'), t('Add annual leave(company) for @days day', array('@days' => $company_annual_leave)), array(), WATCHDOG_INFO);      
+        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(company) for @days day', array('@days' => $company_annual_leave)), array(), WATCHDOG_INFO);      
       }
     }
   }
@@ -1170,7 +1170,7 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
       user_save($account, $fields);  
       //Add annual leave logs
       if($official_annual_leave!=0){
-        custom_watchdog(t('annual leave logs'), t('Add annual leave(official) for @days day', array('@days' => $official_annual_leave)), array(), WATCHDOG_INFO);      
+        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(official) for @days day', array('@days' => $official_annual_leave)), array(), WATCHDOG_INFO);      
       }
     }    
   }
