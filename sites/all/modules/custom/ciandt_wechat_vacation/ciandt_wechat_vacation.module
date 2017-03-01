@@ -1009,7 +1009,7 @@ function ciandt_wechat_vacation_calculate_company_vacation($positive_time, $nowt
     $positive_time_m_d = date("m-d", strtotime($positive_time."+1 year"));//Positive date of the month
     
     //If the current date is greater than the positive date of the month
-    if($nowtime_m_d >= $positive_time_m_d){
+    if($nowtime_m_d > $positive_time_m_d){
       $start_time = date("Y",strtotime($nowtime))."-".$positive_time_m_d;
     }else{
       $start_time = date("Y",strtotime($nowtime."-1 year"))."-".$positive_time_m_d;
@@ -1198,5 +1198,5 @@ function custom_watchdog($replace_user, $type, $message, $variables = array(), $
   $user = $replace_user;
   watchdog($type, $message, $variables, $severity, $link);
   $user=$old_user;
-  drupal_save_session(TRUE);  
+  drupal_save_session(TRUE); 
 }
