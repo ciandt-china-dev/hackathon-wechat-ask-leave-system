@@ -1064,12 +1064,13 @@ function ciandt_wechat_vacation_adjust_commpany_vacation(){
         }else{
           $start_time = date("Y",strtotime($nowtime."-1 year"))."-".$positive_time_m_d;
         }
-        if($start_time <= $user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value']){
+        if(strtotime($start_time) < strtotime($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
           $invalid_days = ciandt_wechat_vacation_calculate_company_vacation($user_info->field_formal_employee_time[LANGUAGE_NONE][0]['value'], $user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value']);        
           $company_annual_leave = $company_annual_leave - $invalid_days;
         }
       }
-
+echo $company_annual_leave;
+die();
       $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $company_annual_leave;
       $account = $user_info;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
