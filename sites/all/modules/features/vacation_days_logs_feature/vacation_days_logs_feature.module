@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Vacation days logs feature feature.
+ */
+
+include_once 'vacation_days_logs_feature.features.inc';
