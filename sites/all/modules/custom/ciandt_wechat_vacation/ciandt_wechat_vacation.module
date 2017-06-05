@@ -403,7 +403,9 @@ function ciandt_wechat_vacation_block_view($delta = '') {
  */
 function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_state) {
   global $user;
-
+  if (user_is_anonymous()) {
+    _ciandt_wechat_vacation_authorize();
+  }
   // Get approvers list.
   $options = _ciandt_wechat_vacation_get_tag_lists();
   // Get rid of current login user.
