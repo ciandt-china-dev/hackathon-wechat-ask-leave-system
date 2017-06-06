@@ -933,13 +933,16 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
       $user_ids = array();
       foreach ($view->result as $k => $v) {
           $user_ids[] = $v->users_node_uid;
-      }      
-      
+      }
+
       $query = db_select('field_data_field_leave_duration','d')
         ->condition('d.field_leave_duration_value',$endtime,'<=')          
         ->condition('d.field_leave_duration_value2',$starttime,'>=');
       $query->leftJoin('node', 'n', 'n.nid = d.entity_id');
-      $query->condition('n.uid', $user_ids, 'in');
+
+      if(!empty($user_ids)) {
+        $query->condition('n.uid', $user_ids, 'in');
+      }
       
       if(@$_GET['field_type_of_leave_value'] != 'All' and !empty($_GET['field_type_of_leave_value'])){
         $query->leftJoin('field_data_field_type_of_leave', 'v', 'd.entity_id = v.entity_id');
