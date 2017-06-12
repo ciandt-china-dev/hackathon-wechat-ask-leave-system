@@ -91,7 +91,7 @@ select::-ms-expand {
 
 /* ------------------ Reset Styles ------------------ */
 
-.page-wap-vacation-summary #main-wrapper,
+.page-vacation-summary #main-wrapper,
 .page-vacation-edit #main-wrapper,
 .page-vacation-request #main-wrapper {
   padding: 0 20px;
@@ -239,13 +239,18 @@ label {
   font-weight:normal;
 }
 
-.page-wap-vacation-summary .views-field {
+.views-table .views-field-field-total-days,
+.views-table .views-field-nid{
+  text-align: center;
+}
+
+.page-vacation-summary .views-field {
   width: 21%;
   padding: 10px 2%;
   border:none;
 }
 
-.page-wap-vacation-summary .pager {
+.page-vacation-summary .pager {
   margin:20px -20px;
 }
 
