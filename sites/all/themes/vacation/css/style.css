@@ -91,6 +91,7 @@ select::-ms-expand {
 
 /* ------------------ Reset Styles ------------------ */
 
+.page-wap-vacation-summary #main-wrapper,
 .page-vacation-edit #main-wrapper,
 .page-vacation-request #main-wrapper {
   padding: 0 20px;
@@ -217,8 +218,35 @@ label {
   opacity: 0.8;
 }
 
+.views-submit-button,
 .form-actions {
   margin: 20px 0 30px;
+}
+
+.views-table {
+  width:100%;
+}
+
+.views-table tr {
+  border:none;
+}
+
+.views-table tr.odd {
+  background: #fff;
+}
+
+.views-table .views-field {
+  font-weight:normal;
+}
+
+.page-wap-vacation-summary .views-field {
+  width: 21%;
+  padding: 10px 2%;
+  border:none;
+}
+
+.page-wap-vacation-summary .pager {
+  margin:20px -20px;
 }
 
 fieldset {

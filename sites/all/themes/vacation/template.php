@@ -21,4 +21,5 @@ function vacation_theme($existing, $type, $theme, $path) {
 function vacation_css_alter(&$css) {
   // Remove defaults.css file.
   unset($css[drupal_get_path('module', 'date') . '/date_api/date.css']);
+  unset($css[drupal_get_path('module', 'views') . '/css/views.css']);
 }
