@@ -11,6 +11,7 @@ stylesheets[all][] = css/style.css
 
 scripts[] = scripts/layer.m.js
 scripts[] = scripts/vacation.js
+scripts[] = scripts/carbon_copy.js
 
 regions[header] = Header
 regions[help] = Help

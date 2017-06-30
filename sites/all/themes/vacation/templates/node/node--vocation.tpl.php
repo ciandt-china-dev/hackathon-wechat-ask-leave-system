@@ -88,7 +88,7 @@ foreach($field_approver_vocation_status as $key => $v){
           $approver_vocation_status .= "<br/>".$field_approver[$key]['entity']->name."(".t($v['entity']->name).")";
       }else{
           $approver_vocation_status = $field_approver[$key]['entity']->name."(".t($v['entity']->name).")";
-      } 
+      }
       if($v['entity']->name=='approved'){
           $edit = false;
       }
@@ -164,14 +164,14 @@ endif;
       <div class="circle-item">
         <div class="circle">
           <?php print $end_date_circle;?>
-        </div> 
+        </div>
         <?php print t("End Date");?>
       </div>
     </div>
 
     <div class="detail-content">
       <div class="item">
-        <?php print t("Start:");?> 
+        <?php print t("Start:");?>
         <?php print $start_date;?>
       </div>
       <div class="item">
@@ -190,6 +190,11 @@ endif;
       <?php if(!empty($content['field_approver'])): ?>
         <div class="item">
           <?php print render($content['field_approver']);?>
+        </div>
+      <?php endif; ?>
+      <?php if (!empty($content['field_carbon_copy_user'])): ?>
+        <div class="item">
+          <?php print render($content['field_carbon_copy_user']); ?>
         </div>
       <?php endif; ?>
       <?php if(!empty($approver_vocation_status)): ?>
