@@ -7,10 +7,15 @@
 /**
  * Function to get user list by department id.
  */
-function _ciandt_wechat_vacation_get_user_lists($department = 1) {
-  if ($cache = cache_get('ciandt_wechat_user_list_department_' . $department)) {
-    return $cache->data;
-  }
+function _ciandt_wechat_vacation_get_user_lists() {
+  $user_infos = variable_get('ciandt_wechat_user_list_all');
+  return !empty($user_infos) ? $user_infos : array();
+}
+
+/**
+ * Function to get user list by cron.
+ */
+function _ciandt_wechat_vacation_get_all_user($department = 1) {
   $we_obj = _ciandt_wechat_vacation_init_obj();
   $user_list = $we_obj->getUserList($department);
   $user_infos = [];
@@ -27,6 +32,6 @@ function _ciandt_wechat_vacation_get_user_lists($department = 1) {
     }
     ksort($user_infos);
   }
-  cache_set('ciandt_wechat_user_list_department_' . $department, $user_infos);
+  variable_set('ciandt_wechat_user_list_all', $user_infos);
   return $user_infos;
 }
