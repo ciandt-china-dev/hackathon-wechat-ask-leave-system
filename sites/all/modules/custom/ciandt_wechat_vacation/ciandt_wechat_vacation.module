@@ -279,9 +279,13 @@ function _ciandt_wechat_vacation_init_obj() {
  * Function to get tag list of Weixin API.
  */
 function _ciandt_wechat_vacation_get_tag_lists() {
+  $tag_name = variable_get('vacation_approver_wechat_tag_name');
+  if ($cache = cache_get('ciandt_wechat_user_list_tag_' . $tag_name)) {
+    return $cache->data;
+  }
   $we_obj = _ciandt_wechat_vacation_init_obj();
   $taglist = $we_obj->getTagList();
-  $tag_name = variable_get('vacation_approver_wechat_tag_name');
+
   if (isset($taglist['taglist'])) {
     foreach ($taglist['taglist'] as $v) {
       if ($tag_name == $v['tagname']) {
@@ -300,6 +304,7 @@ function _ciandt_wechat_vacation_get_tag_lists() {
           ];
         }
         ksort($user_infos);
+        cache_set('ciandt_wechat_user_list_tag_' . $tag_name, $user_infos);
         return $user_infos;
       }
     }

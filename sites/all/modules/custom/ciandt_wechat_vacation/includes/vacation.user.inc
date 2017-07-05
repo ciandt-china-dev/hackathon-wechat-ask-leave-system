@@ -9,7 +9,7 @@
  */
 function _ciandt_wechat_vacation_get_user_lists() {
   $user_infos = variable_get('ciandt_wechat_user_list_all');
-  return $user_infos;
+  return !empty($user_infos) ? $user_infos : array();
 }
 
 /**
