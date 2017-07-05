@@ -56,12 +56,12 @@
       if (!hasCCUid(uid)) {
         ccUidArray.push(uid);
         $userItem = $(this).clone();
-        $userItem.append('<div class="cc-remove-approver">-</div>');
+        $userItem.append('<div class="remove-cc">-</div>');
         $('.selected-cc-field').append($userItem);
       }
     });
 
-    $('.selected-cc-field').on('click', '.cc-remove-approver', function() {
+    $('.selected-cc-field').on('click', '.remove-cc', function() {
       var $userItem = $(this).parent();
 
       removeUid($userItem.data('uid'));
