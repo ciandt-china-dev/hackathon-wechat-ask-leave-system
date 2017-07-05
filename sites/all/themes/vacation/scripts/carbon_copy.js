@@ -64,7 +64,7 @@
     $('.selected-cc-field').on('click', '.remove-cc', function() {
       var $userItem = $(this).parent();
 
-      removeUid($userItem.data('uid'));
+      removeCCUid($userItem.data('uid'));
       $userItem.remove();
     });
   });
