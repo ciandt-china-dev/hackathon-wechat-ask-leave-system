@@ -22,7 +22,7 @@
       var len = ccUidArray.length,
           i = 0;
       for (i; i < len; i++) {
-        if (uidArray[i] === uid) {
+        if (ccUidArray[i] === uid) {
           ccUidArray.splice(i, 1);
           return true;
         }
