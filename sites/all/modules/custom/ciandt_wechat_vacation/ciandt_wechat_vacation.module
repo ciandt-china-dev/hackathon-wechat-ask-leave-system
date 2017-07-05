@@ -1183,5 +1183,6 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
 */
 function ciandt_wechat_vacation_cron() {  
   ciandt_wechat_vacation_adjust_commpany_vacation();
-  ciandt_wechat_vacation_adjust_official_vacation();  
+  ciandt_wechat_vacation_adjust_official_vacation();
+  _ciandt_wechat_vacation_get_all_user();
 }
