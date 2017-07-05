@@ -336,7 +336,7 @@ fieldset {
 }
 
 .selected-approver .name,
-.selected-cc .name, {
+.selected-cc .name {
   font-size: 12px;
   display: block;
 }
@@ -367,7 +367,7 @@ fieldset {
 }
 
 .selected-approver .remove-approver,
-.selected-cc .remove-cc, {
+.selected-cc .remove-cc {
   display: block;
   font-weight: bold;
   font-size: 30px;
