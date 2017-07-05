@@ -264,7 +264,8 @@ fieldset {
   /*display: none;*/
 }
 
-.popup {
+.popup,
+.cc-popup {
   position: fixed;
   left: 0;
   top: 0;
@@ -275,17 +276,20 @@ fieldset {
   display: none;
 }
 
-.popup-top {
+.popup-top,
+.cc-popup-top {
   padding: 5px 12px;
   text-align: right;
   border-bottom: 1px solid #ccc;
 }
 
-.close-btn {
+.close-btn,
+.cc-popup-top {
   padding: 10px;
 }
 
-.popup ul {
+.popup ul,
+.cc-popup ul {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -293,7 +297,8 @@ fieldset {
   overflow: auto;
 }
 
-.popup .user-item {
+.popup .user-item,
+.cc-popup .user-item {
   padding: 8px 15px;
   border-bottom: 1px solid #ccc;
   font-size: 0;
@@ -302,17 +307,20 @@ fieldset {
   display: inline-block;
 }
 
-.popup .user-item:nth-child(odd){
+.popup .user-item:nth-child(odd),
+.cc-popup .user-item:nth-child(odd) {
   border-right: 1px solid #ccc;
 }
 
-.popup .user-item .image {
+.popup .user-item .image,
+.cc-popup .user-item .image {
   display: inline-block;
   vertical-align: middle;
   margin-right: 10px;
 }
 
-.popup .user-item .name {
+.popup .user-item .name,
+.cc-popup .user-item .name {
   display: inline-block;
   vertical-align: middle;
   font-size: 14px;
@@ -327,7 +335,8 @@ fieldset {
   margin: 0 auto;
 }
 
-.selected-approver .name {
+.selected-approver .name,
+.selected-cc .name, {
   font-size: 12px;
   display: block;
 }
@@ -336,7 +345,8 @@ fieldset {
   display: none;
 }
 
-.add-approver {
+.add-approver,
+.add-cc {
   width: 40px;
   height: 40px;
   background: #eee;
@@ -348,13 +358,16 @@ fieldset {
 }
 
 .add-approver,
-.selected-approver {
+.selected-approver,
+.add-cc,
+.selected-cc {
   display: inline-block;
   vertical-align: top;
   text-align: center;
 }
 
-.selected-approver .remove-approver {
+.selected-approver .remove-approver,
+.selected-cc .remove-cc, {
   display: block;
   font-weight: bold;
   font-size: 30px;
@@ -370,13 +383,15 @@ fieldset {
   top: -5px;
 }
 
-.selected-approver-field {
+.selected-approver-field,
+.selected-cc-field {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.selected-approver-field li {
+.selected-approver-field li,
+.selected-cc-field li {
   display: inline-block;
   position: relative;
   margin-right: 10px;

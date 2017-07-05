@@ -2,6 +2,7 @@
 <?php $endtime = strtotime($form['field_leave_duration'][LANGUAGE_NONE][0]['#default_value']['value2']);?>
 <?php unset($form["actions"]["preview"]);?>
 <?php unset($form["field_approver"][LANGUAGE_NONE]["add_more"]);?>
+<?php unset($form["field_carbon_copy_user"][LANGUAGE_NONE]["add_more"]);?>
 <?php unset($form["field_approver_vocation_status"]);?>
 <?php
 if (empty($form["nid"]['value'])) {
@@ -47,7 +48,28 @@ if (empty($form["nid"]['value'])) {
 	</div>
 	<div class="add-approver"></div>
 </div>
+<?php // Add CC user element. ?>
+<?php print render($form["field_carbon_copy_user"]);?>
+<div class="cc-wrapper">
+	<div class="selected-cc">
+		<ul class="selected-cc-field">
+			<?php if(!empty($form['cc_user_info_arr']['#value'])): ?>
+				<?php foreach (unserialize($form['cc_user_info_arr']['#value']) as $cc_user_info): ?>
+					<li class="user-item" data-uid="<?php print $cc_user_info['user_info_user_id'];?>">
+						<span class="image">
+							<img src="<?php print $cc_user_info['user_info_avatar'];?>">
+						</span>
+						<span class="name"><?php print $cc_user_info['user_info_name'];?></span>
+						<div class="remove-cc">-</div>
+					</li>
+				<?php endforeach;?>
+			<?php endif;?>
+		</ul>
+	</div>
+	<div class="add-cc"></div>
+</div>
 <?php print render($form["actions"]);?>
 <input name="approve_user_id" type="hidden" value="<?php if(!empty($form['userinfo_userid'])){print $form['userinfo_userid']['#value'];}?>" />
+<input name="cc_user_id" type="hidden" value="<?php if(!empty($form['cc_userinfo_userid'])){print $form['cc_userinfo_userid']['#value'];}?>" />
 <?php print drupal_render_children($form);?>
 

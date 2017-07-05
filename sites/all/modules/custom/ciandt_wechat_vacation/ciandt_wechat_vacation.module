@@ -5,6 +5,8 @@
  * Ciandt_wechat_vacation module.
  */
 define('DRUPAL_APPROVER_RID', 4);
+module_load_include('inc', 'ciandt_wechat_vacation', 'includes/vacation.user');
+module_load_include('inc', 'ciandt_wechat_vacation', 'includes/vacation.alter');
 /**
  * Implements hook_menu().
  */
@@ -292,7 +294,7 @@ function _ciandt_wechat_vacation_get_tag_lists() {
           $info['userid'] = strtolower($info['userid']);
           $user_infos[$info['userid']] = [
             'email' => $info['email'],
-            'avatar' => $info['avatar'] . '64',
+            'avatar' => substr($info['avatar'], 0, strrpos($info['avatar'], '/')) . '/100',
             'userid' => $info['userid'],
             'name' => $info['name'],
           ];
@@ -426,7 +428,10 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
     );
     $form_state['storage']['approve_user_list'] = $options;
   }
-  
+
+  // Alter form for CC user list placement.
+  _vocation_node_form_alter_cc_user_list_placement($form, $form_state, $user);  
+
   $form["field_total_days"]['#disabled'] = 'true';
 
   array_unshift($form['actions']["submit"]["#submit"], 'ciandt_wechat_vacation_form_vocation_node_form_submit');
@@ -462,7 +467,11 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
       '#type' => 'hidden',
       '#value' => serialize($user_info_arr),
     );
+
+    // Alter form for exit CC user info.
+    _vocation_node_form_alter_exist_cc_user_info($form, $form_state, $node);
     $field_type_of_leave = $node->field_type_of_leave[LANGUAGE_NONE][0]['value'];
+
     $starttime = $node->field_leave_duration[LANGUAGE_NONE][0]['value'];
     $endtime = $node->field_leave_duration[LANGUAGE_NONE][0]['value2'];
     $field_total_days = $node->field_total_days[LANGUAGE_NONE][0]['value'];
@@ -670,6 +679,10 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
     $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_id'] = $term_tid;//pending
     $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_type'] = 'taxonomy_term';
   }
+
+  // Alter field carbon copy form_state value by post value from front end.
+  _vocation_node_form_submit_alter_field_carbon_copy($form, $form_state, $approve_user_id_arr);
+
   //fix node
   if(arg(1) > 0){
     
