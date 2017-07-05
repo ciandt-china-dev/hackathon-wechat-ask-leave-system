@@ -20,7 +20,7 @@ function _ciandt_wechat_vacation_get_user_lists($department = 1) {
       $info['userid'] = strtolower($info['userid']);
       $user_infos[$info['userid']] = [
         'email' => $info['email'],
-        'avatar' => $info['avatar'] . '64',
+        'avatar' => substr($info['avatar'], 0, strrpos($info['avatar'], '/')) . '/100',
         'userid' => $info['userid'],
         'name' => $info['name'],
       ];
