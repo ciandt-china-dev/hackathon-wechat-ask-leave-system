@@ -1009,203 +1009,143 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
 }
 
 /**
- * calculate annual leave(company)
+ * Time calculator
  */
-function ciandt_wechat_vacation_calculate_company_vacation($positive_time, $nowtime=''){
-  if(empty($nowtime)){
-    $nowtime = date("Y-m-d");
+function ciandt_wechat_vacation_time_calculator($start_time, $end_time, $type = 'official'){
+
+  if($type == 'official'){
+    $total = 5;
+  }elseif($type == 'company'){
+    $total = 10;
   }
-  $positive_year_time = date("Y-m-d",strtotime($positive_time."+1 year"));
-  //Whether it is a full year
-  if($positive_year_time <= $nowtime){
-    $nowtime_m_d = date("m-d", strtotime($nowtime));//The current month
-    $positive_time_m_d = date("m-d", strtotime($positive_time."+1 year"));//Positive date of the month
-    
-    //If the current date is greater than the positive date of the month
-    if($nowtime_m_d > $positive_time_m_d){
-      $start_time = date("Y",strtotime($nowtime))."-".$positive_time_m_d;
-    }else{
-      $start_time = date("Y",strtotime($nowtime."-1 year"))."-".$positive_time_m_d;
-    }
-    if($positive_year_time>$start_time){
-      $company_annual_leave = 0;
-    }else{
-      $company_annual_leave = intval((strtotime($nowtime)-strtotime($start_time)) / 86400 / 365 * 10);
-    }    
+  if(!empty($start_time) && !empty($end_time) && $start_time < $end_time){
+    $time_difference = intval((($end_time-$start_time) / 86400 + 1) / 365 * $total);
   }else{
-    $company_annual_leave = 0;
+    $time_difference = 0;
   }
-  return $company_annual_leave;
+  return $time_difference;
 }
 
 /**
- * calculate annual leave(official)
+ * Adjust annual leave(official)
  */
-function ciandt_wechat_vacation_calculate_official_vacation($start_time='', $nowtime=''){
-  if(empty($start_time)){
-    $start_time = date("Y")."-01-01";
-  }
-  if(empty($nowtime)){
-    $nowtime = date("Y-m-d");
-  }
-  $official_annual_leave = intval((strtotime($nowtime)-strtotime($start_time)) / 86400 / 365 * 5);
-  return $official_annual_leave;
-}
-
-/**
- * annual leave(company)
- */
-function ciandt_wechat_vacation_adjust_commpany_vacation(){
-  
-  $year_ago_time = date("Y-m-d", strtotime(date("Y-m-d")."-1 year"));
-  $query = db_select('users', 'u');
-  $query->leftJoin('field_data_field_formal_employee_time', 't', 'u.uid = t.entity_id');
-  $result = $query->condition('t.entity_type', 'user', '=')          
-    ->condition('t.field_formal_employee_time_value', $year_ago_time, '<=')
-    ->fields('u', array('uid'))
-    ->execute();
-  while($arr = $result->fetchAssoc()){
-    $user_info = array();    
-    $user_info = user_load($arr['uid']);
-    
-    if(!isset($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-      $user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'] = '';
-    }
-    if($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'] != date("Y-m-d")." 00:00:00"){
-      //calculate annual leave
-      $company_annual_leave = ciandt_wechat_vacation_calculate_company_vacation($user_info->field_formal_employee_time[LANGUAGE_NONE][0]['value']);
-      if(isset($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-        $nowtime = date("Y-m-d");
-        $positive_time = $user_info->field_formal_employee_time[LANGUAGE_NONE][0]['value'];
-        $nowtime_m_d = date("m-d",strtotime($nowtime));//The current month
-        $positive_time_m_d = date("m-d",strtotime($positive_time."+1 year"));//Positive date of the month
-        //If the current date is greater than the positive date of the month
-        if($nowtime_m_d > $positive_time_m_d){
-          $start_time = date("Y",strtotime($nowtime))."-".$positive_time_m_d;
-        }else{
-          $start_time = date("Y",strtotime($nowtime."-1 year"))."-".$positive_time_m_d;
-        }
-        if(strtotime($start_time) < strtotime($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-          $invalid_days = ciandt_wechat_vacation_calculate_company_vacation($user_info->field_formal_employee_time[LANGUAGE_NONE][0]['value'], $user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value']);        
-          $company_annual_leave = $company_annual_leave - $invalid_days;
-        }
-      }
-
-      $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $company_annual_leave;
-      $account = $user_info;
-      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
-      $fields['field_company_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
-      user_save($account, $fields);  
-    }
-  }
-  
-}
-
-/**
-* annual leave(official)
-*/
 function ciandt_wechat_vacation_adjust_official_vacation(){
+
+  //Query user who graduated a year ago
   $year_ago_time = date("Y-m-d", strtotime(date("Y-m-d")."-1 year"));
+
   $query = db_select('users', 'u');
   $query->leftJoin('field_data_field_graduation_time', 't', 'u.uid = t.entity_id');
-  $result = $query->condition('t.entity_type', 'user', '=')          
+  $result = $query->condition('t.entity_type', 'user', '=')
     ->condition('t.field_graduation_time_value', $year_ago_time, '<=')
     ->fields('u', array('uid'))
     ->execute();
-  
+
   while($arr = $result->fetchAssoc()){
-    
-    $user_info = array();    
+    $user_info = array();
     $user_info = user_load($arr['uid']);
-    
+
+    $graduation_time = $user_info->field_graduation_time[LANGUAGE_NONE][0]['value'];
+    $after_graduation_year = strtotime($graduation_time."+1 year");
+    $join_company_time = strtotime($user_info->field_join_company_time[LANGUAGE_NONE][0]['value']);
+    $start_time = strtotime(date("Y")."-01-01");
+    $now_time = strtotime(date("Y-m-d"));
     if(!isset($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-      $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'] = '';
+      $update_time = 0;
+    }else{
+      $update_time = strtotime($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']);
     }
-    
-    if($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'] != date("Y-m-d")." 00:00:00"){
-      $graduation_year = date("Y-m-d", strtotime($user_info->field_graduation_time[LANGUAGE_NONE][0]['value']."+1 year"));//毕业满一年的时间
 
-      //Is the entry time this year
-      if(date("Y", strtotime($user_info->field_join_company_time[LANGUAGE_NONE][0]['value'])) == date("Y")){
-        
-        //The year after graduation is in the current year
-        if(date("Y", strtotime($graduation_year)) == date("Y")){
+    if($update_time < $now_time) {
 
-          if($graduation_year > $user_info->field_join_company_time[LANGUAGE_NONE][0]['value']){
-            $official_annual_leave = ciandt_wechat_vacation_calculate_official_vacation($graduation_year);
-
-            if(isset($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-              if($graduation_year < $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']){
-                $invalid_days = ciandt_wechat_vacation_calculate_official_vacation($graduation_year, $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']);
-              }else{
-                $invalid_days = 0;
-              }
-              $official_annual_leave = $official_annual_leave - $invalid_days;
-            }
-
-          }else{
-            $official_annual_leave = ciandt_wechat_vacation_calculate_official_vacation($user_info->field_join_company_time[LANGUAGE_NONE][0]['value']);
-
-            if(isset($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-              if($user_info->field_join_company_time[LANGUAGE_NONE][0]['value'] < $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']){
-                $invalid_days = ciandt_wechat_vacation_calculate_official_vacation($user_info->field_join_company_time[LANGUAGE_NONE][0]['value'], $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']);
-              }else{
-                $invalid_days = 0;
-              }
-              $official_annual_leave = $official_annual_leave - $invalid_days;
-            }
-
-          }
-
+      //Calculate the start time
+      if($after_graduation_year > $start_time || $join_company_time > $start_time){
+        if($after_graduation_year >= $join_company_time){
+          $start_time = $after_graduation_year;
         }else{
-          $official_annual_leave = ciandt_wechat_vacation_calculate_official_vacation($user_info->field_join_company_time[LANGUAGE_NONE][0]['value']);
-
-          if(isset($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-            if($user_info->field_join_company_time[LANGUAGE_NONE][0]['value'] < $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']){
-              $invalid_days = ciandt_wechat_vacation_calculate_official_vacation($user_info->field_join_company_time[LANGUAGE_NONE][0]['value'], $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']);
-            }else{
-              $invalid_days = 0;
-            }
-            $official_annual_leave = $official_annual_leave - $invalid_days;
-          }
-
+          $start_time = $join_company_time;
         }
+      }
 
+      $total_days = ciandt_wechat_vacation_time_calculator($start_time, $now_time);
+      if(!empty($update_time)){
+        $invalid_days = ciandt_wechat_vacation_time_calculator($start_time, $update_time);
       }else{
+        $invalid_days = 0;
+      }
 
-        //The year after graduation is in the current year
-        if(date("Y", strtotime($user_info->field_graduation_time[LANGUAGE_NONE][0]['value'])) + 1 == date("Y")){
-          $official_annual_leave = ciandt_wechat_vacation_calculate_official_vacation($graduation_year);
-
-          if(isset($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-            if($graduation_year < $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']){
-              $invalid_days = ciandt_wechat_vacation_calculate_official_vacation($graduation_year, $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']);
-            }else{
-              $invalid_days = 0;
-            }
-            $official_annual_leave = $official_annual_leave - $invalid_days;
-          }
-
-        }else{
-          $official_annual_leave = ciandt_wechat_vacation_calculate_official_vacation();
-          if(isset($user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
-            $invalid_days = ciandt_wechat_vacation_calculate_official_vacation('', $user_info->field_official_vacation_upd_time[LANGUAGE_NONE][0]['value']);
-            $official_annual_leave = $official_annual_leave - $invalid_days;
-          } 
-        }
-
-      }      
-
-      $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $official_annual_leave;
+      $official_annual_leave = $total_days - $invalid_days;
+      //update annual leave
       $account = $user_info;
-      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
+      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $official_annual_leave;
       $fields['field_official_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
-      user_save($account, $fields);  
-    }    
+      user_save($account, $fields);
+
+      //Add log
+      if($official_annual_leave>0){
+        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(official) for @days day', array('@days' => $official_annual_leave)), array(), WATCHDOG_INFO);
+      }
+    }
+
   }
 }
 
+/**
+ * Adjust annual leave(company)
+ */
+function ciandt_wechat_vacation_adjust_commpany_vacation(){
 
+  //Query user lists
+  $year_ago_time = date("Y-m-d", strtotime(date("Y-m-d")."-1 year"));
+  $query = db_select('users', 'u');
+  $query->leftJoin('field_data_field_formal_employee_time', 't', 'u.uid = t.entity_id');
+  $result = $query->condition('t.entity_type', 'user', '=')
+    ->condition('t.field_formal_employee_time_value', $year_ago_time, '<=')
+    ->fields('u', array('uid'))
+    ->execute();
+  while($arr = $result->fetchAssoc()) {
+    $user_info = array();
+    $user_info = user_load($arr['uid']);
+
+    $formal_employee_time = $user_info->field_formal_employee_time[LANGUAGE_NONE][0]['value'];
+    $after_formal_employee_year = strtotime($formal_employee_time."+1 year");
+    $now_time = strtotime(date("Y-m-d"));
+    if(!isset($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value'])){
+      $update_time = 0;
+    }else{
+      $update_time = strtotime($user_info->field_company_vacation_upd_time[LANGUAGE_NONE][0]['value']);
+    }
+
+    if($update_time < $now_time) {
+      //Calculate the start time
+      if (strtotime(date("Y")."-".date("m-d", $after_formal_employee_year)) > strtotime(date("Y-m-d"))) {
+        $start_time = strtotime((date("Y") ."-". date("m-d", $after_formal_employee_year)) . "-1 year");
+      } else {
+        $start_time = strtotime(date("Y") ."-". date("m-d", $after_formal_employee_year));
+      }
+
+      $total_days = ciandt_wechat_vacation_time_calculator($start_time, $now_time, 'company');
+      if (!empty($update_time)) {
+        $invalid_days = ciandt_wechat_vacation_time_calculator($start_time, $update_time, 'company');
+      } else {
+        $invalid_days = 0;
+      }
+
+      $company_annual_leave = $total_days - $invalid_days;
+      //update annual leave
+      $account = $user_info;
+      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $company_annual_leave;
+      $fields['field_company_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
+      user_save($account, $fields);
+
+      //Add log
+      if ($company_annual_leave > 0) {
+        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(company) for @days day', array('@days' => $company_annual_leave)), array(), WATCHDOG_INFO);
+      }
+    }
+  }
+
+}
 
 /**
 * Implements hook_cron().
@@ -1214,4 +1154,19 @@ function ciandt_wechat_vacation_cron() {
   ciandt_wechat_vacation_adjust_commpany_vacation();
   ciandt_wechat_vacation_adjust_official_vacation();
   _ciandt_wechat_vacation_get_all_user();
+}
+
+/**
+ * Function custom watchdog
+ */
+function custom_watchdog($replace_user, $type, $message, $variables = array(), $severity = WATCHDOG_NOTICE, $link = NULL){
+  global $user;
+  $old_user = $user;
+  if(is_numeric($replace_user)){
+    $replace_user=(object)user_load($replace_user);
+  }
+  $user = $replace_user;
+  watchdog($type, $message, $variables, $severity, $link);
+  $user=$old_user;
+  drupal_save_session(TRUE);
 }
