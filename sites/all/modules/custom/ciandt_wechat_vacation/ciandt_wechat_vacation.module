@@ -1077,7 +1077,7 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
       $official_annual_leave = $total_days - $invalid_days;
       //update annual leave
       $account = $user_info;
-      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $official_annual_leave;
+      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $official_annual_leave;
       $fields['field_official_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
       user_save($account, $fields);
 
@@ -1134,7 +1134,7 @@ function ciandt_wechat_vacation_adjust_commpany_vacation(){
       $company_annual_leave = $total_days - $invalid_days;
       //update annual leave
       $account = $user_info;
-      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $company_annual_leave;
+      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $company_annual_leave;
       $fields['field_company_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
       user_save($account, $fields);
 
