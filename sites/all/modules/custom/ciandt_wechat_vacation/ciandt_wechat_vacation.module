@@ -28,7 +28,7 @@ function ciandt_wechat_vacation_menu() {
   
   $items['calculate_vocation_duration'] = array(
     'page callback' => 'ciandt_wechat_calculate_duration_api',
-    'page arguments' => array(1,2),
+    'page arguments' => array(1, 2, 3),
     'access callback' => TRUE,
   );
   
@@ -38,6 +38,14 @@ function ciandt_wechat_vacation_menu() {
     'page arguments' => array('ciandt_wechat_vacation_holiday_nid_settings'),
     'title' => 'China Official Holiday Nid Settings',
     'description' => 'Set china official holiday nid.',
+  );
+
+  $items['admin/config/vacation/special-leave-type'] = array(
+    'access arguments' => array('administer site configuration'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ciandt_wechat_vacation_special_leave_type_settings'),
+    'title' => 'China Official Special Leave Type Settings',
+    'description' => 'Enter the leave type machine names,(eg. paternity-leave), please put each name on a separate line. When system calculate the leave duration, the listed leave types here will NOT count holidays(including weekends)',
   );
   
   $items['vacation/remaining-days'] = array(    
@@ -50,11 +58,26 @@ function ciandt_wechat_vacation_menu() {
 }
 
 /**
+ * China Official Special Leave Type Settings Form.
+ */
+function ciandt_wechat_vacation_special_leave_type_settings($form, &$form_state){
+  $form['ciandt_wechat_vacation_special_leave_type'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Special leave type'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('ciandt_wechat_vacation_special_leave_type'),
+    '#description' => t('Enter the leave type name, please put each name on a separate line.'),
+  );
+  return system_settings_form($form);
+}
+
+/**
  * Function.
  */
-function ciandt_wechat_calculate_duration_api($starttime,$endtime){
+function ciandt_wechat_calculate_duration_api($starttime, $endtime, $leave_type){
     $data['starttime'] = $starttime;
     $data['endtime'] = $endtime;
+    $data['leave_type'] = $leave_type;
     $result['days'] = ciandt_wechat_vocation_calculate_duration($data);
     echo json_encode($result);
 }
@@ -508,8 +531,11 @@ function ciandt_wechat_vocation_calculate_duration($data){
         ->condition('entity_id', $holiday_nid,'=')
         ->execute()
         ->fetchAssoc();
+
+        $leave_type = explode(PHP_EOL, variable_get('ciandt_wechat_vacation_special_leave_type'));
+        $check_leave_type = in_array($data['leave_type'], $leave_type);
         
-        if(!empty($holidays['field_holidays_cid'])){
+        if(!empty($holidays['field_holidays_cid']) && !$check_leave_type) {
           $starttime_ymd = date("Y-m-d", $starttime);
           $endtime_ymd = date("Y-m-d", $endtime);
           $holidays_num = 0;
@@ -538,6 +564,9 @@ function ciandt_wechat_vocation_calculate_duration($data){
             $date = date("Y-m-d",($starttime))." 09:00:00";
             $starttime = strtotime($date);
           }
+        }
+        else{
+          $holidays_num = 0;
         }
         
         
@@ -596,6 +625,16 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
     if(!empty($result)){
       form_set_error('field_leave_duration',$message);
     }
+
+    if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'] == 'paternity-leave') {
+      $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
+      $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+      $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
+      $duration = ciandt_wechat_vocation_calculate_duration($data);
+      if($duration > 15) {
+        form_set_error('field_total_days', t('The total of days can not be greater than 15 days'));
+      }
+    }
     
     //Available annual leave
     if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'] == 'annual-leave'){
@@ -606,6 +645,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
       }
       $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
       $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+      $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
       $duration = ciandt_wechat_vocation_calculate_duration($data);
       $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'];
       if(arg(1) > 0){
@@ -633,6 +673,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   //half a day as a unit
   $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
   $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+  $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
   $duration = ciandt_wechat_vocation_calculate_duration($data);
   $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $duration;
   
@@ -961,9 +1002,9 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
       if(!empty($user_ids)) {
         $query->condition('n.uid', $user_ids, 'in');
       }
-      
+
+      $query->leftJoin('field_data_field_type_of_leave', 'v', 'd.entity_id = v.entity_id');
       if(@$_GET['field_type_of_leave_value'] != 'All' and !empty($_GET['field_type_of_leave_value'])){
-        $query->leftJoin('field_data_field_type_of_leave', 'v', 'd.entity_id = v.entity_id');
         $query->condition('v.field_type_of_leave_value',$_GET['field_type_of_leave_value'],'=');
       }
       
@@ -971,7 +1012,8 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
       $query->condition('s.field_vocation_status_value', 'approved', '=');
       
       $result = $query->fields('n', array('uid'))
-        ->fields('d',array('field_leave_duration_value','field_leave_duration_value2'))
+        ->fields('d',array('field_leave_duration_value', 'field_leave_duration_value2'))
+        ->fields('v', array('field_type_of_leave_value'))
         ->execute();
       
       $arr = array();
@@ -984,6 +1026,7 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
         if($row['field_leave_duration_value'] < $starttime){
           $data['starttime'] = $row['field_leave_duration_value'];
           $data['endtime'] = $starttime;
+          $data['leave_type'] = $row['field_type_of_leave_value'];
           $days = ciandt_wechat_vocation_calculate_duration($data);
           $arr[$row['uid']] = $arr[$row['uid']] + $days;
         }        
@@ -991,6 +1034,7 @@ function ciandt_wechat_vacation_views_post_execute(&$view) {
         if($row['field_leave_duration_value2'] > $endtime){
             $data['starttime'] = $endtime;
             $data['endtime'] = $row['field_leave_duration_value2'];
+            $data['leave_type'] = $row['field_type_of_leave_value'];
             $days = ciandt_wechat_vocation_calculate_duration($data);
             $arr[$row['uid']] = $arr[$row['uid']] + $days;
         } 

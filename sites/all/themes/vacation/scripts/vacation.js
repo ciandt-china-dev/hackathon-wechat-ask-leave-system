@@ -58,9 +58,10 @@ var message = {
       startDate = $('.start-date').val(),
       endDate = $('.end-date').val(),
       startTime = $('.start-time').val(),
-      endTime = $('.end-time').val();
+      endTime = $('.end-time').val(),
+      leaveType = $('#edit-field-type-of-leave-und').val();
 
-    autototalDaysUrl = location.protocol + '//' + location.host + '/calculate_vocation_duration/' + startDate + '%20' + startTime + '/' + endDate + '%20' + endTime;
+    autototalDaysUrl = location.protocol + '//' + location.host + '/calculate_vocation_duration/' + startDate + '%20' + startTime + '/' + endDate + '%20' + endTime + '/' + leaveType;
 
     $.getJSON(autototalDaysUrl).done(function(res) {
       if(res.days>0){
