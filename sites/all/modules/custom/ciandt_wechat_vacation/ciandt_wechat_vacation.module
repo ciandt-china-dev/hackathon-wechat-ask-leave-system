@@ -45,7 +45,7 @@ function ciandt_wechat_vacation_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('ciandt_wechat_vacation_special_leave_type_settings'),
     'title' => 'China Official Special Leave Type Settings',
-    'description' => 'This type of leave includes holidays when calculate duration.',
+    'description' => 'Enter the leave type machine names,(eg. paternity-leave), please put each name on a separate line. When system calculate the leave duration, the listed leave types here will NOT count holidays(including weekends)',
   );
   
   $items['vacation/remaining-days'] = array(    
@@ -624,6 +624,16 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
     
     if(!empty($result)){
       form_set_error('field_leave_duration',$message);
+    }
+
+    if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'] == 'paternity-leave') {
+      $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
+      $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
+      $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
+      $duration = ciandt_wechat_vocation_calculate_duration($data);
+      if($duration > 15) {
+        form_set_error('field_total_days', t('The total of days can not be greater than 15 days'));
+      }
     }
     
     //Available annual leave
