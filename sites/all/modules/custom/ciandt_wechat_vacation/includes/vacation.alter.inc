@@ -14,7 +14,8 @@ function _vocation_node_form_alter_cc_user_list_placement(&$form, &$form_state, 
   if (isset($user->name) && isset($cc_options[$user->name])) {
     unset($cc_options[$user->name]);
   }
-  $cc_output = '<div class="cc-popup"><div class="cc-popup-top"><span class="cc-close-btn">X</span></div><div class="cc-autocomplete"><input id="cc-autocomplete-search" class="form-text"/></div><ul class="initial-cc-list">';
+  $cc_output = '<div class="cc-popup"><div class="cc-popup-top"><span class="cc-close-btn">X</span></div>';
+  $cc_output .= '<div class="cc-autocomplete"><input id="cc-autocomplete-search" class="form-text"/></div><ul class="initial-cc-list">';
   foreach ($cc_options as $key => $option) {
     $image = '<img src="' . $option['avatar'] . '"/>';
     $cc_output .= '<li class="user-item" data-uid="' . $option['userid'] . '"><span class="image">' . $image . '</span><span class="name">' . $option['name'] . '</span></li>';

@@ -442,7 +442,8 @@ function ciandt_wechat_vacation_form_vocation_node_form_alter(&$form, &$form_sta
   if (isset($user->name) && isset($options[$user->name])) {
     unset($options[$user->name]);
   }
-  $output = '<div class="popup"><div class="popup-top"><span class="close-btn">X</span></div><div class="approver-autocomplete"><input id="approver-autocomplete-search" class="form-text"/></div><ul class="initial-approver-list">';
+  $output = '<div class="popup"><div class="popup-top"><span class="close-btn">X</span></div>';
+  $output .= '<div class="approver-autocomplete"><input id="approver-autocomplete-search" class="form-text"/></div><ul class="initial-approver-list">';
   foreach ($options as $key => $option) {
     $image = '<img src="' . $option['avatar'] . '"/>';
     $output .= '<li class="user-item" data-uid="' . $option['userid'] . '"><span class="image">' . $image . '</span><span class="name">' . $option['name'] . '</span></li>';
