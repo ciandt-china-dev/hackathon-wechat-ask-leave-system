@@ -23,3 +23,10 @@ function vacation_css_alter(&$css) {
   unset($css[drupal_get_path('module', 'date') . '/date_api/date.css']);
   unset($css[drupal_get_path('module', 'views') . '/css/views.css']);
 }
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function vacation_preprocess_html(&$variables) {
+  drupal_add_library('system', 'ui.autocomplete');
+}
