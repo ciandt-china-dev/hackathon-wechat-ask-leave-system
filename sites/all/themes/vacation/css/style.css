@@ -280,11 +280,16 @@ fieldset {
 .cc-popup-top {
   padding: 5px 12px;
   text-align: right;
+  display: inline-block;
+  float: right;
+  margin-top: 20px;
 }
 
 .close-btn,
 .cc-close-btn {
-  padding: 10px;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 3px;
 }
 
 .popup ul,
@@ -344,6 +349,13 @@ fieldset {
 .ui-autocomplete-input.form-text {
   width: calc(100% - 10px);
   margin: 5px 5px 20px;
+}
+
+.approver-autocomplete,
+.cc-autocomplete {
+  width: calc(100% - 63px);
+  display: inline-block;
+  margin-top: 15px;
 }
 
 .selected-approver img,
