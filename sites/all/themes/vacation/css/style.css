@@ -280,7 +280,6 @@ fieldset {
 .cc-popup-top {
   padding: 5px 12px;
   text-align: right;
-  border-bottom: 1px solid #ccc;
 }
 
 .close-btn,
@@ -295,6 +294,7 @@ fieldset {
   padding: 0;
   max-height: 90%;
   overflow: auto;
+  border-top: 1px solid #ccc;
 }
 
 .popup .user-item,
@@ -324,6 +324,26 @@ fieldset {
   display: inline-block;
   vertical-align: middle;
   font-size: 14px;
+}
+
+/* autocomplete */
+.ui-widget {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.popup .ui-autocomplete.ui-widget,
+.cc-popup .ui-autocomplete.ui-widget {
+  display: block !important;
+  position: static !important;
+  width: auto !important;
+  border: none;
+  border-top: 1px solid #ccc;
+  border-radius: 0;
+}
+
+.ui-autocomplete-input.form-text {
+  width: calc(100% - 10px);
+  margin: 5px 5px 20px;
 }
 
 .selected-approver img,

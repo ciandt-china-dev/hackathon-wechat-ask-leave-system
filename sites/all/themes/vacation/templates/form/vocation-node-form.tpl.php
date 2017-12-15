@@ -19,12 +19,12 @@ if (empty($form["nid"]['value'])) {
 	<label><?php print t("Leave Duration", array(), array('context' => 'vacation request'));?> <span class="form-required" title="<?php print t("This field is required.");?>">*</span></label>
 	<div class="date-field">
 		<input type="date" class="date start-date form-text" value="<?php echo date('Y-m-d',$starttime); ?>">
-		<input type="time" class="time start-time form-text" value="09:00">
+		<input type="time" class="time start-time form-text" value="<?php echo date('H:i',$starttime); ?>">
 	</div>
 	<label><?php print t("to:");?> <span class="form-required" title="<?php print t("This field is required.");?>">*</span></label>
 	<div class="date-field">
 		<input type="date" class="date end-date form-text" value="<?php echo date('Y-m-d',$endtime); ?>">
-		<input type="time" class="time end-time form-text" value="18:00">
+		<input type="time" class="time end-time form-text" value="<?php echo date('H:i',$endtime); ?>">
 	</div>
 </div>
 <?php print render($form["field_total_days"]);?>

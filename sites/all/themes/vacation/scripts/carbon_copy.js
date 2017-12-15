@@ -67,5 +67,6 @@
       removeCCUid($userItem.data('uid'));
       $userItem.remove();
     });
+
   });
 })(jQuery);
