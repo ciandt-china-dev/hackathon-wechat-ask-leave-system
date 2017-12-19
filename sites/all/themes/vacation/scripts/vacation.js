@@ -43,6 +43,12 @@ var message = {
     DateRangeError: Drupal.t('Please enter the valid date and time'),
     RejectReasonRequired: Drupal.t('Please enter the reject reason'),
     CommentError: Drupal.t('Please write description'),
+    name: Drupal.t('name', {}, { context: "vacation" }),
+    leaveDuration: Drupal.t('leaveDuration', {}, { context: "vacation" }),
+    totalDays: Drupal.t('totalDays', {}, { context: "vacation" }),
+    typeOfLeave: Drupal.t('typeOfLeave', {}, { context: "vacation" }),
+    approver: Drupal.t('approver', {}, { context: "vacation" }),
+    comment: Drupal.t('comment', {}, { context: "vacation" }),
   };
 
   function formatDate(date) {
@@ -220,6 +226,40 @@ var message = {
   autoTotalDays();
   $('.start-date, .end-date, .start-time, .end-time').on('input propertychange', function() {
     autoTotalDays();
+  });
+
+  // search page popup detail
+  $('.page-vacation-search tbody').on('click', '.views-field', function() {
+    var strHTML = '';
+    var obj = {};
+    var $this = $(this),
+      $tr = $this.parent('tr');
+
+    obj.name = $.trim($tr.find('.views-field-name').text());
+    obj.leaveDuration = $.trim($tr.find('.views-field-field-leave-duration').text());
+    obj.totalDays = $.trim($tr.find('.views-field-field-total-days').text());
+    obj.typeOfLeave = $.trim($tr.find('.views-field-field-type-of-leave').text());
+    obj.approver = $.trim($tr.find('.views-field-field-approver').text());
+    obj.comment = $.trim($tr.find('.views-field-field-comment').text());
+
+    $.each(obj, function(ind, item) {
+      strHTML += '<div class="item">' +
+                    '<div class="title">' + MESSAGE[ind] + '</div>' +
+                    '<div class="content">' + item + '</div>' +
+                  '</div>';
+    });
+
+    var popupHTML = '<div class="info-popup">' +
+        '<div class="btn-close">+</div>' +
+        strHTML +
+      '</div>';
+
+    $('body').append(popupHTML);
+
+  });
+
+  $('body').on('click', '.info-popup .btn-close', function() {
+    $('.info-popup').remove();
   });
 
 })(jQuery);
