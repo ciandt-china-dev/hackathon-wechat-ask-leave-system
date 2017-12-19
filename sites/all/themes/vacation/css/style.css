@@ -93,7 +93,8 @@ select::-ms-expand {
 
 .page-vacation-summary #main-wrapper,
 .page-vacation-edit #main-wrapper,
-.page-vacation-request #main-wrapper {
+.page-vacation-request #main-wrapper,
+.page-vacation-search #main-wrapper {
   padding: 0 20px;
 }
 
@@ -244,14 +245,77 @@ label {
   text-align: center;
 }
 
-.page-vacation-summary .views-field {
+.page-vacation-summary .views-field,
+.page-vacation-search .views-field {
   width: 21%;
   padding: 10px 2%;
   border:none;
 }
 
-.page-vacation-summary .pager {
+.page-vacation-summary .pager,
+.page-vacation-search .pager {
   margin:20px -20px;
+}
+
+.page-vacation-search .views-field-field-leave-duration {
+  width: 71%;
+}
+
+.page-vacation-search .views-field-field-leave-duration {
+  font-size: 14px;
+  color: #333;
+}
+
+.page-vacation-search .views-field-field-total-days,
+.page-vacation-search .views-field-field-type-of-leave,
+.page-vacation-search .views-field-field-approver,
+.page-vacation-search .views-field-field-comment {
+  display: none;
+}
+
+.info-popup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99999;
+  font-size: 14px;
+  padding: 20px;
+  background: #fff;
+}
+
+.info-popup .item {
+  border-bottom: solid 1px #ccc;
+  overflow: hidden;
+}
+
+.info-popup .title {
+  float: left;
+  width: 90px;
+  padding: 10px 8px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.info-popup .content {
+  margin-left: 90px;
+  padding: 10px 8px;
+  overflow: hidden;
+}
+
+.info-popup .btn-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 16px;
+  height: 16px;
+  font-size: 26px;
+  color: #ccc;
+  transform: rotate(-45deg);
+  line-height: 16px;
+  z-index: 2;
 }
 
 fieldset {
@@ -280,12 +344,16 @@ fieldset {
 .cc-popup-top {
   padding: 5px 12px;
   text-align: right;
-  border-bottom: 1px solid #ccc;
+  display: inline-block;
+  float: right;
+  margin-top: 20px;
 }
 
 .close-btn,
 .cc-close-btn {
-  padding: 10px;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 3px;
 }
 
 .popup ul,
@@ -295,6 +363,7 @@ fieldset {
   padding: 0;
   max-height: 90%;
   overflow: auto;
+  border-top: 1px solid #ccc;
 }
 
 .popup .user-item,
@@ -324,6 +393,33 @@ fieldset {
   display: inline-block;
   vertical-align: middle;
   font-size: 14px;
+}
+
+/* autocomplete */
+.ui-widget {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.popup .ui-autocomplete.ui-widget,
+.cc-popup .ui-autocomplete.ui-widget {
+  display: block !important;
+  position: static !important;
+  width: auto !important;
+  border: none;
+  border-top: 1px solid #ccc;
+  border-radius: 0;
+}
+
+.ui-autocomplete-input.form-text {
+  width: calc(100% - 10px);
+  margin: 5px 5px 20px;
+}
+
+.approver-autocomplete,
+.cc-autocomplete {
+  width: calc(100% - 63px);
+  display: inline-block;
+  margin-top: 15px;
 }
 
 .selected-approver img,
