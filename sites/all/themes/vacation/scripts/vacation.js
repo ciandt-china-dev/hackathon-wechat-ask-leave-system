@@ -84,6 +84,7 @@ var message = {
     var $popup = $('.popup'),
       $selectedWrapper = $('.selected-approver'),
       $approver = $('input[name="approve_user_id"]'),
+      $main_content = $('#main-content'),
       uidArray = [];
 
     function hasUid(uid) {
@@ -188,15 +189,18 @@ var message = {
 
     $('.add-approver').click(function() {
       $popup.show();
+      $main_content.hide();
     });
 
     $popup.on('click', '.close-btn', function() {
       $popup.hide();
+      $main_content.show();
     }).on('click', '.user-item', function() {
       var uid = $(this).data('uid'),
         $userItem;
 
       $popup.hide();
+      $main_content.show();
 
       if (!hasUid(uid)) {
         uidArray.push(uid);

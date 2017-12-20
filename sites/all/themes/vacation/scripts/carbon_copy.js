@@ -4,6 +4,7 @@
     var $cc_popup = $('.cc-popup'),
         $selectedCCWrapper = $('.selected-cc'),
         $cc_user = $('input[name="cc_user_id"]'),
+        $main_content = $('#main-content'),
         ccUidArray = [];
 
     function hasCCUid(uid) {
@@ -43,15 +44,18 @@
     // Click event for popup showup.
     $('.add-cc').click(function() {
       $cc_popup.show();
+      $main_content.hide();
     });
     // Popup close and select event.
     $cc_popup.on('click', '.cc-close-btn', function() {
       $cc_popup.hide();
+      $main_content.show();
     }).on('click', '.user-item', function() {
       var uid = $(this).data('uid'),
           $userItem;
 
       $cc_popup.hide();
+      $main_content.show();
 
       if (!hasCCUid(uid)) {
         ccUidArray.push(uid);

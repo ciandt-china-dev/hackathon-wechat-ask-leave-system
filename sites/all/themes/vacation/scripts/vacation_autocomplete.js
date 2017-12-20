@@ -1,20 +1,35 @@
 (function($) {
   $(document).ready(function() {
     if ($('.node-vocation-form').length) {
+
       var users = [
         {
           'list_ele': '.initial-approver-list',
           'input_ele': '#approver-autocomplete-search',
-          'append_ele_string': '.popup'
+          'append_ele_string': '.popup',
+          'close_btn': '.close-btn'
         },
         {
           'list_ele': '.initial-cc-list',
           'input_ele': '#cc-autocomplete-search',
-          'append_ele_string': '.cc-popup'
+          'append_ele_string': '.cc-popup',
+          'close_btn': '.cc-close-btn'
         }
       ];
 
       $.each(users, function(i, v) {
+        // Move popup element to popup-content to fix layout issue on wechat.
+        $(v.append_ele_string).appendTo('#popup-content');
+
+        $(v.append_ele_string).on('click', v.close_btn, function() {
+          $(v.input_ele).val('');
+          $(v.input_ele).autocomplete('search', '');
+        }).on('click', '.user-item', function() {
+          $(v.input_ele).trigger('blur');
+          $(v.input_ele).val('');
+          $(v.input_ele).autocomplete('search', '');
+        });
+
         userAutoCompleteImpl($(v.list_ele), $(v.input_ele), v.append_ele_string);
       });
 
