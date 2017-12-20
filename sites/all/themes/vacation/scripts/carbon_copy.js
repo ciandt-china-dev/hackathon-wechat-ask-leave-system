@@ -45,6 +45,7 @@
     $('.add-cc').click(function() {
       $cc_popup.show();
       $main_content.hide();
+      $(window).scrollTop('0');
     });
     // Popup close and select event.
     $cc_popup.on('click', '.cc-close-btn', function() {

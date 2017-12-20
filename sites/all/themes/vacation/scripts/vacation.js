@@ -190,6 +190,7 @@ var message = {
     $('.add-approver').click(function() {
       $popup.show();
       $main_content.hide();
+      $(window).scrollTop('0');
     });
 
     $popup.on('click', '.close-btn', function() {
