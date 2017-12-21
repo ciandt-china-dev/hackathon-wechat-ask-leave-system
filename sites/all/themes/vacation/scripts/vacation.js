@@ -250,16 +250,22 @@ var message = {
     });
 
     var popupHTML = '<div class="info-popup">' +
+        '<div class="container">' +
         '<div class="btn-close">+</div>' +
         strHTML +
+        '</div>' +
       '</div>';
 
     $('body').append(popupHTML);
 
   });
 
-  $('body').on('click', '.info-popup .btn-close', function() {
+  $('body').on('click', '.info-popup, .info-popup .btn-close', function() {
     $('.info-popup').remove();
+  });
+
+  $('body').on('click', '.container', function(event) {
+      event.stopPropagation();
   });
 
 })(jQuery);

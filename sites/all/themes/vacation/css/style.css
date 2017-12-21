@@ -280,9 +280,24 @@ label {
   bottom: 0;
   left: 0;
   z-index: 99999;
+  background: rgba(0,0,0,.5);
+  cursor: pointer;
+}
+
+.info-popup .container {
+  position: absolute;
+  top: 50%;
+  right: 30px;
+  left: 30px;
   font-size: 14px;
   padding: 20px;
   background: #fff;
+  border-radius: 4px;
+  -webkit-transform: translate(0, -50%);
+  -moz-transform: translate(0, -50%);
+  -ms-transform: translate(0, -50%);
+  -o-transform: translate(0, -50%);
+  transform: translate(0, -50%);
 }
 
 .info-popup .item {
@@ -316,6 +331,7 @@ label {
   transform: rotate(-45deg);
   line-height: 16px;
   z-index: 2;
+  cursor: pointer;
 }
 
 fieldset {
