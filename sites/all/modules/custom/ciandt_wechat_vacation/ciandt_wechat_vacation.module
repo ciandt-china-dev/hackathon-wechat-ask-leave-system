@@ -539,6 +539,7 @@ function ciandt_wechat_vocation_calculate_duration($data){
         ->fetchAssoc();
 
         $leave_type = explode(PHP_EOL, variable_get('ciandt_wechat_vacation_special_leave_type'));
+        $leave_type = array_map('trim', $leave_type);
         $check_leave_type = in_array($data['leave_type'], $leave_type);
         
         if(!empty($holidays['field_holidays_cid']) && !$check_leave_type) {
