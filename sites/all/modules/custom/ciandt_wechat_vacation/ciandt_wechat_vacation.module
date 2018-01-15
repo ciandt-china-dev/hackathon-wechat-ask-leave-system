@@ -686,72 +686,78 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   
   global $user;
   
-  //annual leave
-  if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value']=='annual-leave'){
-    $user_info = user_load($user->uid);
-    $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] + $duration;
-    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] - $duration;
-    
-    $account = $user_info;
-    $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
-    $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
-    user_save($account, $fields);
-  }
-
-  $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
-  $approve_user_id_arr = explode(',', $approve_user_id_all);
-  foreach ($approve_user_id_arr as $key => $approve_user_id) {
-    $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_id];
-
-    $approve_user = user_load_by_mail($full_user_info['email']);
-
-    if (!$approve_user) {
-      $edit = array(
-        'mail' => $full_user_info['email'],
-        'name' => $full_user_info['userid'],
-        'roles' => array(
-          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
-          DRUPAL_APPROVER_RID => 'Vacation Approver',
-        ),
-      );
-      $approve_user = user_save(NULL, $edit);
-    } elseif (!user_has_role(DRUPAL_APPROVER_RID, $approve_user)) {
-      $edit = array(
-        'mail' => $full_user_info['email'],
-        'name' => $full_user_info['userid'],
-        'roles' => array(
-          DRUPAL_AUTHENTICATED_RID => 'authenticated user',
-          DRUPAL_APPROVER_RID => 'Vacation Approver',
-        ),
-      );
-      $approve_user = user_save($approve_user, $edit);
-    }
-    $form_state['values']['field_approver'][LANGUAGE_NONE][$key]['target_id'] = $approve_user->uid;
-    $form_state['values']['field_approver'][LANGUAGE_NONE][$key]['target_type'] = 'user';
-    $term_tid = get_approver_vocation_status('pending', 'vocation_status');
-    $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_id'] = $term_tid;//pending
-    $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_type'] = 'taxonomy_term';
-  }
-
-  // Alter field carbon copy form_state value by post value from front end.
-  _vocation_node_form_submit_alter_field_carbon_copy($form, $form_state, $approve_user_id_arr);
-
-  //fix node
-  if(arg(1) > 0){
-    
+  $transaction = db_transaction();
+  try {
     //annual leave
-    $node_info = node_load(arg(1));
-    if($node_info->field_type_of_leave[LANGUAGE_NONE][0]['value'] == 'annual-leave' && $node_info->	field_vocation_status[LANGUAGE_NONE][0]['value'] == 'pending'){
+    if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value']=='annual-leave'){
       $user_info = user_load($user->uid);
-      $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] - $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
-      $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
+      $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] + $duration;
+      $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] - $duration;
+
       $account = $user_info;
       $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
       $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
       user_save($account, $fields);
     }
-    $form_state['values']['nid'] = arg(1);
-    $form_state['values']['vid'] = arg(1);
+
+    $approve_user_id_all = filter_input(INPUT_POST, 'approve_user_id');
+    $approve_user_id_arr = explode(',', $approve_user_id_all);
+    foreach ($approve_user_id_arr as $key => $approve_user_id) {
+      $full_user_info = $form_state['storage']['approve_user_list'][$approve_user_id];
+
+      $approve_user = user_load_by_mail($full_user_info['email']);
+
+      if (!$approve_user) {
+        $edit = array(
+          'mail' => $full_user_info['email'],
+          'name' => $full_user_info['userid'],
+          'roles' => array(
+            DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+            DRUPAL_APPROVER_RID => 'Vacation Approver',
+          ),
+        );
+        $approve_user = user_save(NULL, $edit);
+      } elseif (!user_has_role(DRUPAL_APPROVER_RID, $approve_user)) {
+        $edit = array(
+          'mail' => $full_user_info['email'],
+          'name' => $full_user_info['userid'],
+          'roles' => array(
+            DRUPAL_AUTHENTICATED_RID => 'authenticated user',
+            DRUPAL_APPROVER_RID => 'Vacation Approver',
+          ),
+        );
+        $approve_user = user_save($approve_user, $edit);
+      }
+      $form_state['values']['field_approver'][LANGUAGE_NONE][$key]['target_id'] = $approve_user->uid;
+      $form_state['values']['field_approver'][LANGUAGE_NONE][$key]['target_type'] = 'user';
+      $term_tid = get_approver_vocation_status('pending', 'vocation_status');
+      $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_id'] = $term_tid;//pending
+      $form_state['values']['field_approver_vocation_status'][LANGUAGE_NONE][$key]['target_type'] = 'taxonomy_term';
+    }
+
+    // Alter field carbon copy form_state value by post value from front end.
+    _vocation_node_form_submit_alter_field_carbon_copy($form, $form_state, $approve_user_id_arr);
+
+    //fix node
+    if(arg(1) > 0){
+
+      //annual leave
+      $node_info = node_load(arg(1));
+      if($node_info->field_type_of_leave[LANGUAGE_NONE][0]['value'] == 'annual-leave' && $node_info->	field_vocation_status[LANGUAGE_NONE][0]['value'] == 'pending'){
+        $user_info = user_load($user->uid);
+        $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] - $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
+        $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
+        $account = $user_info;
+        $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
+        $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $annual_leave;
+        user_save($account, $fields);
+      }
+      $form_state['values']['nid'] = arg(1);
+      $form_state['values']['vid'] = arg(1);
+    }
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
   }
 }
 
