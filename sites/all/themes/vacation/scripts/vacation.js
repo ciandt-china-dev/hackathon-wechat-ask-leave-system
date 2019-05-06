@@ -70,7 +70,7 @@ var message = {
     autototalDaysUrl = location.protocol + '//' + location.host + '/calculate_vocation_duration/' + startDate + '%20' + startTime + '/' + endDate + '%20' + endTime + '/' + leaveType;
 
     $.getJSON(autototalDaysUrl).done(function(res) {
-      if(res.days>0){
+      if(res.days){
         $totalDays.val(res.days);
       }else{
         $totalDays.val('');
@@ -158,10 +158,10 @@ var message = {
         return false;
       }
 
-      if (reg.test($totalDays.val()) == false) {
-        message.alert(MESSAGE.TotalDaysError);
-        return false;
-      }
+      // if (reg.test($totalDays.val()) == false) {
+      //   message.alert(MESSAGE.TotalDaysError);
+      //   return false;
+      // }
 
       $approver.val(uidArray.join(','));
 
@@ -229,7 +229,7 @@ var message = {
 
   // auto totalDays
   autoTotalDays();
-  $('.start-date, .end-date, .start-time, .end-time').on('input propertychange', function() {
+  $('.start-date, .end-date, .start-time, .end-time, #edit-field-type-of-leave-und').on('input propertychange', function() {
     autoTotalDays();
   });
 
