@@ -229,7 +229,7 @@ var message = {
 
   // auto totalDays
   autoTotalDays();
-  $('.start-date, .end-date, .start-time, .end-time').on('input propertychange', function() {
+  $('.start-date, .end-date, .start-time, .end-time, #edit-field-type-of-leave-und').on('input propertychange', function() {
     autoTotalDays();
   });
 
