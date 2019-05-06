@@ -68,6 +68,14 @@ function ciandt_wechat_vacation_special_leave_type_settings($form, &$form_state)
     '#default_value' => variable_get('ciandt_wechat_vacation_special_leave_type'),
     '#description' => t('Enter the leave type machine names,(eg. paternity-leave), please put each name on a separate line. When system calculate the leave duration, the listed leave types here will NOT count holidays(including weekends)'),
   );
+
+  $form['ciandt_wechat_vacation_days_leave_type'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Leave type(unit days)'),
+    '#required' => TRUE,
+    '#default_value' => variable_get('ciandt_wechat_vacation_days_leave_type'),
+    '#description' => t('Enter the leave type machine names,(eg. paternity-leave), please put each name on a separate line. The leave types listed here are calculated in days.'),
+  );
   return system_settings_form($form);
 }
 
@@ -78,8 +86,40 @@ function ciandt_wechat_calculate_duration_api($starttime, $endtime, $leave_type)
     $data['starttime'] = $starttime;
     $data['endtime'] = $endtime;
     $data['leave_type'] = $leave_type;
-    $result['days'] = ciandt_wechat_vocation_calculate_duration($data);
+    $result = ciandt_wechat_select_unit($data);
+    
     echo json_encode($result);
+}
+
+/**
+ * Function.
+ */
+function ciandt_wechat_select_unit($data){
+  $hours = ciandt_wechat_vocation_calculate_duration($data);
+
+  $leave_type = explode(PHP_EOL, variable_get('ciandt_wechat_vacation_days_leave_type'));
+  $leave_type = array_map('trim', $leave_type);
+  $check_leave_type = in_array($data['leave_type'], $leave_type);
+  if ($check_leave_type) {
+    $mod = ($hours % 4) * 0.5;
+    $days = intval($hours/4) * 0.5;
+    if ($mod != 0) {
+      if (($mod/4) > 0.5){
+        $days++;
+      }
+      else {
+        $days += 0.5;
+      }
+    }
+    $result['days'] = $days . t("days");
+    $result['actual-hours'] = $days * 8;
+  }
+  else {
+    $result['days'] = $hours . t("hours");
+    $result['actual-hours'] = $hours;
+  }
+  
+  return $result;
 }
 
 /**
@@ -561,14 +601,13 @@ function ciandt_wechat_vocation_calculate_duration($data){
         
           //When the last day is a holiday
           if($endtime_ymd == @$arr[$holidays_num-1]){
-            $date = date("Y-m-d", ($endtime-86400))." 18:00:00";
+            $date = date("Y-m-d", ($endtime))." 24:00:00";
             $endtime = strtotime($date);
-            $holidays_num = $holidays_num-1;
           }
 
           //When the first day is a holiday
           if($starttime_ymd == @$arr[0]){
-            $date = date("Y-m-d",($starttime))." 09:00:00";
+            $date = date("Y-m-d",($starttime))." 00:00:00";
             $starttime = strtotime($date);
           }
         }
@@ -576,21 +615,61 @@ function ciandt_wechat_vocation_calculate_duration($data){
           $holidays_num = 0;
         }
         
+        // Start reset start time and end time.
+        $exclude_hour = 0;
         
+        $tmp_start_date_min = strtotime(date("Y-m-d",($starttime))." 09:00:00");
+        $tmp_start_date_max = strtotime(date("Y-m-d",($starttime))." 18:00:00");
+        if ($starttime > $tmp_start_date_min) {
+          if ($starttime < $tmp_start_date_max) {
+            $tmp_start_date_max = $starttime;
+          }
+          $exclude_hour += ($tmp_start_date_max - $tmp_start_date_min)/3600;
 
-        $mod = ($endtime - $starttime) % 86400;
-        if($mod > 0 && $mod <= 14400){
-            $days = intval(floor(($endtime - $starttime) / 86400)) + 0.5;
-        }elseif($mod > 14400){
-            $days = intval(floor(($endtime-$starttime) / 86400)) + 1;
-        }else{
-            $days = intval(floor(($endtime-$starttime) / 86400));
-        }  
-        $days = $days - $holidays_num;
+          $starttime_h = date("H", $starttime);
+          if ($starttime_h > 12) {
+            $mod = ($tmp_start_date_max - strtotime(date("Y-m-d",($starttime))." 12:00:00")) % 3600;
+            if ($mod == 0) {
+              $exclude_hour--;
+            }
+            else {
+              $exclude_hour -= $mod / 3600;
+            }
+          }
+        }
+        
+        $tmp_end_date_min = strtotime(date("Y-m-d",($endtime))." 09:00:00");
+        $tmp_end_date_max = strtotime(date("Y-m-d",($endtime))." 18:00:00");
+        if ($endtime < $tmp_end_date_max) {
+          if ($endtime > $tmp_end_date_min) {
+            $tmp_end_date_min = $endtime;
+          }
+          $exclude_hour += ($tmp_end_date_max - $tmp_end_date_min) / 3600;
+
+          $endtime_h = date("H", $endtime);
+
+          if ($endtime_h <= 12) {
+            $mod = (strtotime(date("Y-m-d",($endtime))." 13:00:00") - $tmp_end_date_min) % 3600;
+            if ($mod == 0) {
+              $exclude_hour--;
+            }
+            else {
+              $exclude_hour -= $mod / 3600;
+            }
+          }
+        }
+
+        $starttime = strtotime(date("Y-m-d",($starttime))." 00:00:00");
+        $endtime = strtotime(date("Y-m-d",($endtime))." 24:00:00");
+        // Reset start time and end time end.
+        
+        $days = intval(($endtime - $starttime) / (24 * 3600)) - $holidays_num;
     }else{
         $days = 0;
     }
-    return $days;
+
+    $actual_hour = ceil($days * 8 - $exclude_hour);
+    return $actual_hour;
 } 
 
 /**
@@ -637,8 +716,8 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
       $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
       $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
       $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
-      $duration = ciandt_wechat_vocation_calculate_duration($data);
-      if($duration > 15) {
+      $duration = ciandt_wechat_select_unit($data);
+      if($duration['actual-hours'] > 120) {
         form_set_error('field_total_days', t('The total of days can not be greater than 15 days'));
       }
     }
@@ -653,7 +732,7 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
       $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
       $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
       $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
-      $duration = ciandt_wechat_vocation_calculate_duration($data);
+      $duration = ciandt_wechat_select_unit($data);
       $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'];
       if(arg(1) > 0){
         $node_info = node_load(arg(1));
@@ -661,8 +740,8 @@ function ciandt_wechat_vacation_form_vocation_node_form_validate(&$form, &$form_
           $annual_leave = $annual_leave + $node_info->field_total_days[LANGUAGE_NONE][0]['value'];
         }
       }
-      $annual_leave = $annual_leave + 3;
-      if($annual_leave < $duration){
+      $annual_leave = $annual_leave + 24;
+      if($annual_leave < $duration['actual-hours']){
         form_set_error('field_total_days', t('Available remaining vacation less than request'));
       }
     }
@@ -681,16 +760,22 @@ function ciandt_wechat_vacation_form_vocation_node_form_submit(&$form, &$form_st
   $data['starttime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value'];
   $data['endtime'] = $form_state['values']['field_leave_duration'][LANGUAGE_NONE][0]['value2'];
   $data['leave_type'] = $form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value'];
-  $duration = ciandt_wechat_vocation_calculate_duration($data);
-  $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $duration;
+  $duration = ciandt_wechat_select_unit($data);
+  $form_state['values']['field_total_days'][LANGUAGE_NONE][0]['value'] = $duration['actual-hours'];
+  $time = ciandt_wechat_select_unit($data);
   
   global $user;
+  $form_state['values']['title'] = t('@name required @leavetype @times', array(
+    '@name' => $user->name,
+    '@leavetype' => $form['field_type_of_leave'][LANGUAGE_NONE]['#options'][$data['leave_type']],
+    '@times' => $time['days']
+  ));
   
   //annual leave
   if($form_state['values']['field_type_of_leave'][LANGUAGE_NONE][0]['value']=='annual-leave'){
     $user_info = user_load($user->uid);
-    $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] + $duration;
-    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] - $duration;
+    $freeze_annual_leave = $user_info->field_freeze_vacation_days[LANGUAGE_NONE][0]['value'] + $duration['actual-hours'];
+    $annual_leave = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] - $duration['actual-hours'];
     
     $account = $user_info;
     $fields['field_freeze_vacation_days'][LANGUAGE_NONE][0]['value'] = $freeze_annual_leave;
@@ -1128,13 +1213,13 @@ function ciandt_wechat_vacation_adjust_official_vacation(){
       $official_annual_leave = $total_days - $invalid_days;
       //update annual leave
       $account = $user_info;
-      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $official_annual_leave;
+      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $official_annual_leave * 8;
       $fields['field_official_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
       user_save($account, $fields);
 
       //Add log
       if($official_annual_leave>0){
-        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(official) for @days day', array('@days' => $official_annual_leave)), array(), WATCHDOG_INFO);
+        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(official) for @hours hours', array('@hours' => $official_annual_leave * 8)), array(), WATCHDOG_INFO);
       }
     }
 
@@ -1185,13 +1270,13 @@ function ciandt_wechat_vacation_adjust_commpany_vacation(){
       $company_annual_leave = $total_days - $invalid_days;
       //update annual leave
       $account = $user_info;
-      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $company_annual_leave;
+      $fields['field_remaining_vacation_days'][LANGUAGE_NONE][0]['value'] = $user_info->field_remaining_vacation_days[LANGUAGE_NONE][0]['value'] + $company_annual_leave * 8;
       $fields['field_company_vacation_upd_time'][LANGUAGE_NONE][0]['value'] = date("Y-m-d");
       user_save($account, $fields);
 
       //Add log
       if ($company_annual_leave > 0) {
-        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(company) for @days day', array('@days' => $company_annual_leave)), array(), WATCHDOG_INFO);
+        custom_watchdog($user_info->uid, t('Update Vacation By Cron'), t('Add annual leave(company) for @hours hours', array('@hours' => $company_annual_leave * 8)), array(), WATCHDOG_INFO);
       }
     }
   }
